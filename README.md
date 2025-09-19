@@ -90,6 +90,6 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
 - Images: `images.unoptimized = true` (optimize sources; prefer WebP)
 - Avoid large binaries in `public/`
 
-## License
-MIT
+## Fonts
+This site uses proprietary fonts from https://usgraphics.com, which are gitignored. The site will fallback to JetBrains Mono if the custom fonts are not provided in the proper directory.
 
