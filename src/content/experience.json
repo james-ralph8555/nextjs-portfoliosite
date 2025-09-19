@@ -1,0 +1,21 @@
+{
+  "title": "Experience",
+  "items": [
+    {
+      "start": "2021",
+      "end": "Present",
+      "company": " ",
+      "company_link": " ",
+      "title": "Data Scientist",
+      "body": []
+    },
+    {
+      "start": "2019",
+      "end": "2020",
+      "company": "Penn State ARL",
+      "company_link": "https://www.arl.psu.edu/",
+      "title": "R&D Engineering Co-Op",
+      "body": []
+    }
+  ]
+}

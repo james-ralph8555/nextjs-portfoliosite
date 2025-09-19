@@ -1,0 +1,46 @@
+{
+  "name": "nextjs-portfoliosite",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.14.3",
+    "@mui/material": "^5.14.4",
+    "@types/node": "20.12.12",
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7",
+    "autoprefixer": "10.4.19",
+    "eslint": "8.57.0",
+    "eslint-config-next": "15.4.6",
+    "gray-matter": "^4.0.3",
+    "next": "15.4.6",
+    "postcss": "8.4.38",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "react-icons": "^4.10.1",
+    "rehype-autolink-headings": "^6.1.1",
+    "rehype-pretty-code": "^0.14.1",
+    "rehype-slug": "^5.1.0",
+    "rehype-stringify": "^9.0.3",
+    "remark-figure-caption": "^1.0.6",
+    "remark-gfm": "^3.0.1",
+    "remark-parse": "^10.0.1",
+    "remark-rehype": "^10.1.0",
+    "shiki": "^3.9.2",
+    "tailwindcss": "3.4.3",
+    "typescript": "5.4.5",
+    "unified": "^10.1.2",
+    "unist-util-visit": "^5.0.0"
+  },
+  "overrides": {
+    "@types/react": "19.1.10",
+    "@types/react-dom": "19.1.7"
+  }
+}
