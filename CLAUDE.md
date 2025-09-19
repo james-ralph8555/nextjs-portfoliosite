@@ -17,6 +17,7 @@ This is a Next.js 15 portfolio website built with:
 - **UI Components**: Material-UI for icons and components
 - **Language**: TypeScript with some @ts-nocheck pragmas
 - **Blog System**: Markdown-based with gray-matter for frontmatter parsing
+- **Asset Management**: Private git submodule for secure asset storage
 
 ### Key Architectural Patterns
 
