@@ -46,6 +46,13 @@ This is a Next.js 15 portfolio website built with:
 - Components are co-located in `src/app/` directory
 - Uses React Server Components for data fetching
 
+**Asset Management**:
+- All static assets stored in private git submodule at `public/assets/`
+- Remote repository: `git@github.com:james-ralph8555/nextjs-portfoliosite-assets.git`
+- Accessed via SSH deploy key during Amplify build process
+- Protects licensed fonts (Berkeley Mono) and keeps main repository clean
+- No code changes required - asset URLs remain unchanged
+
 ### Important Configuration
 
 **Next.js Config** (`next.config.js`):
@@ -79,5 +86,30 @@ Markdown features supported:
 - `src/app/`: Next.js App Router pages and components
 - `src/_posts/`: Blog post markdown files  
 - `src/lib/api.tsx`: Markdown processing and blog post utilities
-- `public/`: Static assets including project images and blog assets
+- `public/assets/`: Git submodule containing all static assets (fonts, images, etc.)
 - Images are converted to WebP format for performance
+
+## Asset Management
+
+### Adding New Assets
+1. Add files to the `public/assets/` directory
+2. Commit and push changes to the assets submodule:
+   ```bash
+   cd public/assets
+   git add .
+   git commit -m "Add new assets"
+   git push origin main
+   ```
+3. Commit submodule updates in main repository:
+   ```bash
+   cd ..
+   git add public/assets
+   git commit -m "Update assets submodule"
+   ```
+
+### Build Process
+Amplify automatically:
+1. Sets up SSH key from `SSH_PRIVATE_KEY` environment variable
+2. Initializes git submodules during preBuild phase
+3. Makes assets available at original paths (e.g., `/assets/fonts/berkeley/`)
+4. No code changes needed - all existing asset references work unchanged

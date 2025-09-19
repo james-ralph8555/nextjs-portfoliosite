@@ -1,12 +1,12 @@
 ---
 title: Setting up Grafana with InfluxDB for Server Monitoring
 date: 2021-12-31
-coverImage: "/grafana-monitoring-post/setup-influxdb.webp"
+coverImage: "/assets/grafana-monitoring-post/setup-influxdb.webp"
 ---
 
 Grafana is an exceptional tool for status monitoring and alerting, with flexibility and extensibility that is hard to find in other tools. This guide will cover every step of the process, from installation to a usable dashboard. The DIY setup of Grafana is a plus in my mind, since once you set it up, you will understand every metric you have shown. You can have a basic setup with a few key metrics and alerts, or you can tinker it to your heart’s content. Fair warning: this setup will take a few hours, but you do not need to do every example in the examples section to have a working dashboard.
 
-![My Grafana Dashboard](/grafana-post/1_Y9zMs-69y5VhPg7OwNWdGg.webp)
+![My Grafana Dashboard](/assets/grafana-post/1_Y9zMs-69y5VhPg7OwNWdGg.webp)
 *My Grafana Dashboard*
 
 ## The Stack
@@ -43,11 +43,11 @@ docker run -d \
 
 If all went well, you should be able to navigate to [http://localhost:8086](http://localhost:8086) or http://<server-ip-addr>:8086 and see the influxDB configuration screen:
 
-![InfluxDB config screen](/grafana-post/1_Wl2s0DEcEudL4dAzAb0adg.webp)
+![InfluxDB config screen](/assets/grafana-post/1_Wl2s0DEcEudL4dAzAb0adg.webp)
 
 Press Get Started, and create a user, password, organization name, and an initial bucket name. A good choice for your organization name is your system’s hostname, and you should name your start bucket “telegraf-bucket”. Once that is setup you should see this screen:
 
-![InfluxDB main screen](/grafana-post/1_mnq4KA2PmCfjo7-qnCJIxg.webp)
+![InfluxDB main screen](/assets/grafana-post/1_mnq4KA2PmCfjo7-qnCJIxg.webp)
 
 Select “Load your data”, and then navigate to the telegraf tab.
 
@@ -55,7 +55,7 @@ Select “Load your data”, and then navigate to the telegraf tab.
 
 Once you are on the telegraf screen, click “create configuration”. You should see options, and I selected “System” and “Docker”:
 
-![Telegraf config options](/grafana-post/1_LNBhNr-bThlpTkP3VErJfA.webp)
+![Telegraf config options](/assets/grafana-post/1_LNBhNr-bThlpTkP3VErJfA.webp)
 
 You can select the other services as well if you run these.
 
@@ -108,7 +108,7 @@ You should be presented with a screen to change your password after logging in.
 
 You should now see the grafana start screen:
 
-![Grafana start screen](/grafana-post/1_k0VQXTbwrObepbcFI4UaxQ.webp)
+![Grafana start screen](/assets/grafana-post/1_k0VQXTbwrObepbcFI4UaxQ.webp)
 
 Select the gear icon on the left pane and then go to data sources, and select “Add a data source”, and select “InfluxDB”
 
@@ -118,7 +118,7 @@ Go back to the influxDB page at http://<ip-addr>:8086, select the data tab, and 
 
 Back to grafana, you should see a screen like this:
 
-![Grafana Data Source Config](/grafana-post/1_KXPlSE_9167oD2luADazgg.webp)
+![Grafana Data Source Config](/assets/grafana-post/1_KXPlSE_9167oD2luADazgg.webp)
 *Grafana Data Source Config*
 
 Make sure to select your query type as “Flux”, since we are using influxDB v2. Enter your influxDB url, organization, API token from the previous section, and bucket name. Make sure your data source saves successfully.
@@ -127,7 +127,7 @@ Make sure to select your query type as “Flux”, since we are using influxDB v
 
 Now, the system is ready to go. However, it’s still not very useful, since there is no dashboard yet. Go to the left pane in grafana and press the plus symbol, and then select dashboard.
 
-![Your first dashboard! Not much to look at yet.](/grafana-post/1_-JwuqPh4zpPjc2k5gqX_IA.webp)
+![Your first dashboard! Not much to look at yet.](/assets/grafana-post/1_-JwuqPh4zpPjc2k5gqX_IA.webp)
 *Your first dashboard! Not much to look at yet.*
 
 Select add a new panel. You can paste in this example query and you should see data, assuming you enabled system metrics in telegraf.
@@ -145,7 +145,7 @@ from(bucket: "telegraf-bucket")
 
 This query gives the sum of cpu usage by the system and user across all fields and threads. The nice thing about influxDB is that you don’t have to create these queries by hand. Go the the explore tab of influxDB and create a queries there:
 
-![InfluxDB explore tab](/grafana-post/1_Sm5zDkwAqdbHi7oaBbXt1Q.webp)
+![InfluxDB explore tab](/assets/grafana-post/1_Sm5zDkwAqdbHi7oaBbXt1Q.webp)
 
 Then click on the “script editor” button for the query text. You can then paste this in a grafana panel and get the data.
 
@@ -163,12 +163,12 @@ Transformations are essential to building a good looking dashboard, but the rang
 
 In InfluxDB, navigate to the explore page, and select “system” as the measurement and “load1” as the field.
 
-![System 1 Minute Load Query](/grafana-post/1_dNkrVWmbQrOJIIw1oVUjJg.webp)
+![System 1 Minute Load Query](/assets/grafana-post/1_dNkrVWmbQrOJIIw1oVUjJg.webp)
 *System 1 Minute Load Query*
 
 You can click “submit” to get a time series graph of the 1 minute load, but what we want here is the text from the script editor. Select that text and paste it into a new grafana panel.
 
-![The Query Pasted into Grafana](/grafana-post/1_xp1l8xskiuuggwYFCIOVfA.webp)
+![The Query Pasted into Grafana](/assets/grafana-post/1_xp1l8xskiuuggwYFCIOVfA.webp)
 *The Query Pasted into Grafana*
 
 A time series is useful if you want to identify periods of high load. **An important thing to understand in grafana is that the time selector on the top right sets the time range for all charts on the dashboard. This is sometimes counter-intuitive. For example, if I have a gauge from a stat that is updated once per day, and I select the time range for the dashboard to 5 minutes, this stat will be blank since there was no new data in the past 5 minutes.** The way to set a custom time range, down to the query level, is to select “query options” and set the relative time to the time range you want, i.e. 1d for the last day.
@@ -181,7 +181,7 @@ Similarly to the last example, we start a query in InfluxDB. This time, instead 
 
 Like last time, we copy our query into grafana, and get 4 series. Here, I will be using a “gauge” type visualization.
 
-![Gauges for load](/grafana-post/1_QmedZpbfWlztxMpjvOZNhQ.webp)
+![Gauges for load](/assets/grafana-post/1_QmedZpbfWlztxMpjvOZNhQ.webp)
 
 As you can see, this isn’t very nice. There’s no units, the graphs are out of order, and the labels aren’t the most readable.
 
@@ -191,16 +191,16 @@ First, we want to apply a concatenate fields transform, so we can use an organiz
 
 Then, we want to add 3 “add field from calculation transforms”. This allows us to do math on the data returned by queries. System load in linux is given as a number which goes from 0 for no load to n_cpus for max load. We want to have this as a percentage. Therefore, we set the mode of each of these transforms to “binary operation”. We then divide the load by the number of CPUs
 
-![Each Transform Should Look Like This](/grafana-post/1_hYGHkls2TttiNdxNwU9bDA.webp)
+![Each Transform Should Look Like This](/assets/grafana-post/1_hYGHkls2TttiNdxNwU9bDA.webp)
 *Each Transform Should Look Like This*
 
 Now, we can use an organize fields transform to hide the original data and rename fields.
 
-![Organize fields transform](/grafana-post/1_OvX9FpdVTT_9QtpE6qsXrg.webp)
+![Organize fields transform](/assets/grafana-post/1_OvX9FpdVTT_9QtpE6qsXrg.webp)
 
 After this, using the options pane, we can set the unit to “Percent (0.0–1.0)”, the min to 0, the max to 1, and the red threshold to 0.8. The title can be changed too, resulting in
 
-![Final load gauges](/grafana-post/1_ZY5dNhKP0iekTz6MSTwg4w.webp)
+![Final load gauges](/assets/grafana-post/1_ZY5dNhKP0iekTz6MSTwg4w.webp)
 
 ## Combining Multiple Queries — CPU and Hard Drive Temperatures
 
@@ -208,35 +208,35 @@ First, CPU temperatures are only available when using the powerstat plugin, and 
 
 Since we are pulling two different measurements, we will use multiple queries in grafana. The first query will pull the CPU temperature, by core
 
-![InfluxDB Query for Per Core CPU Temperature](/grafana-post/1_0w9jZUh_YrqP0t5UQvbbAQ.webp)
+![InfluxDB Query for Per Core CPU Temperature](/assets/grafana-post/1_0w9jZUh_YrqP0t5UQvbbAQ.webp)
 *InfluxDB Query for Per Core CPU Temperature*
 
 This query returns 4 time series, or one for each core.
 
 If we want the mean temperature of all 4 cores, we add a group to our query, group by measurement, and aggregate by mean:
 
-![InfluxDB Query for CPU Temperature](/grafana-post/1_29NjY4gOJp80F3MNndhUFA.webp)
+![InfluxDB Query for CPU Temperature](/assets/grafana-post/1_29NjY4gOJp80F3MNndhUFA.webp)
 *InfluxDB Query for CPU Temperature*
 
 This aggregates the temperature of the 4 series from before into one. Paste these into grafana and use a bar gauge to display the most recent data.
 
 We now have to use grafana transforms. First, we use a “concatenate fields” transform to merge the results of both queries into a single field. Then, and “organize fields” transform is used to rename and reorder the fields:
 
-![Organize fields](/grafana-post/1_Zsx9AyZFontVscH7LhvGDA.webp)
+![Organize fields](/assets/grafana-post/1_Zsx9AyZFontVscH7LhvGDA.webp)
 
 We can now use the options pane on the right hand side of grafana to change the title, graph style, orientation, font size, units (degrees C in this case) and thresholds. Thresholds change the color of the bar once it is over a certain level. I set the threshold to 80 and the color to red, so the green bar changes to red when a temperature is over 80 degrees. These can also be set per bar using the “overrides” section. This results in
 
-![Temperature gauges](/grafana-post/1_ewpD-RG56pNje3y9I3VqsA.webp)
+![Temperature gauges](/assets/grafana-post/1_ewpD-RG56pNje3y9I3VqsA.webp)
 
 ## Disk Usage — Pie/Donut Chart
 
 First, we start off by querying the disk measurement for the “used” and “free” fields, and filtering this to a single drive.
 
-![Disk usage query](/grafana-post/1_7qvf6dW-XLsjNEnV6mlH1w.webp)
+![Disk usage query](/assets/grafana-post/1_7qvf6dW-XLsjNEnV6mlH1w.webp)
 
 Again, this is pasted into grafana, and the chart type is set to “Pie”. Like the previous example, a concatenate fields and organize fields transform is used to name the series to something more readable. For a pie chart, the style can either be a “pie” or a “donut”, and this is changeable in the options pane. Creating a legend in the options panel and adding the percentage values to it is also something I like to do. This results in
 
-![Disk usage chart](/grafana-post/1_9jqJSRlRJ5ZqeknKMzpIgg.webp)
+![Disk usage chart](/assets/grafana-post/1_9jqJSRlRJ5ZqeknKMzpIgg.webp)
 
 ## Bar Charts From Time Series
 
@@ -252,24 +252,24 @@ Then, an outer join is done on container name to connect each container to its c
 
 After this, an organize fields transform is done where the first N/2 entries are labeled “CPU” and the last N/2 entries are labeled “Mem” where N is the number of containers queried.
 
-![Docker usage transforms](/grafana-post/1_BHHAjJi4Vp4HCh2TcDw1Ow.webp)
+![Docker usage transforms](/assets/grafana-post/1_BHHAjJi4Vp4HCh2TcDw1Ow.webp)
 *Docker usage transforms*
 
 Next, in the options pane, the legend is hidden. The unit is set to percent (0–100). Overrides are performed, by matching with regex. This allows us to match every field labeled “CPU” or “Mem” instead of having to apply the overrides manually. In the overrides, the colors of the bars are changed.
 
-![Override to Change Bar Color](/grafana-post/1__afuazomQBHLO5NoZ_TPXw.webp)
+![Override to Change Bar Color](/assets/grafana-post/1__afuazomQBHLO5NoZ_TPXw.webp)
 *Override to Change Bar Color*
 
 This results in the CPU and memory usage being grouped nicely by container.
 
-![The Final Result](/grafana-post/1_wXvNdThud28LmF539qJY1g.webp)
+![The Final Result](/assets/grafana-post/1_wXvNdThud28LmF539qJY1g.webp)
 *The Final Result*
 
 ## Read/Write and Network Usage — Rates From Totals
 
 Linux reports network and disk reads and writes in bytes since the system was started. If you want to get a rate, this can be done in influxDB.
 
-![Network usage query](/grafana-post/1_wJDR4PXL03WZR_BJ-2JCug.webp)
+![Network usage query](/assets/grafana-post/1_wJDR4PXL03WZR_BJ-2JCug.webp)
 
 Using the aggregation function “derivative” allows us to see the current rate that data is being sent over the network. Note that a very similar query can be done for disk usage, using “diskio” as the measurement and “write_bytes” and “read_bytes” as the field. This query can be pasted into grafana and the standard options fields can be changed to get the graph you want.
 
@@ -320,7 +320,7 @@ This produces a few simple fields, such as HTTP status code and probe_duration_s
 
 Using the link above, we can create a scraper in influxDB. To do this, navigate to the data tab of influxDB and select “scrapers”. Paste in the link above. I create a new bucket for each scraper. You can create another api key that gives read access across all buckets and edit your grafana data source configuration with this API key. Once this is all done, you will see a new bucket with all the fields that blackbox exported. Since influxDB is a time series database, we can use these points in time to chart the state. Query “probe_http_status_code” from influxDB and paste it into grafana. For a website, successful http codes are in the range of 200–299. Therefore, we can use the state diagram or status history chart in grafana and set thresholds to be red for values not in 200–299.
 
-![Uptime chart](/grafana-post/1_ohO5PQVc43Lz7TJr3D5cuA.webp)
+![Uptime chart](/assets/grafana-post/1_ohO5PQVc43Lz7TJr3D5cuA.webp)
 
 Similarly, the probe duration status measurement can be queried from the scraper’s bucket. A stat or time series is a good way to represent this value.
 

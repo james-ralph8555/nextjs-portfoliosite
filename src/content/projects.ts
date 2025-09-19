@@ -21,7 +21,7 @@ const projectsConfig = {
       title: "Real-Time Black Hole Simulator",
       summary:
         "A real-time black hole simulator built with Rust, WebAssembly & WebGPU. Explore gravitational lensing effects interactively in your browser.",
-      image: "/black-hole-laboratory.webp",
+      image: "/assets/black-hole-laboratory.webp",
       url: "https://gravitylens.space",
       github: "james-ralph8555/black-hole-laboratory",
     },
@@ -29,7 +29,7 @@ const projectsConfig = {
       title: "Options Visualizer",
       summary:
         "Tool to visualize changes in the Black–Scholes model with respect to other variables. 2D or 3D data output. Can also be used to get current Greeks for a given option. European style options.",
-      image: "/optvis_thumb.webp",
+      image: "/assets/optvis_thumb.webp",
       url: "https://github.com/james-ralph8555/optionsVisualizer",
       github: "james-ralph8555/optionsVisualizer",
     },
@@ -37,7 +37,7 @@ const projectsConfig = {
       title: "Personal Portfolio Website",
       summary:
         "A static portfolio website built with Next.js 15, featuring interactive project cards with GitHub stars, a markdown-powered blog system, and optimized for AWS Amplify hosting",
-      image: "/portfolio-thumb.webp",
+      image: "/assets/portfolio-thumb.webp",
       url: "https://james-ralph.com",
       github: "james-ralph8555/nextjs-portfoliosite",
     },
@@ -45,7 +45,7 @@ const projectsConfig = {
       title: "chickhen.xyz",
       summary:
         "A website built in gatsby.js with hosting and CI/CD provided by AWS Amplify",
-      image: "/avatar_thumb.webp",
+      image: "/assets/avatar_thumb.webp",
       url: "https://chickhen.xyz",
       github: null,
     },
@@ -53,7 +53,7 @@ const projectsConfig = {
       title: "Drexel Micromouse 2020",
       summary:
         "Won 1st prize in the 2020 Princeton Micromouse competition using the A* algorithm implemented in Python",
-      image: "/micromouse_thumb.webp",
+      image: "/assets/micromouse_thumb.webp",
       url: "https://github.com/james-ralph8555/DrexelMicromouse2020",
       github: "james-ralph8555/DrexelMicromouse2020",
     },

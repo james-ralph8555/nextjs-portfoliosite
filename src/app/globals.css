@@ -5,7 +5,7 @@
 /* Berkeley Mono Font Loading */
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
+  src: url('/assets/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -13,7 +13,7 @@
 
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/fonts/berkeley/BerkeleyMono-Oblique.woff2') format('woff2');
+  src: url('/assets/fonts/berkeley/BerkeleyMono-Oblique.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
   font-display: swap;
@@ -21,7 +21,7 @@
 
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
+  src: url('/assets/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -29,7 +29,7 @@
 
 @font-face {
   font-family: 'Berkeley Mono';
-  src: url('/fonts/berkeley/BerkeleyMono-Bold-Oblique.woff2') format('woff2');
+  src: url('/assets/fonts/berkeley/BerkeleyMono-Bold-Oblique.woff2') format('woff2');
   font-weight: 700;
   font-style: italic;
   font-display: swap;
@@ -39,7 +39,7 @@
 @media screen and (max-width: 768px) {
   @font-face {
     font-family: 'Berkeley Mono';
-    src: url('/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
+    src: url('/assets/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
     font-weight: 400;
     font-style: normal;
     font-display: block; /* Force immediate loading on mobile */
@@ -47,7 +47,7 @@
   
   @font-face {
     font-family: 'Berkeley Mono';
-    src: url('/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
+    src: url('/assets/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
     font-weight: 700;
     font-style: normal;
     font-display: block;

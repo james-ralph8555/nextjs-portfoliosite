@@ -1,0 +1,3 @@
+[submodule "public/assets"]
+	path = public/assets
+	url = git@github.com:james-ralph8555/nextjs-portfoliosite-assets.git

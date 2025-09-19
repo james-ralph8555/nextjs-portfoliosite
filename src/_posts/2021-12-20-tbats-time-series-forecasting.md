@@ -1,10 +1,10 @@
 ---
 title: "End-to-End Time Series Forecasting Project with TBATS and Pandas in Python"
 date: 2021-12-20
-coverImage: "/tbats-post/header.webp"
+coverImage: "/assets/tbats-post/header.webp"
 ---
 
-![TBATS Forecasting](/tbats-post/header.webp)
+![TBATS Forecasting](/assets/tbats-post/header.webp)
 
 TBATS is a very powerful and flexible time series modelling method. It allows for multiple seasonalities and data with non-constant variance (heteroscedastic). A theoretical treatment of the model is given [here](https://robjhyndman.com/papers/ComplexSeasonality.pdf), and this article focuses on its implementation in a larger project. In python, this powerful technique can be implemented in just a few lines of code. The following exercise was given as an interview question to me, and it is an interesting problem due to the anomalies and complexity of the data.
 
@@ -48,7 +48,7 @@ monthly_freq = df.resample('m').size()
 plt.plot(monthly_freq)
 ```
 
-![Monthly Frequency Plot](/tbats-post/monthly-frequency.webp)
+![Monthly Frequency Plot](/assets/tbats-post/monthly-frequency.webp)
 *Monthly Frequency*
 
 This visualization informs us of a few characteristics of this data
@@ -72,7 +72,7 @@ We should expect roughly a 1 year seasonality in biking due to changes in the se
 pd.plotting.autocorrelation_plot(monthly_freq)
 ```
 
-![Autocorrelation function plot](/tbats-post/autocorrelation.webp)
+![Autocorrelation function plot](/assets/tbats-post/autocorrelation.webp)
 *Autocorrelation function for Austin Bike Data*
 
 The spike at 12 months confirms this. What this plot is showing is that ridership will correlate with ridership 12 months ahead of it — since our data is in monthly frequency, this is a year.
@@ -128,7 +128,7 @@ plt.ylim(bottom=0)
 plt.legend()
 ```
 
-![Forecast vs Actual Ridership](/tbats-post/forecast-vs-actual.webp)
+![Forecast vs Actual Ridership](/assets/tbats-post/forecast-vs-actual.webp)
 *Monthly Forecast vs Actual Ridership*
 
 There are a range of metrics for quantifying time series error. In this example, I will use Mean Absolute Percentage Error (MAPE) since percentage errors eliminate the scale of the data. This can be done since the data is always positive, but in cases where the data can be 0, this metric cannot be used due to potential division by zero errors. In that case, Root Mean Squared Error (RMSE) or similar metrics can be used. Since there are only 7 data points from 2021 published so far, we will take the first 7 months of 2021’s forecasted data for this metric.
