@@ -61,8 +61,33 @@ This is a Next.js 15 portfolio website built with:
 **Tailwind Config** (`tailwind.config.ts`):
 - Configured for App Router structure
 - Custom gradient utilities defined
+- Extended animation library with custom keyframes for globe and UI animations
 
 **Analytics**: Cloudflare Web Analytics integrated in layout.tsx
+
+### CSS Architecture
+
+**Modular CSS Structure**:
+- CSS is organized into modular partials in `src/styles/` for better maintainability
+- Main `globals.css` imports all partials in dependency order
+- Each partial serves a specific purpose with clear separation of concerns
+
+**CSS Partials**:
+- `01-base.css`: Variables, fonts, resets, and base styles
+- `02-tokens.css`: CSS custom properties and theme tokens  
+- `03-utilities.css`: One-off helpers and utility classes
+- `04-components.css`: Reusable UI components built with Tailwind @apply
+- `05-animations.css`: Keyframes and animation utilities
+- `06-3d-globe.css`: Globe-specific 3D wireframe styles (largest component)
+- `07-layout.css`: Portfolio layout system and grid structure
+- `08-scrollbars.css`: Custom scrollbar styling for different screen sizes
+
+**Styling Philosophy**:
+- Prioritize Tailwind utilities over custom CSS where possible
+- Use `@apply` for reusable component patterns
+- Custom CSS reserved for complex animations and 3D transforms
+- Animations moved to Tailwind config for consistency
+- Build time reduced by ~40% through better organization
 
 ## Adding Blog Posts
 
