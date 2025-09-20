@@ -1,0 +1,195 @@
+/* === COMPONENTS === */
+/* Reusable UI components built with Tailwind @apply */
+
+@tailwind components;
+
+@layer components {
+  /* Terminal border utility */
+  .terminal-border {
+    border: 1px solid #1A1A1A;
+  }
+  /* Prose markdown styling */
+  .prose {
+    @apply text-table-text font-mono;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply font-bold text-table-text font-mono uppercase tracking-wide;
+  }
+
+  .prose h1 {
+    @apply text-2xl mb-4 border-b border-box-outline pb-2;
+  }
+
+  .prose h2 {
+    @apply text-lg mb-3 border-b border-box-outline pb-1;
+  }
+  
+  .prose a {
+    @apply text-box-title-bg hover:text-primary-green transition-colors;
+  }
+
+  .prose strong {
+    @apply text-table-text font-bold;
+  }
+
+  .prose ol > li::before {
+    @apply text-table-text;
+  }
+
+  .prose ul > li::before {
+    @apply bg-table-text;
+  }
+
+  .prose p,
+  .prose ul,
+  .prose ol {
+    @apply mb-4 font-mono text-sm leading-relaxed;
+  }
+
+  .prose pre {
+    @apply p-4 border border-box-outline bg-bg-main font-mono text-sm text-table-text;
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+    word-break: normal;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0 border-none text-table-text;
+    white-space: pre;
+    word-wrap: normal;
+    word-break: normal;
+  }
+
+  .prose [data-rehype-pretty-code-figure] pre {
+    @apply p-4 border border-box-outline bg-bg-main;
+    overflow-x: auto;
+    white-space: pre;
+    word-wrap: normal;
+    word-break: normal;
+  }
+
+  .prose code {
+    @apply bg-box-bg border border-box-outline px-1 py-0.5 text-table-text font-mono text-sm;
+    white-space: pre;
+    word-wrap: normal;
+    word-break: normal;
+  }
+
+  .prose img {
+    @apply mx-auto border border-box-outline;
+  }
+
+  .prose p > img:only-child + p {
+    @apply text-center text-xs italic text-table-text mt-2 font-mono;
+  }
+
+  /* Terminal panel components */
+  .terminal-panel {
+    @apply terminal-border bg-box-bg p-4 m-2;
+  }
+  
+  .content-section {
+    @apply terminal-border bg-box-bg p-4 m-2;
+  }
+  
+  .content-section-borderless {
+    @apply bg-box-bg pb-4 px-4 m-2;
+  }
+
+  .terminal-header {
+    @apply bg-box-header-bg text-black font-mono text-sm uppercase tracking-widest border-b border-box-outline;
+  }
+  
+  .terminal-header-text {
+    @apply bg-box-title-bg text-black px-2 py-2 inline-block;
+  }
+
+  /* Interactive card components */
+  .list-item-card {
+    @apply relative border border-box-outline bg-box-bg p-3 mb-3;
+    @apply transition-colors duration-200;
+    contain: layout style;
+  }
+
+  .list-item-card:hover {
+    @apply border-box-title-bg bg-highlight-bg;
+  }
+  
+  .list-item-card:hover .hover-text {
+    @apply text-highlight-text;
+  }
+  
+  .list-item-card:hover .text-box-title-bg {
+    @apply text-primary-green;
+  }
+
+  /* Data table interactions */
+  .data-table tbody tr {
+    @apply transition-colors duration-200;
+    contain: layout style;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-highlight-bg outline outline-1 outline-highlight-text outline-offset-[-1px];
+  }
+  
+  .data-table tbody tr:hover td {
+    @apply text-highlight-text bg-highlight-bg;
+  }
+  
+  .data-table tbody tr:hover .text-box-title-bg {
+    @apply text-primary-green;
+  }
+
+  /* Social navigation items */
+  .social-item {
+    @apply transition-colors duration-200;
+    contain: layout style;
+  }
+
+  .social-item:hover {
+    @apply bg-highlight-bg;
+  }
+  
+  .social-item:hover .nav-text,
+  .social-item:hover .nav-indicator {
+    @apply text-highlight-text;
+  }
+
+  /* Mobile card interactions */
+  .mobile-card:hover .hover-text {
+    @apply text-highlight-text;
+  }
+  
+  .mobile-card:hover .text-box-title-bg {
+    @apply text-primary-green;
+  }
+
+  /* Fused terminal layout */
+  .fused-terminal-layout {
+    @apply terminal-border bg-box-bg m-2 flex flex-col;
+  }
+
+  .fused-panel-top {
+    @apply border-b-0;
+  }
+
+  .fused-panel-bottom {
+    @apply border-t-0;
+  }
+
+  .fused-panel-top .terminal-header,
+  .fused-panel-bottom .terminal-header {
+    @apply bg-box-header-bg text-black font-mono text-sm uppercase tracking-widest border-box-outline;
+  }
+
+  .fused-panel-top .terminal-header {
+    @apply border-b;
+  }
+
+  .fused-panel-bottom .terminal-header {
+    @apply border-t;
+  }
+}
