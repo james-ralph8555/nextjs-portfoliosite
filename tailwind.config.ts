@@ -15,6 +15,8 @@ const config: Config = {
         'primary-green': '#5AFD81',
         'primary-red': '#F8343D',
         'primary-yellow': '#E7F40F',
+        'primary-cyan': '#00FFFF',
+        'primary-magenta': '#FF00FF',
         'bg-main': '#000000',
         'bg-secondary': '#040D0A',
         'bg-other': '#060606',
