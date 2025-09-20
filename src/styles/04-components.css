@@ -233,7 +233,12 @@
   /* Mobile Layout (<768px) */
   @media (max-width: 767px) {
     .synth-grid-desktop {
-      @apply grid-cols-1 gap-1;
+      @apply grid-cols-2 gap-1;
+      grid-template-areas: 
+        "osc filter"
+        "env master"
+        "lfo fx"
+        "scopes macro";
     }
     
     .synth-grid-desktop > div {
