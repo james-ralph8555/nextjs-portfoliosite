@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="industrialRocker" xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 180 120" role="img" aria-labelledby="t d">
-  <title id="t">Industrial Rocker Power Switch</title>
-  <desc id="d">Panel-mounted heavy-duty rocker switch with I/O glyphs and black bezel.</desc>
+<svg id="industrialRockerStatic" xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 180 120" role="img" aria-labelledby="t d">
+  <title id="t">Industrial Rocker Switch (Static)</title>
+  <desc id="d">Panel-mounted rocker with no rotation, ON/OFF indicated by light and shading.</desc>
 
   <defs>
     <!-- Panel -->
@@ -10,16 +10,13 @@
       <stop offset="0.55" stop-color="#cfd4da"/>
       <stop offset="1" stop-color="#c3c8cf"/>
     </linearGradient>
-
-    <!-- Panel shadow -->
     <filter id="fPanelShadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feOffset dy="2"/>
-      <feGaussianBlur stdDeviation="2"/>
+      <feOffset dy="2"/><feGaussianBlur stdDeviation="2"/>
       <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .25 0"/>
       <feBlend in="SourceGraphic"/>
     </filter>
 
-    <!-- Bezel -->
+    <!-- Bezel / recess -->
     <linearGradient id="gBezel" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#1b1d20"/>
       <stop offset="0.5" stop-color="#0e1013"/>
@@ -29,8 +26,6 @@
       <stop offset="60%" stop-color="#0000"/>
       <stop offset="100%" stop-color="#0008"/>
     </radialGradient>
-
-    <!-- Recess -->
     <linearGradient id="gRecess" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#0b0d0f"/>
       <stop offset="1" stop-color="#090a0c"/>
@@ -83,21 +78,19 @@
       <rect x="-28" y="-38" width="56" height="76" rx="6" fill="url(#gRecess)"/>
     </g>
 
-    <!-- Rocker pivoted at bottom edge -->
-    <g id="rocker" transform="translate(0 38)">
-      <g id="rockerTilt" transform="rotate(-15 0 -38)">
-        <rect id="rockerBody" x="-24" y="-68" width="48" height="60" rx="7" fill="url(#gRockerRed)"/>
-        <rect x="-24" y="-68" width="48" height="14" rx="7" fill="url(#gSheen)" opacity=".7"/>
+    <!-- Rocker (static, no rotation) -->
+    <g id="rocker">
+      <rect id="rockerBody" x="-24" y="-30" width="48" height="60" rx="7" fill="url(#gRockerRed)"/>
+      <rect x="-24" y="-30" width="48" height="14" rx="7" fill="url(#gSheen)" opacity=".7"/>
 
-        <!-- indicator -->
-        <rect id="indicator" x="-8" y="-60" width="16" height="6.5" rx="3.2" fill="#fff" opacity="0"/>
-        <circle id="indicatorGlow" cx="0" cy="-57" r="10" fill="url(#gGlow)" opacity="0"/>
+      <!-- indicator -->
+      <rect id="indicator" x="-8" y="-22" width="16" height="6.5" rx="3.2" fill="#fff" opacity="0"/>
+      <circle id="indicatorGlow" cx="0" cy="-19" r="10" fill="url(#gGlow)" opacity="0"/>
 
-        <!-- glyphs -->
-        <g stroke="url(#gGlyph)" stroke-width="3" stroke-linecap="round" fill="none">
-          <line x1="0" y1="-42" x2="0" y2="-34"/> <!-- I -->
-          <circle cx="0" cy="-16" r="6"/>        <!-- O -->
-        </g>
+      <!-- glyphs -->
+      <g stroke="url(#gGlyph)" stroke-width="3" stroke-linecap="round" fill="none">
+        <line x1="0" y1="-10" x2="0" y2="-2"/> <!-- I -->
+        <circle cx="0" cy="14" r="6"/>        <!-- O -->
       </g>
     </g>
   </g>
@@ -105,18 +98,17 @@
   <!-- Script -->
   <script type="application/ecmascript"><![CDATA[
     (function(){
-      var root = document.getElementById('industrialRocker');
-      var tilt = document.getElementById('rockerTilt');
+      var root = document.getElementById('industrialRockerStatic');
       var body = document.getElementById('rockerBody');
       var ind  = document.getElementById('indicator');
       var glow = document.getElementById('indicatorGlow');
       var on = false;
 
       function apply(){
-        tilt.setAttribute('transform','rotate('+(on ? 15 : -15)+' 0 -38)');
         body.setAttribute('fill', on ? 'url(#gRockerGreen)' : 'url(#gRockerRed)');
         ind.setAttribute('opacity', on ? '0.85' : '0');
         glow.setAttribute('opacity', on ? '0.55' : '0');
+        root.setAttribute('data-on', on ? 'true' : 'false');
       }
 
       root.setOn = function(v){ on = !!v; apply(); };

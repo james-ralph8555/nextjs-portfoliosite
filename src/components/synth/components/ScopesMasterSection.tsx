@@ -17,8 +17,6 @@ interface ScopesMasterSectionProps {
   onDelayMixChange: (mix: number) => void
 }
 
-type ScopeType = 'wave' | 'spectrum'
-
 export function ScopesMasterSection({
   audioContext,
   analyser,
@@ -31,93 +29,113 @@ export function ScopesMasterSection({
   onDelayFeedbackChange,
   onDelayMixChange
 }: ScopesMasterSectionProps) {
-  const [activeTab, setActiveTab] = useState<ScopeType>('wave')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const waveCanvasRef = useRef<HTMLCanvasElement>(null)
+  const spectrumCanvasRef = useRef<HTMLCanvasElement>(null)
+  const waveAnimationRef = useRef<number>()
+  const spectrumAnimationRef = useRef<number>()
   
   // Throttle rendering for performance
-  const lastRenderRef = useRef<number>(0)
+  const lastWaveRenderRef = useRef<number>(0)
+  const lastSpectrumRenderRef = useRef<number>(0)
   const FPS = 30
   const FRAME_TIME = 1000 / FPS
 
   useEffect(() => {
-    if (!analyser || !canvasRef.current) return
+    if (!analyser || !waveCanvasRef.current || !spectrumCanvasRef.current) return
 
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const waveCanvas = waveCanvasRef.current
+    const spectrumCanvas = spectrumCanvasRef.current
+    const waveCtx = waveCanvas.getContext('2d')
+    const spectrumCtx = spectrumCanvas.getContext('2d')
+    if (!waveCtx || !spectrumCtx) return
 
     const bufferLength = analyser.frequencyBinCount
-    const dataArray = new Uint8Array(bufferLength)
+    const waveDataArray = new Uint8Array(bufferLength)
+    const spectrumDataArray = new Uint8Array(bufferLength)
 
-    const draw = (timestamp: number) => {
+    const drawWave = (timestamp: number) => {
       // Throttle rendering
-      if (timestamp - lastRenderRef.current < FRAME_TIME) {
-        animationRef.current = requestAnimationFrame(draw)
+      if (timestamp - lastWaveRenderRef.current < FRAME_TIME) {
+        waveAnimationRef.current = requestAnimationFrame(drawWave)
         return
       }
-      lastRenderRef.current = timestamp
+      lastWaveRenderRef.current = timestamp
 
-      analyser.getByteTimeDomainData(dataArray)
+      analyser.getByteTimeDomainData(waveDataArray)
 
-      ctx.fillStyle = '#000000'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      waveCtx.fillStyle = '#000000'
+      waveCtx.fillRect(0, 0, waveCanvas.width, waveCanvas.height)
 
-      if (activeTab === 'wave') {
-        // Draw waveform
-        ctx.lineWidth = 1
-        ctx.strokeStyle = '#22d3ee'
-        ctx.beginPath()
+      // Draw waveform
+      waveCtx.lineWidth = 1
+      waveCtx.strokeStyle = '#22d3ee'
+      waveCtx.beginPath()
 
-        const sliceWidth = canvas.width / bufferLength
-        let x = 0
+      const sliceWidth = waveCanvas.width / bufferLength
+      let x = 0
 
-        for (let i = 0; i < bufferLength; i++) {
-          const v = dataArray[i] / 128.0
-          const y = v * canvas.height / 2
+      for (let i = 0; i < bufferLength; i++) {
+        const v = waveDataArray[i] / 128.0
+        const y = v * waveCanvas.height / 2
 
-          if (i === 0) {
-            ctx.moveTo(x, y)
-          } else {
-            ctx.lineTo(x, y)
-          }
-
-          x += sliceWidth
+        if (i === 0) {
+          waveCtx.moveTo(x, y)
+        } else {
+          waveCtx.lineTo(x, y)
         }
 
-        ctx.lineTo(canvas.width, canvas.height / 2)
-        ctx.stroke()
-      } else {
-        // Draw spectrum
-        analyser.getByteFrequencyData(dataArray)
-        
-        const barWidth = (canvas.width / bufferLength) * 2.5
-        let barHeight
-        let x = 0
-
-        for (let i = 0; i < bufferLength; i++) {
-          barHeight = (dataArray[i] / 255) * canvas.height
-
-          const hue = (i / bufferLength) * 240 // Blue to cyan gradient
-          ctx.fillStyle = `hsl(${180 + hue * 0.3}, 70%, 50%)`
-          ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
-
-          x += barWidth + 1
-        }
+        x += sliceWidth
       }
 
-      animationRef.current = requestAnimationFrame(draw)
+      waveCtx.lineTo(waveCanvas.width, waveCanvas.height / 2)
+      waveCtx.stroke()
+
+      waveAnimationRef.current = requestAnimationFrame(drawWave)
     }
 
-    animationRef.current = requestAnimationFrame(draw)
+    const drawSpectrum = (timestamp: number) => {
+      // Throttle rendering
+      if (timestamp - lastSpectrumRenderRef.current < FRAME_TIME) {
+        spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
+        return
+      }
+      lastSpectrumRenderRef.current = timestamp
+
+      analyser.getByteFrequencyData(spectrumDataArray)
+
+      spectrumCtx.fillStyle = '#000000'
+      spectrumCtx.fillRect(0, 0, spectrumCanvas.width, spectrumCanvas.height)
+      
+      const barWidth = (spectrumCanvas.width / bufferLength) * 2.5
+      let barHeight
+      let x = 0
+
+      for (let i = 0; i < bufferLength; i++) {
+        barHeight = (spectrumDataArray[i] / 255) * spectrumCanvas.height
+
+        const hue = (i / bufferLength) * 240 // Blue to cyan gradient
+        spectrumCtx.fillStyle = `hsl(${180 + hue * 0.3}, 70%, 50%)`
+        spectrumCtx.fillRect(x, spectrumCanvas.height - barHeight, barWidth, barHeight)
+
+        x += barWidth + 1
+      }
+
+      spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
+    }
+
+    waveAnimationRef.current = requestAnimationFrame(drawWave)
+    spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
 
     return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current)
+      if (waveAnimationRef.current) {
+        cancelAnimationFrame(waveAnimationRef.current)
+      }
+      if (spectrumAnimationRef.current) {
+        cancelAnimationFrame(spectrumAnimationRef.current)
       }
     }
-  }, [analyser, activeTab])
+  }, [analyser])
 
   const handleCanvasClick = () => {
     setIsModalOpen(true)
@@ -130,52 +148,40 @@ export function ScopesMasterSection({
         
         {/* Scopes Section */}
         <div className="mb-3">
-          {/* Tabs */}
-          <div className="flex gap-1 mb-2">
-            <button
-              className={`flex-1 synth-button-small text-[9px] ${
-                activeTab === 'wave' ? 'bg-cyan-600 text-white border-cyan-500' : ''
-              }`}
-              onClick={() => setActiveTab('wave')}
-            >
-              Wave
-            </button>
-            <button
-              className={`flex-1 synth-button-small text-[9px] ${
-                activeTab === 'spectrum' ? 'bg-cyan-600 text-white border-cyan-500' : ''
-              }`}
-              onClick={() => setActiveTab('spectrum')}
-            >
-              Spec
-            </button>
-          </div>
-
-          {/* Mini Scope */}
-          <div className="relative">
-            <canvas
-              ref={canvasRef}
-              width={200}
-              height={80}
-              className="w-full h-16 bg-black border border-gray-700 rounded cursor-pointer hover:border-cyan-500 transition-colors"
-              onClick={handleCanvasClick}
-            />
-            <div className="absolute top-1 right-1">
-              <LED active={true} color="cyan" size="xxs" />
+          {/* Dual Scopes */}
+          <div className="grid grid-cols-2 gap-2">
+            {/* Waveform Scope */}
+            <div className="relative">
+              <canvas
+                ref={waveCanvasRef}
+                width={120}
+                height={80}
+                className="w-full h-16 bg-black border border-gray-700 rounded cursor-pointer hover:border-cyan-500 transition-colors"
+                onClick={handleCanvasClick}
+              />
+              <div className="absolute top-1 right-1">
+                <LED active={true} color="cyan" size="xxs" />
+              </div>
+              <div className="absolute bottom-1 left-1 text-[8px] font-mono text-gray-500">
+                TIME
+              </div>
             </div>
-            <div className="absolute bottom-1 left-1 text-[8px] font-mono text-gray-500">
-              {activeTab === 'wave' ? 'TIME' : 'FREQ'}
-            </div>
-          </div>
-
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-2 mt-2 text-[8px] font-mono">
-            <div className="bg-gray-900 rounded px-2 py-1">
-              <div className="text-gray-500">PEAK</div>
-              <div className="text-cyan-400">-12dB</div>
-            </div>
-            <div className="bg-gray-900 rounded px-2 py-1">
-              <div className="text-gray-500">RMS</div>
-              <div className="text-cyan-400">-18dB</div>
+            
+            {/* Spectrum Scope */}
+            <div className="relative">
+              <canvas
+                ref={spectrumCanvasRef}
+                width={120}
+                height={80}
+                className="w-full h-16 bg-black border border-gray-700 rounded cursor-pointer hover:border-cyan-500 transition-colors"
+                onClick={handleCanvasClick}
+              />
+              <div className="absolute top-1 right-1">
+                <LED active={true} color="cyan" size="xxs" />
+              </div>
+              <div className="absolute bottom-1 left-1 text-[8px] font-mono text-gray-500">
+                FREQ
+              </div>
             </div>
           </div>
         </div>
@@ -272,10 +278,10 @@ export function ScopesMasterSection({
       {/* Modal for full scope view */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 max-w-2xl w-full mx-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 max-w-4xl w-full mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-mono text-cyan-400">
-                {activeTab === 'wave' ? 'Waveform' : 'Spectrum'} Analyzer
+                Dual Analyzer
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -284,12 +290,26 @@ export function ScopesMasterSection({
                 Close
               </button>
             </div>
-            <canvas
-              ref={canvasRef}
-              width={800}
-              height={300}
-              className="w-full bg-black border border-gray-700 rounded"
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <div className="text-sm font-mono text-gray-400 mb-2">Waveform</div>
+                <canvas
+                  ref={waveCanvasRef}
+                  width={400}
+                  height={300}
+                  className="w-full bg-black border border-gray-700 rounded"
+                />
+              </div>
+              <div>
+                <div className="text-sm font-mono text-gray-400 mb-2">Spectrum</div>
+                <canvas
+                  ref={spectrumCanvasRef}
+                  width={400}
+                  height={300}
+                  className="w-full bg-black border border-gray-700 rounded"
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
