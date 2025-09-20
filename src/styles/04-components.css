@@ -288,6 +288,28 @@
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
+  /* Mobile keyboard positioning - keyboard at top */
+  @media (max-width: 767px) {
+    .synth-keyboard-container {
+      @apply order-1;
+    }
+    
+    .synth-grid-desktop {
+      @apply order-2;
+    }
+  }
+
+  /* Desktop keyboard positioning - keyboard at bottom */
+  @media (min-width: 768px) {
+    .synth-keyboard-container {
+      @apply order-3;
+    }
+    
+    .synth-grid-desktop {
+      @apply order-1;
+    }
+  }
+
   .synth-visualizer {
     @apply bg-gray-900 border border-gray-700 rounded p-2 h-16;
   }

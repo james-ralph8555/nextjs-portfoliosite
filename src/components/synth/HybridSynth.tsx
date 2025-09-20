@@ -69,7 +69,7 @@ export function HybridSynth() {
   }
 
   return (
-    <div className="synth-chassis max-w-7xl mx-auto">
+    <div className="synth-chassis max-w-7xl mx-auto flex flex-col">
       {/* Status Bar */}
       <div className="synth-status-bar">
         <div className="flex items-center space-x-3">
@@ -97,6 +97,15 @@ export function HybridSynth() {
             PANIC
           </button>
         </div>
+      </div>
+
+      {/* Keyboard */}
+      <div className="synth-keyboard-container">
+        <Keyboard 
+          activeKeys={activeKeys}
+          onNoteOn={playNote}
+          onNoteOff={releaseNote}
+        />
       </div>
 
       {/* Main 4x2 Grid Layout */}
@@ -197,15 +206,6 @@ export function HybridSynth() {
       {/* Legacy Analyzer (hidden for now, can be removed) */}
       <div className="hidden">
         <Analyzer audioContext={audioContextRef.current} />
-      </div>
-
-      {/* Keyboard */}
-      <div className="synth-keyboard-container">
-        <Keyboard 
-          activeKeys={activeKeys}
-          onNoteOn={playNote}
-          onNoteOff={releaseNote}
-        />
       </div>
     </div>
   )

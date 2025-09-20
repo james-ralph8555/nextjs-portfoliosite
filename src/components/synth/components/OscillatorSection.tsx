@@ -84,87 +84,67 @@ export function OscillatorSection({
       <div className="space-y-1 mb-2">
         <div className="flex items-center justify-between">
           <span className="text-[9px] font-mono text-gray-500">UNISON</span>
-          <button
-            className={`synth-button-small text-[8px] px-2 ${
-              unison.enabled ? 'bg-amber-600 text-white border-amber-500' : ''
-            }`}
-            onClick={() => onUnisonChange({ enabled: !unison.enabled })}
-          >
-            {unison.enabled ? 'ON' : 'OFF'}
-          </button>
         </div>
         
-        {unison.enabled && (
-          <div className="grid grid-cols-2 gap-1">
-            <div className="synth-knob-compact">
-              <div className="text-[8px] font-mono text-gray-500">Voices</div>
-              <Knob
-                value={unison.voices}
-                min={2}
-                max={6}
-                step={1}
-                onChange={(v) => onUnisonChange({ voices: Math.round(v) })}
-                size="xs"
-              />
-              <div className="text-[8px] font-mono text-gray-400">{unison.voices}</div>
-            </div>
-            <div className="synth-knob-compact">
-              <div className="text-[8px] font-mono text-gray-500">Detune</div>
-              <Knob
-                value={unison.detune}
-                min={0.01}
-                max={0.5}
-                step={0.01}
-                onChange={(v) => onUnisonChange({ detune: v })}
-                size="xs"
-              />
-              <div className="text-[8px] font-mono text-gray-400">{unison.detune.toFixed(2)}</div>
-            </div>
+        <div className="grid grid-cols-2 gap-1">
+          <div className="synth-knob-compact">
+            <div className="text-[8px] font-mono text-gray-500">Voices</div>
+            <Knob
+              value={unison.voices}
+              min={2}
+              max={6}
+              step={1}
+              onChange={(v) => onUnisonChange({ voices: Math.round(v) })}
+              size="xs"
+            />
+            <div className="text-[8px] font-mono text-gray-400">{unison.voices}</div>
           </div>
-        )}
+          <div className="synth-knob-compact">
+            <div className="text-[8px] font-mono text-gray-500">Detune</div>
+            <Knob
+              value={unison.detune}
+              min={0.01}
+              max={0.5}
+              step={0.01}
+              onChange={(v) => onUnisonChange({ detune: v })}
+              size="xs"
+            />
+            <div className="text-[8px] font-mono text-gray-400">{unison.detune.toFixed(2)}</div>
+          </div>
+        </div>
       </div>
 
       {/* Glide Section */}
       <div className="space-y-1">
         <div className="flex items-center justify-between">
           <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
-          <button
-            className={`synth-button-small text-[8px] px-2 ${
-              glide.enabled ? 'bg-green-600 text-white border-green-500' : ''
-            }`}
-            onClick={() => onGlideChange({ enabled: !glide.enabled })}
-          >
-            {glide.enabled ? 'ON' : 'OFF'}
-          </button>
         </div>
         
-        {glide.enabled && (
-          <div className="grid grid-cols-2 gap-1">
-            <div className="synth-knob-compact">
-              <div className="text-[8px] font-mono text-gray-500">Time</div>
-              <Knob
-                value={glide.time}
-                min={0.01}
-                max={1}
-                step={0.01}
-                onChange={(v) => onGlideChange({ time: v })}
-                size="xs"
-              />
-              <div className="text-[8px] font-mono text-gray-400">{glide.time.toFixed(2)}s</div>
-            </div>
-            <div className="synth-knob-compact">
-              <div className="text-[8px] font-mono text-gray-500">Legato</div>
-              <button
-                className={`synth-button-small text-[8px] w-full ${
-                  glide.legato ? 'bg-cyan-600 text-white border-cyan-500' : ''
-                }`}
-                onClick={() => onGlideChange({ legato: !glide.legato })}
-              >
-                {glide.legato ? 'YES' : 'NO'}
-              </button>
-            </div>
+        <div className="grid grid-cols-2 gap-1">
+          <div className="synth-knob-compact">
+            <div className="text-[8px] font-mono text-gray-500">Time</div>
+            <Knob
+              value={glide.time}
+              min={0.01}
+              max={1}
+              step={0.01}
+              onChange={(v) => onGlideChange({ time: v })}
+              size="xs"
+            />
+            <div className="text-[8px] font-mono text-gray-400">{glide.time.toFixed(2)}s</div>
           </div>
-        )}
+          <div className="synth-knob-compact">
+            <div className="text-[8px] font-mono text-gray-500">Legato</div>
+            <button
+              className={`synth-button-small text-[8px] w-full ${
+                glide.legato ? 'bg-cyan-600 text-white border-cyan-500' : ''
+              }`}
+              onClick={() => onGlideChange({ legato: !glide.legato })}
+            >
+              {glide.legato ? 'YES' : 'NO'}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
