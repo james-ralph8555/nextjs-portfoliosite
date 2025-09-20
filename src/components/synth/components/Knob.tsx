@@ -115,8 +115,8 @@ export function Knob({
   const displayValue = unit ? `${value}${unit}` : value.toString()
 
   return (
-    <div className="flex flex-col items-center space-y-2">
-      <div className="text-xs font-mono text-table-text uppercase tracking-wider">
+    <div className="synth-knob-compact">
+      <div className="synth-knob-label">
         {label}
       </div>
       
@@ -125,9 +125,9 @@ export function Knob({
         className={`
           relative rounded-full border-2 ${colorClasses[color]}
           ${sizeClasses[size]} cursor-grab select-none
-          transition-all duration-200 hover:shadow-lg
+          transition-all duration-150 hover:shadow-md
           ${isDragging ? 'cursor-grabbing scale-105' : ''}
-          bg-box-bg flex items-center justify-center
+          bg-gray-700 flex items-center justify-center
         `}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
@@ -142,7 +142,7 @@ export function Knob({
         />
         
         {/* Center dot */}
-        <div className="w-2 h-2 rounded-full bg-current opacity-50" />
+        <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
         
         {/* Rotation indicators */}
         <div className="absolute inset-0 pointer-events-none">
@@ -152,13 +152,13 @@ export function Knob({
             return (
               <div
                 key={i}
-                className={`absolute w-1 h-1 rounded-full ${
+                className={`absolute w-0.5 h-0.5 rounded-full ${
                   isActive ? 'bg-current opacity-100' : 'bg-current opacity-20'
                 }`}
                 style={{
                   left: '50%',
-                  top: '15%',
-                  transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-12px)`
+                  top: '20%',
+                  transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-8px)`
                 }}
               />
             )
@@ -167,7 +167,7 @@ export function Knob({
       </div>
 
       {/* Value display */}
-      <div className={`value-box text-xs ${colorClasses[color].replace('border', 'text')}`}>
+      <div className={`synth-knob-value ${colorClasses[color].replace('border', 'text')}`}>
         {displayValue}
       </div>
     </div>

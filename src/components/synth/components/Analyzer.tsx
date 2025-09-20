@@ -153,59 +153,39 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
   }
 
   return (
-    <div className="fused-terminal-layout">
-      <div className="terminal-header">
-        <span className="terminal-header-text" style={{ backgroundColor: '#5AFD81' }}>
-          ANALYZER
-        </span>
+    <div className="synth-visualizer">
+      {/* Mode Selector */}
+      <div className="flex justify-center space-x-1 mb-2">
+        <button
+          className={`synth-button-small ${
+            mode === 'waveform' 
+              ? 'bg-cyan-600 text-cyan-100 border-cyan-500' 
+              : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
+          }`}
+          onClick={() => setMode('waveform')}
+        >
+          WAVE
+        </button>
+        <button
+          className={`synth-button-small ${
+            mode === 'spectrum' 
+              ? 'bg-cyan-600 text-cyan-100 border-cyan-500' 
+              : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
+          }`}
+          onClick={() => setMode('spectrum')}
+        >
+          SPEC
+        </button>
       </div>
-      
-      <div className="p-4 space-y-4">
-        {/* Mode Selector */}
-        <div className="flex justify-center space-x-2">
-          <button
-            className={`boombox-button px-3 py-1 text-xs ${
-              mode === 'waveform' 
-                ? 'bg-primary-green text-black border-primary-green' 
-                : 'text-table-text border-box-outline hover:border-primary-green'
-            }`}
-            onClick={() => setMode('waveform')}
-          >
-            WAVEFORM
-          </button>
-          <button
-            className={`boombox-button px-3 py-1 text-xs ${
-              mode === 'spectrum' 
-                ? 'bg-primary-green text-black border-primary-green' 
-                : 'text-table-text border-box-outline hover:border-primary-green'
-            }`}
-            onClick={() => setMode('spectrum')}
-          >
-            SPECTRUM
-          </button>
-        </div>
 
-        {/* Canvas */}
-        <div className="bg-box-bg border border-box-outline rounded p-2">
-          <canvas
-            ref={canvasRef}
-            width="600"
-            height="150"
-            className="w-full h-[150px] max-w-full"
-            style={{ imageRendering: 'crisp-edges' }}
-          />
-        </div>
-
-        {/* Info */}
-        <div className="text-center">
-          <div className="text-xs font-mono text-table-text">
-            {mode === 'waveform' ? 'Oscilloscope - Time Domain' : 'Spectrum Analyzer - Frequency Domain'}
-          </div>
-          <div className="text-xs font-mono text-table-text opacity-60 mt-1">
-            Real-time audio visualization
-          </div>
-        </div>
-      </div>
+      {/* Canvas */}
+      <canvas
+        ref={canvasRef}
+        width="600"
+        height="120"
+        className="w-full h-[80px] max-w-full"
+        style={{ imageRendering: 'crisp-edges' }}
+      />
     </div>
   )
 }

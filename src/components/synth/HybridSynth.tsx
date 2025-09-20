@@ -54,32 +54,27 @@ export function HybridSynth() {
   }
 
   return (
-    <div className="fused-terminal-layout space-y-4">
-      {/* Header */}
-      <div className="fused-panel-top">
-        <div className="terminal-header">
-          <span className="terminal-header-text">SYNTH ENGINE</span>
+    <div className="synth-chassis max-w-4xl mx-auto">
+      {/* Status Bar */}
+      <div className="synth-status-bar">
+        <div className="flex items-center space-x-3">
+          <LED active={isInitialized} color="green" size="sm" />
+          <LED active={isPlaying} color="amber" size="sm" />
+          <LED active={Object.keys(activeKeys).length > 0} color="cyan" size="sm" />
         </div>
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <LED active={isInitialized} color="green" label="POWER" />
-            <LED active={isPlaying} color="amber" label="ACTIVE" />
-            <LED active={Object.keys(activeKeys).length > 0} color="cyan" label="KEYS" />
-          </div>
-          
-          {!isInitialized && (
-            <button
-              onClick={handleInitClick}
-              className="boombox-button px-4 py-2 text-primary-green border border-primary-green hover:bg-primary-green hover:text-black transition-colors"
-            >
-              INIT AUDIO
-            </button>
-          )}
-        </div>
+        
+        {!isInitialized && (
+          <button
+            onClick={handleInitClick}
+            className="synth-button-small bg-cyan-600 text-cyan-100 border-cyan-500 hover:bg-cyan-500"
+          >
+            INIT
+          </button>
+        )}
       </div>
 
-      {/* Control Sections Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      {/* Main Control Panel */}
+      <div className="synth-control-panel">
         <OscillatorSection 
           waveform={audioState.oscillator.waveform}
           onWaveformChange={(waveform) => updateOscillator({ waveform })}
@@ -102,10 +97,7 @@ export function HybridSynth() {
           onSustainChange={(sustain) => updateEnvelope({ sustain })}
           onReleaseChange={(release) => updateEnvelope({ release })}
         />
-      </div>
 
-      {/* Master Section */}
-      <div className="p-4">
         <MasterSection 
           gain={audioState.gain}
           delayTime={audioState.delay.time}
@@ -117,22 +109,17 @@ export function HybridSynth() {
       </div>
 
       {/* Analyzer */}
-      <div className="p-4">
+      <div className="mb-2">
         <Analyzer audioContext={audioContextRef.current} />
       </div>
 
       {/* Keyboard */}
-      <div className="fused-panel-bottom">
-        <div className="terminal-header">
-          <span className="terminal-header-text">KEYBOARD</span>
-        </div>
-        <div className="p-4">
-          <Keyboard 
-            activeKeys={activeKeys}
-            onNoteOn={playNote}
-            onNoteOff={releaseNote}
-          />
-        </div>
+      <div className="synth-keyboard-container">
+        <Keyboard 
+          activeKeys={activeKeys}
+          onNoteOn={playNote}
+          onNoteOff={releaseNote}
+        />
       </div>
     </div>
   )
