@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="industrialRocker" xmlns="http://www.w3.org/2000/svg" width="360" height="240" viewBox="0 0 180 120" role="img" aria-labelledby="t d">
+  <title id="t">Industrial Rocker Power Switch</title>
+  <desc id="d">Panel-mounted heavy-duty rocker switch with I/O glyphs and black bezel.</desc>
+
+  <defs>
+    <!-- Panel -->
+    <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#d7dbe0"/>
+      <stop offset="0.55" stop-color="#cfd4da"/>
+      <stop offset="1" stop-color="#c3c8cf"/>
+    </linearGradient>
+
+    <!-- Panel shadow -->
+    <filter id="fPanelShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feOffset dy="2"/>
+      <feGaussianBlur stdDeviation="2"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .25 0"/>
+      <feBlend in="SourceGraphic"/>
+    </filter>
+
+    <!-- Bezel -->
+    <linearGradient id="gBezel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1b1d20"/>
+      <stop offset="0.5" stop-color="#0e1013"/>
+      <stop offset="1" stop-color="#1a1c1f"/>
+    </linearGradient>
+    <radialGradient id="gBezelEdge" cx="50%" cy="50%" r="65%">
+      <stop offset="60%" stop-color="#0000"/>
+      <stop offset="100%" stop-color="#0008"/>
+    </radialGradient>
+
+    <!-- Recess -->
+    <linearGradient id="gRecess" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0d0f"/>
+      <stop offset="1" stop-color="#090a0c"/>
+    </linearGradient>
+
+    <!-- Rocker colors -->
+    <radialGradient id="gRockerRed" cx="50%" cy="30%" r="85%">
+      <stop offset="0" stop-color="#ff6860"/>
+      <stop offset="0.55" stop-color="#cc2a22"/>
+      <stop offset="1" stop-color="#951815"/>
+    </radialGradient>
+    <radialGradient id="gRockerGreen" cx="50%" cy="30%" r="85%">
+      <stop offset="0" stop-color="#98ff8c"/>
+      <stop offset="0.55" stop-color="#22b14c"/>
+      <stop offset="1" stop-color="#147a32"/>
+    </radialGradient>
+
+    <!-- Sheen -->
+    <linearGradient id="gSheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff90"/>
+      <stop offset="0.12" stop-color="#ffffff20"/>
+      <stop offset="0.7" stop-color="#0000"/>
+      <stop offset="1" stop-color="#0000"/>
+    </linearGradient>
+
+    <!-- Glow -->
+    <radialGradient id="gGlow" cx="50%" cy="50%" r="70%">
+      <stop offset="0" stop-color="#ffffffaa"/>
+      <stop offset="1" stop-color="#ffffff00"/>
+    </radialGradient>
+
+    <!-- Glyph ink -->
+    <linearGradient id="gGlyph" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="1" stop-color="#dfe4ea"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Panel -->
+  <g filter="url(#fPanelShadow)">
+    <rect x="4" y="4" width="172" height="112" rx="5" fill="url(#gPanel)"/>
+  </g>
+
+  <!-- Switch Assembly -->
+  <g id="switchAssembly" transform="translate(90 60)">
+    <!-- Bezel -->
+    <g id="bezel">
+      <rect x="-34" y="-44" width="68" height="88" rx="7" fill="url(#gBezel)"/>
+      <rect x="-34" y="-44" width="68" height="88" rx="7" fill="url(#gBezelEdge)"/>
+      <rect x="-28" y="-38" width="56" height="76" rx="6" fill="url(#gRecess)"/>
+    </g>
+
+    <!-- Rocker pivoted at bottom edge -->
+    <g id="rocker" transform="translate(0 38)">
+      <g id="rockerTilt" transform="rotate(-15 0 -38)">
+        <rect id="rockerBody" x="-24" y="-68" width="48" height="60" rx="7" fill="url(#gRockerRed)"/>
+        <rect x="-24" y="-68" width="48" height="14" rx="7" fill="url(#gSheen)" opacity=".7"/>
+
+        <!-- indicator -->
+        <rect id="indicator" x="-8" y="-60" width="16" height="6.5" rx="3.2" fill="#fff" opacity="0"/>
+        <circle id="indicatorGlow" cx="0" cy="-57" r="10" fill="url(#gGlow)" opacity="0"/>
+
+        <!-- glyphs -->
+        <g stroke="url(#gGlyph)" stroke-width="3" stroke-linecap="round" fill="none">
+          <line x1="0" y1="-42" x2="0" y2="-34"/> <!-- I -->
+          <circle cx="0" cy="-16" r="6"/>        <!-- O -->
+        </g>
+      </g>
+    </g>
+  </g>
+
+  <!-- Script -->
+  <script type="application/ecmascript"><![CDATA[
+    (function(){
+      var root = document.getElementById('industrialRocker');
+      var tilt = document.getElementById('rockerTilt');
+      var body = document.getElementById('rockerBody');
+      var ind  = document.getElementById('indicator');
+      var glow = document.getElementById('indicatorGlow');
+      var on = false;
+
+      function apply(){
+        tilt.setAttribute('transform','rotate('+(on ? 15 : -15)+' 0 -38)');
+        body.setAttribute('fill', on ? 'url(#gRockerGreen)' : 'url(#gRockerRed)');
+        ind.setAttribute('opacity', on ? '0.85' : '0');
+        glow.setAttribute('opacity', on ? '0.55' : '0');
+      }
+
+      root.setOn = function(v){ on = !!v; apply(); };
+      document.getElementById('switchAssembly').addEventListener('click', function(){
+        on = !on; apply();
+      });
+      apply();
+    })();
+  ]]></script>
+</svg>
+

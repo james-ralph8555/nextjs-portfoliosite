@@ -9,6 +9,8 @@ import { LFOSection } from './components/LFOSection'
 import { ChorusSection } from './components/ChorusSection'
 import { Scopes } from './components/Scopes'
 import { MacroSection } from './components/MacroSection'
+import { UnisonGlideSection } from './components/UnisonGlideSection'
+import { ScopesMasterSection } from './components/ScopesMasterSection'
 import { Keyboard } from './components/Keyboard'
 import { Analyzer } from './components/Analyzer'
 import { LED } from './components/LED'
@@ -124,6 +126,15 @@ export function HybridSynth() {
           />
         </div>
 
+        <div className="synth-grid-unison-glide">
+          <UnisonGlideSection
+            unison={audioState.oscillator.unison}
+            glide={audioState.oscillator.glide}
+            onUnisonChange={(unison) => updateOscillator({ unison: { ...audioState.oscillator.unison, ...unison } })}
+            onGlideChange={(glide) => updateOscillator({ glide: { ...audioState.oscillator.glide, ...glide } })}
+          />
+        </div>
+
         <div className="synth-grid-filter">
           <FilterSection 
             cutoff={audioState.filter.cutoff}
@@ -145,19 +156,6 @@ export function HybridSynth() {
             onDecayChange={(decay) => updateEnvelope({ decay })}
             onSustainChange={(sustain) => updateEnvelope({ sustain })}
             onReleaseChange={(release) => updateEnvelope({ release })}
-          />
-        </div>
-
-        <div className="synth-grid-master">
-          <MasterSection 
-            gain={audioState.gain}
-            delayTime={audioState.delay.time}
-            delayFeedback={audioState.delay.feedback}
-            delayMix={audioState.delay.mix}
-            onGainChange={updateGain}
-            onDelayTimeChange={(time) => updateDelay({ time })}
-            onDelayFeedbackChange={(feedback) => updateDelay({ feedback })}
-            onDelayMixChange={(mix) => updateDelay({ mix })}
           />
         </div>
 
@@ -188,10 +186,18 @@ export function HybridSynth() {
           />
         </div>
 
-        <div className="synth-grid-scopes">
-          <Scopes 
+        <div className="synth-grid-scopes-master">
+          <ScopesMasterSection 
             audioContext={audioContextRef.current}
             analyser={analyser}
+            gain={audioState.gain}
+            delayTime={audioState.delay.time}
+            delayFeedback={audioState.delay.feedback}
+            delayMix={audioState.delay.mix}
+            onGainChange={updateGain}
+            onDelayTimeChange={(time) => updateDelay({ time })}
+            onDelayFeedbackChange={(feedback) => updateDelay({ feedback })}
+            onDelayMixChange={(mix) => updateDelay({ mix })}
           />
         </div>
 

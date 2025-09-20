@@ -205,27 +205,29 @@
   .synth-grid-desktop {
     @apply grid grid-cols-1 lg:grid-cols-4 gap-2 mb-2;
     grid-template-areas: 
-      "osc filter env master"
-      "lfo fx scopes macro";
+      "osc unison-glide filter scopes-master"
+      "lfo fx env macro";
   }
 
   .synth-grid-osc { grid-area: osc; }
+  .synth-grid-unison-glide { grid-area: unison-glide; }
   .synth-grid-filter { grid-area: filter; }
   .synth-grid-env { grid-area: env; }
   .synth-grid-master { grid-area: master; }
   .synth-grid-lfo { grid-area: lfo; }
   .synth-grid-fx { grid-area: fx; }
   .synth-grid-scopes { grid-area: scopes; }
+  .synth-grid-scopes-master { grid-area: scopes-master; }
   .synth-grid-macro { grid-area: macro; }
 
   /* Tablet Layout (768px - 1279px) */
   @media (min-width: 768px) and (max-width: 1279px) {
     .synth-grid-desktop {
       grid-template-areas: 
-        "osc filter"
-        "env master"
-        "lfo fx"
-        "scopes macro";
+        "osc scopes-master"
+        "unison-glide filter"
+        "env lfo"
+        "fx macro";
       @apply grid-cols-2;
     }
   }
@@ -235,10 +237,10 @@
     .synth-grid-desktop {
       @apply grid-cols-2 gap-1;
       grid-template-areas: 
-        "osc filter"
-        "env master"
-        "lfo fx"
-        "scopes macro";
+        "osc scopes-master"
+        "unison-glide filter"
+        "env lfo"
+        "fx macro";
     }
     
     .synth-grid-desktop > div {
