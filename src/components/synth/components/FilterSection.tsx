@@ -1,4 +1,6 @@
-import React from 'react'
+'use client'
+
+import React, { useMemo } from 'react'
 import { Knob } from './Knob'
 
 interface FilterSectionProps {
@@ -14,6 +16,15 @@ export function FilterSection({
   onCutoffChange, 
   onResonanceChange 
 }: FilterSectionProps) {
+  // Memoize filter curve generation to prevent hydration mismatches
+  const filterCurvePath = useMemo(() => {
+    return generateFilterCurve(cutoff, resonance)
+  }, [cutoff, resonance])
+
+  const cutoffXPosition = useMemo(() => {
+    return frequencyToX(cutoff)
+  }, [cutoff])
+
   return (
     <div className="fused-terminal-layout h-full">
       <div className="terminal-header">
@@ -90,7 +101,7 @@ export function FilterSection({
               
               {/* Filter curve */}
               <path 
-                d={generateFilterCurve(cutoff, resonance)}
+                d={filterCurvePath}
                 stroke="#00FFFF" 
                 strokeWidth="2" 
                 fill="none"
@@ -99,9 +110,9 @@ export function FilterSection({
               
               {/* Cutoff indicator */}
               <line 
-                x1={frequencyToX(cutoff)} 
+                x1={cutoffXPosition} 
                 y1="10" 
-                x2={frequencyToX(cutoff)} 
+                x2={cutoffXPosition} 
                 y2="50" 
                 stroke="#00FFFF" 
                 strokeWidth="1" 
