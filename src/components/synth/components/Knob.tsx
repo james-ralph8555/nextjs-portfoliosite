@@ -26,24 +26,16 @@ export function Knob({
   size = 'md'
 }: KnobProps) {
   const [isDragging, setIsDragging] = useState(false)
+  const [isLoaded, setIsLoaded] = useState(false)
   const knobRef = useRef<HTMLDivElement>(null)
   const startYRef = useRef(0)
   const startValueRef = useRef(value)
 
-  const sizeClasses = {
-    xs: 'w-8 h-8',
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-20 h-20'
-  }
-
-  const colorClasses = {
-    green: 'text-green-400 border-green-400',
-    amber: 'text-amber-400 border-amber-400',
-    red: 'text-red-400 border-red-400',
-    cyan: 'text-cyan-400 border-cyan-400',
-    magenta: 'text-purple-400 border-purple-400',
-    purple: 'text-purple-400 border-purple-400'
+  const svgSizes = {
+    xs: { width: 32, height: 32 },
+    sm: { width: 48, height: 48 },
+    md: { width: 64, height: 64 },
+    lg: { width: 80, height: 80 }
   }
 
   const valueToRotation = (val: number): number => {
@@ -97,6 +89,37 @@ export function Knob({
     setIsDragging(false)
   }
 
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault()
+    const delta = e.deltaY > 0 ? -step : step
+    const newValue = Math.max(min, Math.min(max, value + delta))
+    onChange(newValue)
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    let newValue = value
+    switch (e.key) {
+      case 'ArrowUp':
+      case 'ArrowRight':
+        newValue = Math.min(max, value + step)
+        break
+      case 'ArrowDown':
+      case 'ArrowLeft':
+        newValue = Math.max(min, value - step)
+        break
+      case 'Home':
+        newValue = max
+        break
+      case 'End':
+        newValue = min
+        break
+      default:
+        return
+    }
+    e.preventDefault()
+    onChange(newValue)
+  }
+
   useEffect(() => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
@@ -113,8 +136,24 @@ export function Knob({
     }
   }, [isDragging])
 
+  useEffect(() => {
+    // Check if knob SVG is available
+    const checkSvgLoad = () => {
+      const img = new Image()
+      img.onload = () => setIsLoaded(true)
+      img.onerror = () => {
+        // Fallback after timeout
+        setTimeout(() => setIsLoaded(true), 1000)
+      }
+      img.src = '/assets/synth-skins/knob.svg'
+    }
+    
+    checkSvgLoad()
+  }, [])
+
   const rotation = valueToRotation(value)
   const displayValue = unit ? `${value}${unit}` : value.toString()
+  const { width, height } = svgSizes[size]
 
   return (
     <div className="synth-knob-compact">
@@ -122,50 +161,90 @@ export function Knob({
         {label}
       </div>
       
+      {/* Hit area - larger transparent area for better touch interaction */}
       <div
         ref={knobRef}
         className={`
-          relative rounded-full border-2 ${colorClasses[color]}
-          ${sizeClasses[size]} cursor-grab select-none
+          relative flex items-center justify-center cursor-grab select-none
           transition-all duration-150 hover:shadow-md
           ${isDragging ? 'cursor-grabbing scale-105' : ''}
-          bg-gray-700 flex items-center justify-center
         `}
+        style={{
+          width: `${width + 8}px`,
+          height: `${height + 8}px`
+        }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        onWheel={handleWheel}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        role="slider"
+        aria-label={label}
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={value}
+        aria-valuetext={displayValue}
       >
-        {/* Knob indicator line */}
-        <div
-          className="absolute w-0.5 h-1/2 bg-current origin-bottom"
-          style={{
-            transform: `translateY(-50%) rotate(${rotation}deg)`,
-            bottom: '50%'
+        {!isLoaded && (
+          // Skeleton ring loading state
+          <svg
+            width={width}
+            height={height}
+            viewBox="0 0 100 100"
+            className="absolute"
+          >
+            <circle cx="50" cy="50" r="47" fill="none" stroke="#374151" strokeWidth="3" strokeDasharray="5,5" opacity="0.5"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="#374151" strokeWidth="2" strokeDasharray="3,3" opacity="0.3"/>
+            <line x1="50" y1="16" x2="50" y2="34" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
+          </svg>
+        )}
+        
+        {/* Main knob SVG */}
+        <svg
+          width={width}
+          height={height}
+          viewBox="0 0 100 100"
+          style={{ 
+            pointerEvents: 'none',
+            opacity: isLoaded ? 1 : 0,
+            transition: 'opacity 0.3s ease-in-out'
           }}
-        />
-        
-        {/* Center dot */}
-        <div className="w-1.5 h-1.5 rounded-full bg-current opacity-50" />
-        
-        {/* Rotation indicators */}
-        <div className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: 8 }, (_, i) => {
-            const angle = (i * 45) - 135
-            const isActive = Math.abs(rotation - angle) < 22.5
-            return (
-              <div
-                key={i}
-                className={`absolute w-0.5 h-0.5 rounded-full ${
-                  isActive ? 'bg-current opacity-100' : 'bg-current opacity-20'
-                }`}
-                style={{
-                  left: '50%',
-                  top: '20%',
-                  transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-8px)`
-                }}
+        >
+            {/* Use the knob.svg as background */}
+            <image 
+              href="/assets/synth-skins/knob.svg" 
+              width="100" 
+              height="100" 
+              preserveAspectRatio="xMidYMid meet"
+            />
+            
+            {/* Rotating indicator overlay */}
+            <g transform={`rotate(${rotation} 50 50)`}>
+              <line
+                x1="50"
+                y1="15.5"
+                x2="50"
+                y2="22.5"
+                stroke="#ffffff"
+                strokeWidth="2.2"
+                strokeLinecap="round"
               />
-            )
-          })}
-        </div>
+              <line
+                x1="50"
+                y1="15.5"
+                x2="50"
+                y2="22.5"
+                stroke={color === 'amber' ? '#ffbf3a' : 
+                       color === 'green' ? '#4ade80' :
+                       color === 'red' ? '#f87171' :
+                       color === 'cyan' ? '#22d3ee' :
+                       color === 'magenta' ? '#f472b6' : '#f472b6'}
+                strokeWidth="5"
+                strokeLinecap="round"
+                opacity="0.22"
+              />
+            </g>
+          </svg>
       </div>
 
       {/* Value display */}

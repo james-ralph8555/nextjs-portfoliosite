@@ -25,7 +25,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {/* Preload synth skin SVGs */}
+        <link rel="preload" as="image" href="/assets/synth-skins/knob.svg" />
+      </head>
       <body className={jetbrainsMono.className}>
+              {/* SVG sprite for synthesizer controls will be loaded by components */}
+        
         {children}
         {/* Cloudflare Web Analytics */}
         <Script
