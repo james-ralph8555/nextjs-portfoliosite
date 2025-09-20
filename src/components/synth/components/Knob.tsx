@@ -145,7 +145,7 @@ export function Knob({
         // Fallback after timeout
         setTimeout(() => setIsLoaded(true), 1000)
       }
-      img.src = '/assets/synth-skins/knob.svg'
+      img.src = '/synth-skins/knob.svg'
     }
     
     checkSvgLoad()
@@ -212,7 +212,7 @@ export function Knob({
         >
             {/* Use the knob.svg as background */}
             <image 
-              href="/assets/synth-skins/knob.svg" 
+              href="/synth-skins/knob.svg" 
               width="100" 
               height="100" 
               preserveAspectRatio="xMidYMid meet"
