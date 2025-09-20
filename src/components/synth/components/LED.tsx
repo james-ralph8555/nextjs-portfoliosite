@@ -6,31 +6,33 @@ interface LEDProps {
   active: boolean
   color: 'green' | 'amber' | 'red' | 'cyan' | 'magenta'
   label?: string
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg'
   pulse?: boolean
 }
 
 export function LED({ active, color, label, size = 'md', pulse = false }: LEDProps) {
   const sizeClasses = {
+    xxs: 'w-1 h-1',
+    xs: 'w-1.5 h-1.5',
     sm: 'w-2 h-2',
     md: 'w-3 h-3',
     lg: 'w-4 h-4'
   }
 
   const colorClasses = {
-    green: active ? 'bg-primary-green' : 'bg-gray-700',
-    amber: active ? 'bg-primary-yellow' : 'bg-gray-700',
-    red: active ? 'bg-primary-red' : 'bg-gray-700',
+    green: active ? 'bg-green-400' : 'bg-gray-700',
+    amber: active ? 'bg-amber-400' : 'bg-gray-700',
+    red: active ? 'bg-red-400' : 'bg-gray-700',
     cyan: active ? 'bg-cyan-400' : 'bg-gray-700',
-    magenta: active ? 'bg-magenta-400' : 'bg-gray-700'
+    magenta: active ? 'bg-purple-400' : 'bg-gray-700'
   }
 
   const glowClasses = {
-    green: active ? 'shadow-lg shadow-primary-green/50' : '',
-    amber: active ? 'shadow-lg shadow-primary-yellow/50' : '',
-    red: active ? 'shadow-lg shadow-primary-red/50' : '',
+    green: active ? 'shadow-lg shadow-green-400/50' : '',
+    amber: active ? 'shadow-lg shadow-amber-400/50' : '',
+    red: active ? 'shadow-lg shadow-red-400/50' : '',
     cyan: active ? 'shadow-lg shadow-cyan-400/50' : '',
-    magenta: active ? 'shadow-lg shadow-magenta-400/50' : ''
+    magenta: active ? 'shadow-lg shadow-purple-400/50' : ''
   }
 
   return (

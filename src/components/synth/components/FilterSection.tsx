@@ -6,15 +6,19 @@ import { Knob } from './Knob'
 interface FilterSectionProps {
   cutoff: number
   resonance: number
+  envelopeAmount: number
   onCutoffChange: (cutoff: number) => void
   onResonanceChange: (resonance: number) => void
+  onEnvelopeAmountChange: (amount: number) => void
 }
 
 export function FilterSection({ 
   cutoff, 
   resonance, 
+  envelopeAmount,
   onCutoffChange, 
-  onResonanceChange 
+  onResonanceChange,
+  onEnvelopeAmountChange
 }: FilterSectionProps) {
   // Memoize filter curve generation to prevent hydration mismatches
   const filterCurvePath = useMemo(() => {
@@ -29,7 +33,7 @@ export function FilterSection({
     <div className="synth-section">
       <div className="synth-section-title">FILTER</div>
       
-      <div className="flex justify-around items-center mb-2">
+      <div className="grid grid-cols-3 gap-1 mb-2">
         {/* Cutoff Frequency */}
         <div className="synth-knob-compact">
           <Knob
@@ -41,7 +45,7 @@ export function FilterSection({
             unit="Hz"
             color="cyan"
             onChange={onCutoffChange}
-            size="md"
+            size="sm"
           />
         </div>
 
@@ -55,7 +59,21 @@ export function FilterSection({
             label="Q"
             color="cyan"
             onChange={onResonanceChange}
-            size="md"
+            size="sm"
+          />
+        </div>
+
+        {/* Envelope Amount */}
+        <div className="synth-knob-compact">
+          <Knob
+            value={envelopeAmount}
+            min={0}
+            max={1}
+            step={0.01}
+            label="ENV"
+            color="cyan"
+            onChange={onEnvelopeAmountChange}
+            size="sm"
           />
         </div>
       </div>

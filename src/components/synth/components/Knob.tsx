@@ -9,9 +9,9 @@ interface KnobProps {
   step?: number
   label: string
   unit?: string
-  color?: 'green' | 'amber' | 'red' | 'cyan' | 'magenta'
+  color?: 'green' | 'amber' | 'red' | 'cyan' | 'magenta' | 'purple'
   onChange: (value: number) => void
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
 }
 
 export function Knob({
@@ -31,17 +31,19 @@ export function Knob({
   const startValueRef = useRef(value)
 
   const sizeClasses = {
+    xs: 'w-8 h-8',
     sm: 'w-12 h-12',
     md: 'w-16 h-16',
     lg: 'w-20 h-20'
   }
 
   const colorClasses = {
-    green: 'text-primary-green border-primary-green',
-    amber: 'text-primary-yellow border-primary-yellow',
-    red: 'text-primary-red border-primary-red',
+    green: 'text-green-400 border-green-400',
+    amber: 'text-amber-400 border-amber-400',
+    red: 'text-red-400 border-red-400',
     cyan: 'text-cyan-400 border-cyan-400',
-    magenta: 'text-magenta-400 border-magenta-400'
+    magenta: 'text-purple-400 border-purple-400',
+    purple: 'text-purple-400 border-purple-400'
   }
 
   const valueToRotation = (val: number): number => {
@@ -167,7 +169,7 @@ export function Knob({
       </div>
 
       {/* Value display */}
-      <div className={`synth-knob-value ${colorClasses[color].replace('border', 'text')}`}>
+      <div className={`synth-knob-value text-gray-400`}>
         {displayValue}
       </div>
     </div>

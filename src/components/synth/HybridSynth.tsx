@@ -5,6 +5,10 @@ import { OscillatorSection } from './components/OscillatorSection'
 import { FilterSection } from './components/FilterSection'
 import { EnvelopeSection } from './components/EnvelopeSection'
 import { MasterSection } from './components/MasterSection'
+import { LFOSection } from './components/LFOSection'
+import { ChorusSection } from './components/ChorusSection'
+import { Scopes } from './components/Scopes'
+import { MacroSection } from './components/MacroSection'
 import { Keyboard } from './components/Keyboard'
 import { Analyzer } from './components/Analyzer'
 import { LED } from './components/LED'
@@ -20,11 +24,18 @@ export function HybridSynth() {
     updateOscillator,
     updateFilter,
     updateEnvelope,
+    updateFilterEnvelope,
     updateGain,
     updateDelay,
+    updateLFO,
+    updateChorus,
+    updateMacros,
+    updatePerformance,
     playNote,
     releaseNote,
-    isPlaying
+    panic,
+    isPlaying,
+    analyser
   } = useSynthEngine(audioContextRef.current)
 
   const { activeKeys } = useKeyboardControls({
@@ -53,63 +64,138 @@ export function HybridSynth() {
     }
   }
 
+  const handlePanicClick = () => {
+    panic()
+  }
+
   return (
-    <div className="synth-chassis max-w-4xl mx-auto">
+    <div className="synth-chassis max-w-7xl mx-auto">
       {/* Status Bar */}
       <div className="synth-status-bar">
         <div className="flex items-center space-x-3">
           <LED active={isInitialized} color="green" size="sm" />
           <LED active={isPlaying} color="amber" size="sm" />
           <LED active={Object.keys(activeKeys).length > 0} color="cyan" size="sm" />
+          <div className="text-[10px] font-mono text-gray-400">
+            Voices: {Array.from(isPlaying ? [1] : [])}/8
+          </div>
         </div>
         
-        {!isInitialized && (
+        <div className="flex items-center space-x-2">
+          {!isInitialized && (
+            <button
+              onClick={handleInitClick}
+              className="synth-button-small bg-cyan-600 text-cyan-100 border-cyan-500 hover:bg-cyan-500"
+            >
+              INIT
+            </button>
+          )}
           <button
-            onClick={handleInitClick}
-            className="synth-button-small bg-cyan-600 text-cyan-100 border-cyan-500 hover:bg-cyan-500"
+            onClick={handlePanicClick}
+            className="synth-button-small bg-red-600 text-red-100 border-red-500 hover:bg-red-500"
           >
-            INIT
+            PANIC
           </button>
-        )}
+        </div>
       </div>
 
-      {/* Main Control Panel */}
-      <div className="synth-control-panel">
-        <OscillatorSection 
-          waveform={audioState.oscillator.waveform}
-          onWaveformChange={(waveform) => updateOscillator({ waveform })}
-        />
-        
-        <FilterSection 
-          cutoff={audioState.filter.cutoff}
-          resonance={audioState.filter.resonance}
-          onCutoffChange={(cutoff) => updateFilter({ cutoff })}
-          onResonanceChange={(resonance) => updateFilter({ resonance })}
-        />
-        
-        <EnvelopeSection 
-          attack={audioState.envelope.attack}
-          decay={audioState.envelope.decay}
-          sustain={audioState.envelope.sustain}
-          release={audioState.envelope.release}
-          onAttackChange={(attack) => updateEnvelope({ attack })}
-          onDecayChange={(decay) => updateEnvelope({ decay })}
-          onSustainChange={(sustain) => updateEnvelope({ sustain })}
-          onReleaseChange={(release) => updateEnvelope({ release })}
-        />
+      {/* Main 4x2 Grid Layout */}
+      <div className="synth-grid-desktop">
+        {/* Top Row: Sound Design */}
+        <div className="synth-grid-osc">
+          <OscillatorSection 
+            waveform={audioState.oscillator.waveform}
+            mix={audioState.oscillator.mix}
+            unison={audioState.oscillator.unison}
+            glide={audioState.oscillator.glide}
+            onWaveformChange={(waveform) => updateOscillator({ waveform })}
+            onMixChange={(mix) => updateOscillator({ mix })}
+            onUnisonChange={(unison) => updateOscillator({ unison: { ...audioState.oscillator.unison, ...unison } })}
+            onGlideChange={(glide) => updateOscillator({ glide: { ...audioState.oscillator.glide, ...glide } })}
+          />
+        </div>
 
-        <MasterSection 
-          gain={audioState.gain}
-          delayTime={audioState.delay.time}
-          delayFeedback={audioState.delay.feedback}
-          onGainChange={updateGain}
-          onDelayTimeChange={(time) => updateDelay({ time })}
-          onDelayFeedbackChange={(feedback) => updateDelay({ feedback })}
-        />
+        <div className="synth-grid-filter">
+          <FilterSection 
+            cutoff={audioState.filter.cutoff}
+            resonance={audioState.filter.resonance}
+            envelopeAmount={audioState.filter.envelopeAmount}
+            onCutoffChange={(cutoff) => updateFilter({ cutoff })}
+            onResonanceChange={(resonance) => updateFilter({ resonance })}
+            onEnvelopeAmountChange={(envelopeAmount) => updateFilter({ envelopeAmount })}
+          />
+        </div>
+
+        <div className="synth-grid-env">
+          <EnvelopeSection 
+            attack={audioState.envelope.attack}
+            decay={audioState.envelope.decay}
+            sustain={audioState.envelope.sustain}
+            release={audioState.envelope.release}
+            onAttackChange={(attack) => updateEnvelope({ attack })}
+            onDecayChange={(decay) => updateEnvelope({ decay })}
+            onSustainChange={(sustain) => updateEnvelope({ sustain })}
+            onReleaseChange={(release) => updateEnvelope({ release })}
+          />
+        </div>
+
+        <div className="synth-grid-master">
+          <MasterSection 
+            gain={audioState.gain}
+            delayTime={audioState.delay.time}
+            delayFeedback={audioState.delay.feedback}
+            delayMix={audioState.delay.mix}
+            onGainChange={updateGain}
+            onDelayTimeChange={(time) => updateDelay({ time })}
+            onDelayFeedbackChange={(feedback) => updateDelay({ feedback })}
+            onDelayMixChange={(mix) => updateDelay({ mix })}
+          />
+        </div>
+
+        {/* Bottom Row: Modulation & Effects */}
+        <div className="synth-grid-lfo">
+          <LFOSection
+            waveform={audioState.lfo.waveform}
+            rate={audioState.lfo.rate}
+            depth={audioState.lfo.depth}
+            targets={audioState.lfo.targets}
+            onWaveformChange={(waveform) => updateLFO({ waveform })}
+            onRateChange={(rate) => updateLFO({ rate })}
+            onDepthChange={(depth) => updateLFO({ depth })}
+            onTargetChange={(target, enabled) => updateLFO({ 
+              targets: { ...audioState.lfo.targets, [target]: enabled } 
+            })}
+          />
+        </div>
+
+        <div className="synth-grid-fx">
+          <ChorusSection
+            rate={audioState.chorus.rate}
+            depth={audioState.chorus.depth}
+            mix={audioState.chorus.mix}
+            onRateChange={(rate) => updateChorus({ rate })}
+            onDepthChange={(depth) => updateChorus({ depth })}
+            onMixChange={(mix) => updateChorus({ mix })}
+          />
+        </div>
+
+        <div className="synth-grid-scopes">
+          <Scopes 
+            audioContext={audioContextRef.current}
+            analyser={analyser}
+          />
+        </div>
+
+        <div className="synth-grid-macro">
+          <MacroSection
+            macros={audioState.macros}
+            onMacroChange={(macro, value) => updateMacros({ [macro]: value })}
+          />
+        </div>
       </div>
 
-      {/* Analyzer */}
-      <div className="mb-2">
+      {/* Legacy Analyzer (hidden for now, can be removed) */}
+      <div className="hidden">
         <Analyzer audioContext={audioContextRef.current} />
       </div>
 

@@ -1,10 +1,26 @@
 'use client'
 
 import React from 'react'
+import { Knob } from './Knob'
+import { LED } from './LED'
 
 interface OscillatorSectionProps {
   waveform: OscillatorType
+  mix: number
+  unison: {
+    enabled: boolean
+    voices: number
+    detune: number
+  }
+  glide: {
+    enabled: boolean
+    time: number
+    legato: boolean
+  }
   onWaveformChange: (waveform: OscillatorType) => void
+  onMixChange: (mix: number) => void
+  onUnisonChange: (unison: Partial<{ enabled: boolean; voices: number; detune: number }>) => void
+  onGlideChange: (glide: Partial<{ enabled: boolean; time: number; legato: boolean }>) => void
 }
 
 const WAVEFORMS: { value: OscillatorType; label: string; color: string }[] = [
@@ -14,10 +30,25 @@ const WAVEFORMS: { value: OscillatorType; label: string; color: string }[] = [
   { value: 'triangle', label: 'TRI', color: 'cyan' }
 ]
 
-export function OscillatorSection({ waveform, onWaveformChange }: OscillatorSectionProps) {
+export function OscillatorSection({
+  waveform,
+  mix,
+  unison,
+  glide,
+  onWaveformChange,
+  onMixChange,
+  onUnisonChange,
+  onGlideChange
+}: OscillatorSectionProps) {
   return (
     <div className="synth-section">
-      <div className="synth-section-title">OSCILLATOR</div>
+      <div className="synth-section-title flex items-center justify-between">
+        <span>OSC/MIX</span>
+        <div className="flex gap-1">
+          <LED active={unison.enabled} color="amber" size="xxs" />
+          <LED active={glide.enabled} color="green" size="xxs" />
+        </div>
+      </div>
       
       {/* Waveform Selection */}
       <div className="grid grid-cols-4 gap-1 mb-2">
@@ -35,50 +66,105 @@ export function OscillatorSection({ waveform, onWaveformChange }: OscillatorSect
         ))}
       </div>
 
-      {/* Visual Waveform Representation */}
-      <div className="synth-waveform-display">
-        <svg width="100%" height="100%" viewBox="0 0 200 30" className="overflow-visible">
-          {/* Waveform path */}
-          {waveform === 'sawtooth' && (
-            <path 
-              d="M 0 25 L 10 5 L 10 25 L 20 5 L 20 25 L 30 5 L 30 25 L 40 5 L 40 25 L 50 5 L 50 25 L 60 5 L 60 25 L 70 5 L 70 25 L 80 5 L 80 25 L 90 5 L 90 25 L 100 5 L 100 25 L 110 5 L 110 25 L 120 5 L 120 25 L 130 5 L 130 25 L 140 5 L 140 25 L 150 5 L 150 25 L 160 5 L 160 25 L 170 5 L 170 25 L 180 5 L 180 25 L 190 5 L 190 25 L 200 5" 
-              stroke="#E7F40F" 
-              strokeWidth="1.5" 
-              fill="none"
-              className="opacity-80"
-            />
-          )}
-          
-          {waveform === 'square' && (
-            <path 
-              d="M 0 5 L 25 5 L 25 25 L 50 25 L 50 5 L 75 5 L 75 25 L 100 25 L 100 5 L 125 5 L 125 25 L 150 25 L 150 5 L 175 5 L 175 25 L 200 25" 
-              stroke="#F8343D" 
-              strokeWidth="1.5" 
-              fill="none"
-              className="opacity-80"
-            />
-          )}
-          
-          {waveform === 'sine' && (
-            <path 
-              d="M 0 15 Q 12.5 5, 25 5 T 50 15 T 75 15 T 100 15 T 125 15 T 150 15 T 175 15 T 200 15" 
-              stroke="#5AFD81" 
-              strokeWidth="1.5" 
-              fill="none"
-              className="opacity-80"
-            />
-          )}
-          
-          {waveform === 'triangle' && (
-            <path 
-              d="M 0 25 L 25 5 L 50 25 L 75 5 L 100 25 L 125 5 L 150 25 L 175 5 L 200 25" 
-              stroke="#00FFFF" 
-              strokeWidth="1.5" 
-              fill="none"
-              className="opacity-80"
-            />
-          )}
-        </svg>
+      {/* Mix Knob */}
+      <div className="synth-knob-compact mb-2">
+        <div className="synth-knob-label">Mix</div>
+        <Knob
+          value={mix}
+          min={0}
+          max={1}
+          step={0.01}
+          onChange={onMixChange}
+          size="sm"
+        />
+        <div className="synth-knob-value">{(mix * 100).toFixed(0)}%</div>
+      </div>
+
+      {/* Unison Section */}
+      <div className="space-y-1 mb-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[9px] font-mono text-gray-500">UNISON</span>
+          <button
+            className={`synth-button-small text-[8px] px-2 ${
+              unison.enabled ? 'bg-amber-600 text-white border-amber-500' : ''
+            }`}
+            onClick={() => onUnisonChange({ enabled: !unison.enabled })}
+          >
+            {unison.enabled ? 'ON' : 'OFF'}
+          </button>
+        </div>
+        
+        {unison.enabled && (
+          <div className="grid grid-cols-2 gap-1">
+            <div className="synth-knob-compact">
+              <div className="text-[8px] font-mono text-gray-500">Voices</div>
+              <Knob
+                value={unison.voices}
+                min={2}
+                max={6}
+                step={1}
+                onChange={(v) => onUnisonChange({ voices: Math.round(v) })}
+                size="xs"
+              />
+              <div className="text-[8px] font-mono text-gray-400">{unison.voices}</div>
+            </div>
+            <div className="synth-knob-compact">
+              <div className="text-[8px] font-mono text-gray-500">Detune</div>
+              <Knob
+                value={unison.detune}
+                min={0.01}
+                max={0.5}
+                step={0.01}
+                onChange={(v) => onUnisonChange({ detune: v })}
+                size="xs"
+              />
+              <div className="text-[8px] font-mono text-gray-400">{unison.detune.toFixed(2)}</div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Glide Section */}
+      <div className="space-y-1">
+        <div className="flex items-center justify-between">
+          <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
+          <button
+            className={`synth-button-small text-[8px] px-2 ${
+              glide.enabled ? 'bg-green-600 text-white border-green-500' : ''
+            }`}
+            onClick={() => onGlideChange({ enabled: !glide.enabled })}
+          >
+            {glide.enabled ? 'ON' : 'OFF'}
+          </button>
+        </div>
+        
+        {glide.enabled && (
+          <div className="grid grid-cols-2 gap-1">
+            <div className="synth-knob-compact">
+              <div className="text-[8px] font-mono text-gray-500">Time</div>
+              <Knob
+                value={glide.time}
+                min={0.01}
+                max={1}
+                step={0.01}
+                onChange={(v) => onGlideChange({ time: v })}
+                size="xs"
+              />
+              <div className="text-[8px] font-mono text-gray-400">{glide.time.toFixed(2)}s</div>
+            </div>
+            <div className="synth-knob-compact">
+              <div className="text-[8px] font-mono text-gray-500">Legato</div>
+              <button
+                className={`synth-button-small text-[8px] w-full ${
+                  glide.legato ? 'bg-cyan-600 text-white border-cyan-500' : ''
+                }`}
+                onClick={() => onGlideChange({ legato: !glide.legato })}
+              >
+                {glide.legato ? 'YES' : 'NO'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -7,25 +7,29 @@ interface MasterSectionProps {
   gain: number
   delayTime: number
   delayFeedback: number
+  delayMix: number
   onGainChange: (gain: number) => void
   onDelayTimeChange: (time: number) => void
   onDelayFeedbackChange: (feedback: number) => void
+  onDelayMixChange: (mix: number) => void
 }
 
 export function MasterSection({
   gain,
   delayTime,
   delayFeedback,
+  delayMix,
   onGainChange,
   onDelayTimeChange,
-  onDelayFeedbackChange
+  onDelayFeedbackChange,
+  onDelayMixChange
 }: MasterSectionProps) {
   return (
     <div className="synth-section">
       <div className="synth-section-title">MASTER</div>
       
       {/* Master Controls Grid */}
-      <div className="grid grid-cols-3 gap-1 mb-2">
+      <div className="grid grid-cols-4 gap-1 mb-2">
         {/* Volume Control */}
         <div className="synth-knob-compact">
           <Knob
@@ -36,7 +40,7 @@ export function MasterSection({
             label="VOL"
             color="green"
             onChange={onGainChange}
-            size="sm"
+            size="xs"
           />
         </div>
         
@@ -51,7 +55,7 @@ export function MasterSection({
             unit="s"
             color="amber"
             onChange={onDelayTimeChange}
-            size="sm"
+            size="xs"
           />
         </div>
         
@@ -65,7 +69,21 @@ export function MasterSection({
             label="FB"
             color="red"
             onChange={onDelayFeedbackChange}
-            size="sm"
+            size="xs"
+          />
+        </div>
+
+        {/* Delay Mix */}
+        <div className="synth-knob-compact">
+          <Knob
+            value={delayMix}
+            min={0}
+            max={1}
+            step={0.01}
+            label="MIX"
+            color="purple"
+            onChange={onDelayMixChange}
+            size="xs"
           />
         </div>
       </div>
