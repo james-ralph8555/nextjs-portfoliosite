@@ -98,21 +98,28 @@
 .led {
   /* size inherits from utility classes (w- and h-) */
   border-radius: 999px;
-  background:
+  /* Use background-image so Tailwind bg-* (background-color) still applies */
+  background-image:
     radial-gradient(circle at 40% 35%, rgba(255,255,255,.85), rgba(255,255,255,.1) 35%, transparent 50%),
     radial-gradient(circle at 60% 60%, currentColor 0%, rgba(0,0,0,.2) 60%);
-  box-shadow:
-    0 0 6px currentColor,
-    0 0 18px currentColor;
-  transition: filter var(--t-quick) var(--ease-hw);
-  filter: saturate(1.1);
+  /* Off by default: no outer glow, just subtle inner depth */
+  box-shadow: inset 0 0 2px rgba(0,0,0,.35);
+  transition: filter var(--t-quick) var(--ease-hw), box-shadow var(--t-quick) var(--ease-hw);
+  filter: saturate(.85) brightness(.8);
 }
 .led--teal  { color: var(--accent-teal); }
 .led--amber { color: var(--accent-amber); }
 .led--red   { color: var(--accent-red); }
 .led--magenta { color: #ff65df; }
 
-.led[data-on="true"] { animation: led-on 180ms var(--ease-hw); }
+.led[data-on="true"] {
+  /* Only active LEDs should glow */
+  box-shadow:
+    0 0 6px currentColor,
+    0 0 18px currentColor;
+  filter: saturate(1.1) brightness(1);
+  animation: led-on 180ms var(--ease-hw);
+}
 @keyframes led-on { from { filter: brightness(.7); } to { filter: brightness(1); } }
 
 /* Removed unused knob/slider/rocker styles to keep theme lean */
@@ -141,5 +148,77 @@
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   .led { transition: none; animation: none; }
-  .rocker__cap { transition: none; }
+}
+
+/* 8) Keyboard keys – subtle bevels and depth */
+.key-white {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--t-quick) var(--ease-hw), box-shadow var(--t-quick) var(--ease-hw);
+  box-shadow:
+    inset 0 2px 1px rgba(255,255,255,.65), /* top highlight */
+    inset 0 -3px 6px rgba(0,0,0,.22),       /* bottom shade */
+    0 3px 8px rgba(0,0,0,.25);             /* drop */
+}
+.key-white::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,0) 38%), /* top gloss */
+    linear-gradient(0deg, rgba(0,0,0,.06), rgba(0,0,0,0) 85%);               /* base vignetting */
+}
+.key-white::after {
+  content: "";
+  position: absolute; inset: -20% -10% 50% -10%;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.18) 32%, rgba(255,255,255,0) 62%);
+  transform: translateY(-6%) rotate(-2deg);
+  mix-blend-mode: screen;
+  opacity: .85;
+}
+.key-white:hover::after { opacity: 1; }
+.key-white[data-active="true"] {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.5),
+    inset 0 -2px 4px rgba(0,0,0,.25),
+    0 2px 5px rgba(0,0,0,.25);
+}
+
+.key-black {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--t-quick) var(--ease-hw), box-shadow var(--t-quick) var(--ease-hw);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.10), /* top lip */
+    inset 0 -4px 10px rgba(0,0,0,.6),       /* inner bottom */
+    0 8px 16px rgba(0,0,0,.55);            /* drop */
+}
+.key-black::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0) 42%), /* top gloss */
+    radial-gradient(120% 60% at 50% 0%, rgba(255,255,255,.06), transparent 60%);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+.key-black::after {
+  content: "";
+  position: absolute; inset: -10% -20% 55% -20%;
+  pointer-events: none;
+  background: linear-gradient(120deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,.12) 40%, rgba(255,255,255,0) 70%);
+  transform: translateY(-6%) rotate(-4deg);
+  mix-blend-mode: screen;
+  opacity: .75;
+}
+.key-black:hover::after { opacity: .9; }
+.key-black[data-active="true"] {
+  transform: translateY(1px);
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,.08),
+    inset 0 -3px 8px rgba(0,0,0,.55),
+    0 6px 12px rgba(0,0,0,.5);
 }

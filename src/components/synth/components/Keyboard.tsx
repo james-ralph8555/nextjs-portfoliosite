@@ -112,12 +112,12 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
             <div
               key={note}
               className={`
-                relative border-r border-gray-600 last:border-r-0
+                key-white relative border-r border-gray-600 last:border-r-0
                 ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
                 transition-all duration-100 cursor-pointer select-none
                 flex flex-col justify-between items-center py-1
-                shadow-inner
               `}
+              data-active={isActive}
               onMouseDown={() => handleMouseDown(note)}
               onMouseUp={() => handleMouseUp(note)}
               onMouseLeave={() => {
@@ -167,13 +167,14 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
               <div
                 key={note}
                 className={`
-                  absolute w-7 h-16 rounded-b-sm
+                  key-black absolute w-7 h-16 rounded-b-sm
                   ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
                   transition-all duration-100 cursor-pointer select-none
                   pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
-                  shadow-lg z-20
+                  z-20
                 `}
                 style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                data-active={isActive}
                 onMouseDown={() => handleMouseDown(note)}
                 onMouseUp={() => handleMouseUp(note)}
                 onMouseLeave={() => {
