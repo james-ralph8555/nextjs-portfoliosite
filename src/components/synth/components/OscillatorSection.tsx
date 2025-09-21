@@ -78,7 +78,7 @@ export function OscillatorSection({
         {/* OSC 1 */}
         <div className={isMobile ? "synth-subsection-mobile" : "synth-subsection-desktop"}>
           <div className="flex flex-col items-center gap-2">
-            {/* Voice toggle above waveform on mobile, integrated on desktop */}
+            {/* Voice toggle above waveform on mobile, to the right on desktop */}
             {isMobile ? (
               <VoiceToggle
                 enabled={enabled1}
@@ -87,7 +87,15 @@ export function OscillatorSection({
                 color="amber"
               />
             ) : (
-              <div className="flex justify-center w-full">
+              <div className="flex items-center justify-center gap-3 w-full">
+                <WaveButtonGroup
+                  waveforms={WAVEFORMS}
+                  selectedWaveform={waveform as WaveformType}
+                  onWaveformChange={onWaveformChange}
+                  labelMode="abbreviated"
+                  showIcons={true}
+                  size="sm"
+                />
                 <VoiceToggle
                   enabled={enabled1}
                   onToggle={onEnabled1Change}
@@ -97,14 +105,16 @@ export function OscillatorSection({
               </div>
             )}
             
-            <WaveButtonGroup
-              waveforms={WAVEFORMS}
-              selectedWaveform={waveform as WaveformType}
-              onWaveformChange={onWaveformChange}
-              labelMode="abbreviated"
-              showIcons={true}
-              size="sm"
-            />
+            {isMobile && (
+              <WaveButtonGroup
+                waveforms={WAVEFORMS}
+                selectedWaveform={waveform as WaveformType}
+                onWaveformChange={onWaveformChange}
+                labelMode="abbreviated"
+                showIcons={true}
+                size="sm"
+              />
+            )}
             <div className="grid grid-cols-2 gap-2 w-full place-items-center">
               <div className="synth-knob-compact">
                 <Knob
@@ -137,7 +147,7 @@ export function OscillatorSection({
         {/* OSC 2 */}
         <div className={isMobile ? "synth-subsection-mobile" : "synth-subsection-desktop"}>
           <div className="flex flex-col items-center gap-2">
-            {/* Voice toggle above waveform on mobile, integrated on desktop */}
+            {/* Voice toggle above waveform on mobile, to the right on desktop */}
             {isMobile ? (
               <VoiceToggle
                 enabled={enabled2}
@@ -146,7 +156,15 @@ export function OscillatorSection({
                 color="cyan"
               />
             ) : (
-              <div className="flex justify-center w-full">
+              <div className="flex items-center justify-center gap-3 w-full">
+                <WaveButtonGroup
+                  waveforms={WAVEFORMS}
+                  selectedWaveform={waveform2 as WaveformType}
+                  onWaveformChange={onWaveform2Change}
+                  labelMode="abbreviated"
+                  showIcons={true}
+                  size="sm"
+                />
                 <VoiceToggle
                   enabled={enabled2}
                   onToggle={onEnabled2Change}
@@ -156,14 +174,16 @@ export function OscillatorSection({
               </div>
             )}
             
-            <WaveButtonGroup
-              waveforms={WAVEFORMS}
-              selectedWaveform={waveform2 as WaveformType}
-              onWaveformChange={onWaveform2Change}
-              labelMode="abbreviated"
-              showIcons={true}
-              size="sm"
-            />
+            {isMobile && (
+              <WaveButtonGroup
+                waveforms={WAVEFORMS}
+                selectedWaveform={waveform2 as WaveformType}
+                onWaveformChange={onWaveform2Change}
+                labelMode="abbreviated"
+                showIcons={true}
+                size="sm"
+              />
+            )}
             <div className="grid grid-cols-2 gap-2 w-full place-items-center">
               <div className="synth-knob-compact">
                 <Knob
