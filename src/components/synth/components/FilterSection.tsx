@@ -113,6 +113,9 @@ export function FilterSection({
           />
         </svg>
       </div>
+
+      {/* Spacer to match height of sections with additional controls */}
+      <div className="flex-1 min-h-[24px]"></div>
     </div>
   )
 }

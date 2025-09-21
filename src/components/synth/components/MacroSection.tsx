@@ -50,6 +50,9 @@ export function MacroSection({
         ))}
       </div>
 
+      {/* Spacer to match height of LFO/MOD section */}
+      <div className="flex-1 min-h-[16px]"></div>
+
     </div>
   )
 }

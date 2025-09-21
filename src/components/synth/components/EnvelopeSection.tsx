@@ -115,7 +115,15 @@ export function EnvelopeSection({
           <circle cx={Math.min(attack * 40, 80)} cy="20" r="2" fill="#FF00FF" />
           <circle cx={Math.min((attack + decay) * 40, 120)} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
           <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
-          <circle cx={Math.min((attack + decay) * 40, 120) + 30 + Math.min(release * 40, 70)} cy="70" r="2" fill="#FF00FF" />
+          {(() => {
+            // Keep marker logic in sync with path endpoint so they never detach
+            const scaleX = 40
+            const decayX = Math.min((attack + decay) * scaleX, 120)
+            const sustainDuration = 30
+            const viewWidth = 240
+            const releaseEndX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
+            return <circle cx={releaseEndX} cy="70" r="2" fill="#FF00FF" />
+          })()}
           
           {/* Labels */}
           <text x="5" y="17" fill="#666" fontSize="7" fontFamily="monospace">1.0</text>
@@ -132,14 +140,16 @@ export function EnvelopeSection({
 
 // Helper function to generate ADSR envelope path
 function generateEnvelopePath(attack: number, decay: number, sustain: number, release: number): string {
-  const scaleX = 40 // Reduced scale factor to prevent overflow
-  const scaleY = 50 // Scale factor for amplitude
-  
+  const scaleX = 40 // Horizontal scale factor
+  const scaleY = 50 // Vertical scale factor for amplitude
+  const viewWidth = 240 // Matches SVG viewBox width
+
   const attackX = Math.min(attack * scaleX, 80) // Cap at 80 to leave room
   const decayX = Math.min((attack + decay) * scaleX, 120) // Cap at 120
   const sustainY = 70 - (sustain * scaleY) // Base at 70, scale down
   const sustainDuration = 30 // Fixed sustain duration for display
-  const releaseX = Math.min(decayX + sustainDuration + (release * scaleX), 220) // Cap at 220
-  
+  // Ensure the release segment reaches the right edge at high values
+  const releaseX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
+
   return `M 0 70 L ${attackX} 20 L ${decayX} ${sustainY} L ${decayX + sustainDuration} ${sustainY} L ${releaseX} 70`
 }

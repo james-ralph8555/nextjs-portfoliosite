@@ -77,6 +77,8 @@ export function Knob({
 
   const handleTouchMove = (e: TouchEvent) => {
     if (!isDragging) return
+    // Prevent the page from scrolling while adjusting the knob
+    e.preventDefault()
 
     const deltaY = startYRef.current - e.touches[0].clientY
     const sensitivity = 0.5
@@ -125,7 +127,8 @@ export function Knob({
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove)
       document.addEventListener('mouseup', handleMouseUp)
-      document.addEventListener('touchmove', handleTouchMove)
+      // Use non-passive listener so preventDefault works on touchmove
+      document.addEventListener('touchmove', handleTouchMove, { passive: false })
       document.addEventListener('touchend', handleMouseUp)
     }
 
@@ -186,10 +189,16 @@ export function Knob({
         `}
         style={{
           width: `${width + 8}px`,
-          height: `${height + 8}px`
+          height: `${height + 8}px`,
+          // Prevent browser gestures/scroll during touch interaction
+          touchAction: 'none',
+          // Avoid scroll chaining to parent while interacting
+          overscrollBehavior: 'contain'
         }}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
+        // Also guard at the element level during dragging
+        onTouchMove={(e) => { if (isDragging) e.preventDefault() }}
         onWheel={handleWheel}
         onKeyDown={handleKeyDown}
         tabIndex={0}
