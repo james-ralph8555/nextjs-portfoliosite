@@ -85,7 +85,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     oscillator: { 
       waveform: 'sawtooth',
       mix: 0.5,
-      unison: { enabled: false, voices: 3, detune: 0.1 },
+      unison: { enabled: true, voices: 3, detune: 0.1 },
       glide: { enabled: false, time: 0.1, legato: true }
     },
     filter: { cutoff: 1000, resonance: 1, envelopeAmount: 0.5 },
@@ -537,7 +537,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         oscillator: { 
           waveform: 'sawtooth' as OscillatorType,
           mix: 0.5,
-          unison: { enabled: false, voices: 3, detune: 0.1 },
+          unison: { enabled: true, voices: 3, detune: 0.1 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
         filter: { cutoff: 1000, resonance: 1, envelopeAmount: 0.5 },

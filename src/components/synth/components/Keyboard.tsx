@@ -113,7 +113,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
               key={note}
               className={`
                 relative border-r border-gray-600 last:border-r-0
-                ${isActive ? 'bg-cyan-400' : 'bg-white hover:bg-gray-100'}
+                ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
                 transition-all duration-100 cursor-pointer select-none
                 flex flex-col justify-between items-center py-1
                 shadow-inner
@@ -168,7 +168,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
                 key={note}
                 className={`
                   absolute w-7 h-16 rounded-b-sm
-                  ${isActive ? 'bg-cyan-400' : 'bg-gray-900 hover:bg-gray-800'}
+                  ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
                   transition-all duration-100 cursor-pointer select-none
                   pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
                   shadow-lg z-20
