@@ -14,6 +14,10 @@ export function formatLevel(value: number): string {
   return `${Math.round(value * 100)}%`
 }
 
+export function formatInteger(value: number): string {
+  return `${Math.round(value)}`
+}
+
 export function formatDecimal(value: number, decimals: number = 1): string {
   return value.toFixed(decimals)
 }

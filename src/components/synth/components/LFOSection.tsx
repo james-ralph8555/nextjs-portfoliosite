@@ -72,13 +72,13 @@ export function LFOSection({
         {/* Depth Knob */}
         <div className="synth-knob-compact">
           <Knob
-            value={depth * 100}
+            value={depth}
             min={0}
-            max={100}
-            step={1}
+            max={1}
+            step={0.01}
             label="Depth"
             unit="%"
-            onChange={(v) => onDepthChange(v / 100)}
+            onChange={(v) => onDepthChange(v)}
             size="sm"
           />
         </div>

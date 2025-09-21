@@ -63,13 +63,13 @@ export function OscillatorSection({
       {/* Mix Knob */}
       <div className="synth-knob-compact">
         <Knob
-          value={mix * 100}
+          value={mix}
           min={0}
-          max={100}
-          step={1}
+          max={1}
+          step={0.01}
           label="Mix"
           unit="%"
-          onChange={(v) => onMixChange(v / 100)}
+          onChange={(v) => onMixChange(v)}
           size="sm"
         />
       </div>

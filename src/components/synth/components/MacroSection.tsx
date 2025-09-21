@@ -36,13 +36,13 @@ export function MacroSection({
             </div>
             <div className="flex justify-center">
               <Knob
-                value={value * 100}
+                value={value}
                 min={0}
-                max={100}
-                step={1}
+                max={1}
+                step={0.01}
                 label={`M${num}`}
                 unit="%"
-                onChange={(v) => onMacroChange(parseInt(num), v / 100)}
+                onChange={(v) => onMacroChange(parseInt(num), v)}
                 size="md"
               />
             </div>

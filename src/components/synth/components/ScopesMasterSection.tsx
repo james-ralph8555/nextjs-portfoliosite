@@ -266,6 +266,7 @@ export function ScopesMasterSection({
                 max={1}
                 step={0.01}
                 label="VOL"
+                unit="%"
                 color="green"
                 onChange={onGainChange}
                 size="xs"
@@ -295,6 +296,7 @@ export function ScopesMasterSection({
                 max={0.95}
                 step={0.01}
                 label="FB"
+                unit="%"
                 color="red"
                 onChange={onDelayFeedbackChange}
                 size="xs"
@@ -309,6 +311,7 @@ export function ScopesMasterSection({
                 max={1}
                 step={0.01}
                 label="MIX"
+                unit="%"
                 color="purple"
                 onChange={onDelayMixChange}
                 size="xs"
