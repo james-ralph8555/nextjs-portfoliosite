@@ -3,28 +3,33 @@
 import React, { useMemo } from 'react'
 import { Knob } from './Knob'
 import { formatFrequencykHz } from '@/lib/synth-utils'
+import { FilterTypeButtons, type FilterTypeOption } from './FilterTypeButtons'
 
 interface FilterSectionProps {
+  type?: BiquadFilterType
   cutoff: number
   resonance: number
   envelopeAmount: number
+  onTypeChange?: (type: BiquadFilterType) => void
   onCutoffChange: (cutoff: number) => void
   onResonanceChange: (resonance: number) => void
   onEnvelopeAmountChange: (amount: number) => void
 }
 
 export function FilterSection({ 
+  type = 'lowpass',
   cutoff, 
   resonance, 
   envelopeAmount,
+  onTypeChange,
   onCutoffChange, 
   onResonanceChange,
   onEnvelopeAmountChange
 }: FilterSectionProps) {
   // Memoize filter curve generation to prevent hydration mismatches
   const filterCurvePath = useMemo(() => {
-    return generateFilterCurve(cutoff, resonance)
-  }, [cutoff, resonance])
+    return generateFilterCurve(type, cutoff, resonance)
+  }, [type, cutoff, resonance])
 
   const cutoffXPosition = useMemo(() => {
     return frequencyToX(cutoff)
@@ -33,6 +38,9 @@ export function FilterSection({
   return (
     <div className="synth-section">
       <div className="synth-section-title">FILTER</div>
+      <div className="flex items-center justify-center mb-2">
+        <FilterTypeButtons selectedType={type} onChange={(t) => onTypeChange?.(t)} />
+      </div>
       
       <div className="grid grid-cols-3 gap-1 mb-2">
         {/* Cutoff Frequency */}
@@ -55,7 +63,7 @@ export function FilterSection({
           <Knob
             value={resonance}
             min={0.1}
-            max={30}
+            max={15}
             step={0.1}
             label="Q"
             color="cyan"
@@ -77,6 +85,8 @@ export function FilterSection({
             size="sm"
           />
         </div>
+
+        {/* (Key tracking removed) */}
       </div>
 
       {/* Filter Response Visualization – styled like scopes */}
@@ -119,8 +129,7 @@ export function FilterSection({
         </svg>
       </div>
 
-      {/* Spacer to match height of sections with additional controls */}
-      <div className="flex-1 min-h-[24px]"></div>
+      {/* (Drive moved to FX bus) */}
     </div>
   )
 }
@@ -134,18 +143,44 @@ function frequencyToX(freq: number): number {
   return Math.max(0, Math.min(200, normalized * 200))
 }
 
-function generateFilterCurve(cutoff: number, resonance: number): string {
+function generateFilterCurve(type: BiquadFilterType, cutoff: number, resonance: number): string {
   const points = []
   const numPoints = 50
   
   for (let i = 0; i <= numPoints; i++) {
     const x = (i / numPoints) * 200
     const freq = 20 * Math.pow(1000, x / 200) // Logarithmic frequency scale
-    
-    // Simple lowpass filter response calculation
     const normalizedFreq = freq / cutoff
-    const response = 1 / Math.sqrt(1 + Math.pow(normalizedFreq, 2) * resonance)
-    
+    let response = 1
+
+    switch (type) {
+      case 'lowpass': {
+        response = 1 / Math.sqrt(1 + Math.pow(normalizedFreq, 2) * resonance)
+        break
+      }
+      case 'highpass': {
+        response = 1 / Math.sqrt(1 + Math.pow(1 / Math.max(1e-6, normalizedFreq), 2) * resonance)
+        break
+      }
+      case 'bandpass': {
+        // crude bandpass peak around cutoff, scaled by Q
+        const q = Math.max(0.1, resonance)
+        const bw = 1 / q
+        const d = Math.log10(Math.max(1e-6, normalizedFreq))
+        response = Math.exp(-Math.pow(d / bw, 2))
+        break
+      }
+      case 'notch':
+      default: {
+        // crude notch attenuation around cutoff
+        const q = Math.max(0.1, resonance)
+        const bw = 1 / q
+        const d = Math.log10(Math.max(1e-6, normalizedFreq))
+        response = 1 - Math.exp(-Math.pow(d / bw, 2))
+        break
+      }
+    }
+
     const y = 52.5 - (response * 37.5) // Scale and invert for display
     points.push(`${x},${Math.max(12, Math.min(48, y))}`)
   }

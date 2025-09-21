@@ -8,18 +8,22 @@ interface ChorusSectionProps {
   rate: number
   depth: number
   mix: number
+  drive: number
   onRateChange: (rate: number) => void
   onDepthChange: (depth: number) => void
   onMixChange: (mix: number) => void
+  onDriveChange: (drive: number) => void
 }
 
 export function ChorusSection({
   rate,
   depth,
   mix,
+  drive,
   onRateChange,
   onDepthChange,
-  onMixChange
+  onMixChange,
+  onDriveChange
 }: ChorusSectionProps) {
   return (
     <div className="synth-section">
@@ -73,6 +77,22 @@ export function ChorusSection({
           </div>
         </div>
 
+        {/* Drive Knob - Span full width (FX bus) */}
+        <div className="col-span-2">
+          <div className="synth-knob-compact">
+            <Knob
+              value={drive}
+              min={0}
+              max={1}
+              step={0.01}
+              label="Drive"
+              unit="%"
+              onChange={(v) => onDriveChange(v)}
+              size="sm"
+            />
+          </div>
+        </div>
+
         {/* LED Level Meter - Span full width */}
         <div className="col-span-2">
           <div className="flex items-center gap-2 mt-1">
@@ -81,7 +101,7 @@ export function ChorusSection({
               {Array.from({ length: 8 }, (_, i) => (
                 <LED
                   key={i}
-                  active={mix > (i / 8)}
+                  active={(mix + drive * 0.5) > (i / 8)}
                   color="green"
                   size="xxs"
                 />

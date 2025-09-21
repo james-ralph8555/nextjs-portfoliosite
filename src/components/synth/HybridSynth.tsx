@@ -137,9 +137,11 @@ export function HybridSynth() {
 
         <div className="synth-grid-filter">
           <FilterSection 
+            type={audioState.filter.type}
             cutoff={audioState.filter.cutoff}
             resonance={audioState.filter.resonance}
             envelopeAmount={audioState.filter.envelopeAmount}
+            onTypeChange={(type) => updateFilter({ type })}
             onCutoffChange={(cutoff) => updateFilter({ cutoff })}
             onResonanceChange={(resonance) => updateFilter({ resonance })}
             onEnvelopeAmountChange={(envelopeAmount) => updateFilter({ envelopeAmount })}
@@ -180,9 +182,11 @@ export function HybridSynth() {
             rate={audioState.chorus.rate}
             depth={audioState.chorus.depth}
             mix={audioState.chorus.mix}
+            drive={audioState.chorus.drive}
             onRateChange={(rate) => updateChorus({ rate })}
             onDepthChange={(depth) => updateChorus({ depth })}
             onMixChange={(mix) => updateChorus({ mix })}
+            onDriveChange={(drive) => updateChorus({ drive })}
           />
         </div>
 

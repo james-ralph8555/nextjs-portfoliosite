@@ -20,9 +20,11 @@ export interface AudioState {
     }
   }
   filter: {
+    type: BiquadFilterType
     cutoff: number
     resonance: number
     envelopeAmount: number
+    keyTracking: number
   }
   envelope: {
     attack: number
@@ -57,6 +59,7 @@ export interface AudioState {
     rate: number
     depth: number
     mix: number
+    drive: number
   }
   macros: {
     1: number
@@ -76,6 +79,8 @@ export interface Voice {
   oscillators2: OscillatorNode[]
   osc1GainNode: GainNode
   osc2GainNode: GainNode
+  preDriveGain: GainNode
+  waveshaper: WaveShaperNode
   filter: BiquadFilterNode
   gainNode: GainNode
   envelopeGain: GainNode
@@ -99,7 +104,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       unison: { enabled: true, voices: 3, detune: 0.1 },
       glide: { enabled: false, time: 0.1, legato: true }
     },
-    filter: { cutoff: 4000, resonance: 1, envelopeAmount: 0.5 },
+    filter: { type: 'lowpass', cutoff: 4000, resonance: 1, envelopeAmount: 0.5, keyTracking: 0.0 },
     envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
     filterEnvelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
     lfo: { 
@@ -110,7 +115,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     },
     gain: 0.3,
     delay: { time: 0.3, feedback: 0.3, mix: 0.3 },
-    chorus: { rate: 1.5, depth: 0.5, mix: 0.3 },
+    chorus: { rate: 1.5, depth: 0.5, mix: 0.3, drive: 0.0 },
     macros: { 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5 },
     performance: { maxPolyphony: 8, voiceStealing: true }
   })
@@ -120,6 +125,9 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   const voicesRef = useRef<Map<string, Voice>>(new Map())
   const masterGainRef = useRef<GainNode | null>(null)
   const filterRef = useRef<BiquadFilterNode | null>(null)
+  const fxBusRef = useRef<GainNode | null>(null)
+  const fxPreDriveGainRef = useRef<GainNode | null>(null)
+  const fxWaveshaperRef = useRef<WaveShaperNode | null>(null)
   const delayRef = useRef<DelayNode | null>(null)
   const delayFeedbackRef = useRef<GainNode | null>(null)
   const delayGainRef = useRef<GainNode | null>(null)
@@ -140,9 +148,20 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
     // Create main filter
     filterRef.current = audioContext.createBiquadFilter()
-    filterRef.current.type = 'lowpass'
+    filterRef.current.type = audioState.filter.type
     filterRef.current.frequency.value = audioState.filter.cutoff
     filterRef.current.Q.value = audioState.filter.resonance
+
+    // Create FX bus and drive stage (FX)
+    fxBusRef.current = audioContext.createGain()
+    fxBusRef.current.gain.value = 1
+
+    fxPreDriveGainRef.current = audioContext.createGain()
+    fxPreDriveGainRef.current.gain.value = 1 + (audioState.chorus.drive || 0) * 4
+
+    fxWaveshaperRef.current = audioContext.createWaveShaper()
+    fxWaveshaperRef.current.curve = createDriveCurve(audioState.chorus.drive || 0)
+    fxWaveshaperRef.current.oversample = '4x'
 
     // Create delay effect
     delayRef.current = audioContext.createDelay(1.0)
@@ -179,7 +198,10 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     filterRef.current.connect(masterGainRef.current)
     masterGainRef.current.connect(audioContext.destination)
     
-    // Connect delay to output
+    // FX bus chain: fxBus -> drive -> shaper -> delay -> delay gain -> destination
+    fxBusRef.current.connect(fxPreDriveGainRef.current)
+    fxPreDriveGainRef.current.connect(fxWaveshaperRef.current)
+    fxWaveshaperRef.current.connect(delayRef.current)
     delayRef.current.connect(delayGainRef.current)
     delayGainRef.current.connect(audioContext.destination)
 
@@ -194,6 +216,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           try { osc.stop() } catch {}
           try { osc.disconnect() } catch {}
         })
+        try { voice.preDriveGain.disconnect() } catch {}
+        try { voice.waveshaper.disconnect() } catch {}
         voice.filter.disconnect()
         voice.gainNode.disconnect()
         voice.envelopeGain.disconnect()
@@ -206,6 +230,9 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       // Clean up master nodes
       masterGainRef.current?.disconnect()
       filterRef.current?.disconnect()
+      fxBusRef.current?.disconnect()
+      fxPreDriveGainRef.current?.disconnect()
+      fxWaveshaperRef.current?.disconnect()
       delayRef.current?.disconnect()
       delayFeedbackRef.current?.disconnect()
       delayGainRef.current?.disconnect()
@@ -226,10 +253,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
   useEffect(() => {
     if (filterRef.current) {
+      filterRef.current.type = audioState.filter.type
       filterRef.current.frequency.value = audioState.filter.cutoff
       filterRef.current.Q.value = audioState.filter.resonance
     }
-  }, [audioState.filter.cutoff, audioState.filter.resonance])
+  }, [audioState.filter.type, audioState.filter.cutoff, audioState.filter.resonance])
 
   useEffect(() => {
     if (delayRef.current && delayFeedbackRef.current) {
@@ -250,6 +278,15 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     }
   }, [audioState.chorus.mix])
 
+  // Update FX drive when chorus.drive changes (FX bus control)
+  useEffect(() => {
+    if (fxPreDriveGainRef.current && fxWaveshaperRef.current) {
+      const drive = Math.max(0, Math.min(1, audioState.chorus.drive || 0))
+      fxPreDriveGainRef.current.gain.value = 1 + drive * 4
+      fxWaveshaperRef.current.curve = createDriveCurve(drive)
+    }
+  }, [audioState.chorus.drive])
+
   useEffect(() => {
     if (lfoRef.current && lfoGainRef.current) {
       lfoRef.current.type = audioState.lfo.waveform
@@ -268,6 +305,25 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77
     }
     return noteFrequencies[note] || 440
+  }
+
+  // Utility: create a waveshaper curve for drive
+  const createDriveCurve = (amount: number, nSamples = 2048): Float32Array => {
+    const k = amount * 5 // 0..5
+    const curve = new Float32Array(nSamples)
+    for (let i = 0; i < nSamples; i++) {
+      const x = (i * 2) / nSamples - 1
+      curve[i] = (1 + k) * x / (1 + k * Math.abs(x))
+    }
+    return curve
+  }
+
+  // Utility: key tracking mapping (relative to C4)
+  const applyKeyTracking = (baseCutoff: number, keyTracking: number, baseFrequency: number): number => {
+    const ref = 261.63 // C4
+    const ratio = baseFrequency / ref
+    const tracked = baseCutoff * Math.pow(ratio, keyTracking)
+    return Math.max(20, Math.min(20000, tracked))
   }
 
   const getVoiceToSteal = (): string | null => {
@@ -353,15 +409,27 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       audioState.oscillator.waveform2 || audioState.oscillator.waveform,
       (audioState.oscillator.tune2 || 0) * 100
     )
+    const preDriveGain = audioContext.createGain()
+    const waveshaper = audioContext.createWaveShaper()
     const filter = audioContext.createBiquadFilter()
     const gainNode = audioContext.createGain()
     const envelopeGain = audioContext.createGain()
     const filterEnvelopeGain = audioContext.createGain()
 
     // Configure filter for this voice
-    filter.type = 'lowpass'
-    filter.frequency.value = audioState.filter.cutoff
+    filter.type = audioState.filter.type
+    const effectiveCutoff = applyKeyTracking(
+      audioState.filter.cutoff,
+      audioState.filter.keyTracking,
+      baseFrequency
+    )
+    filter.frequency.value = effectiveCutoff
     filter.Q.value = audioState.filter.resonance
+
+    // Pre-filter drive removed (moved to FX bus): keep neutral
+    preDriveGain.gain.value = 1
+    waveshaper.curve = createDriveCurve(0)
+    waveshaper.oversample = '4x'
 
     // Configure amp envelope
     envelopeGain.gain.setValueAtTime(0, now)
@@ -400,9 +468,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     groupMixer1.connect(osc1GainNode)
     groupMixer2.connect(osc2GainNode)
 
-    // Sum into filter
-    osc1GainNode.connect(filter)
-    osc2GainNode.connect(filter)
+    // Sum into drive -> shaper -> filter
+    osc1GainNode.connect(preDriveGain)
+    osc2GainNode.connect(preDriveGain)
+    preDriveGain.connect(waveshaper)
+    waveshaper.connect(filter)
 
     // Continue chain
     filter.connect(envelopeGain)
@@ -413,7 +483,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     
     // Connect to main signal chain
     gainNode.connect(filterRef.current!)
-    gainNode.connect(delayRef.current!)
+    // Send to FX bus (for delay/drive etc.)
+    gainNode.connect(fxBusRef.current!)
     gainNode.connect(analyserRef.current!)
 
     // Handle glide if enabled
@@ -433,6 +504,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       oscillators2,
       osc1GainNode,
       osc2GainNode,
+      preDriveGain,
+      waveshaper,
       filter,
       gainNode,
       envelopeGain,
@@ -492,6 +565,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       setTimeout(() => {
         voice.oscillators1.forEach(osc => osc.disconnect())
         voice.oscillators2.forEach(osc => osc.disconnect())
+        try { voice.preDriveGain.disconnect() } catch {}
+        try { voice.waveshaper.disconnect() } catch {}
         voice.filter.disconnect()
         voice.gainNode.disconnect()
         voice.envelopeGain.disconnect()
@@ -558,6 +633,22 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       ...prev,
       filter: { ...prev.filter, ...updates }
     }))
+
+    // Apply updates to active voices immediately
+    voicesRef.current.forEach(voice => {
+      if (updates.type) {
+        voice.filter.type = updates.type
+      }
+      if (typeof updates.resonance === 'number') {
+        voice.filter.Q.value = updates.resonance
+      }
+      if (typeof updates.cutoff === 'number' || typeof updates.keyTracking === 'number') {
+        const baseCutoff = typeof updates.cutoff === 'number' ? updates.cutoff : audioState.filter.cutoff
+        const keyTrack = typeof updates.keyTracking === 'number' ? updates.keyTracking : audioState.filter.keyTracking
+        const eff = applyKeyTracking(baseCutoff, keyTrack, voice.baseFrequency)
+        voice.filter.frequency.value = eff
+      }
+    })
   }
 
   const updateEnvelope = (updates: Partial<AudioState['envelope']>) => {
@@ -597,6 +688,13 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       ...prev,
       chorus: { ...prev.chorus, ...updates }
     }))
+
+    // Apply FX drive updates immediately
+    if (typeof updates.drive === 'number') {
+      const drive = Math.max(0, Math.min(1, updates.drive))
+      if (fxPreDriveGainRef.current) fxPreDriveGainRef.current.gain.value = 1 + drive * 4
+      if (fxWaveshaperRef.current) fxWaveshaperRef.current.curve = createDriveCurve(drive)
+    }
   }
 
   const updateMacros = (updates: Partial<AudioState['macros']>) => {
@@ -647,7 +745,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           unison: { enabled: true, voices: 3, detune: 0.1 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
-        filter: { cutoff: 4000, resonance: 1, envelopeAmount: 0.5 },
+        filter: { type: 'lowpass' as BiquadFilterType, cutoff: 4000, resonance: 1, envelopeAmount: 0.5, keyTracking: 0.0 },
         envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
         filterEnvelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
         lfo: { 
@@ -658,7 +756,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         },
         gain: 0.3,
         delay: { time: 0.3, feedback: 0.3, mix: 0.3 },
-        chorus: { rate: 1.5, depth: 0.5, mix: 0.3 },
+        chorus: { rate: 1.5, depth: 0.5, mix: 0.3, drive: 0.0 },
         macros: { 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5 },
         performance: { maxPolyphony: 8, voiceStealing: true }
       }
@@ -676,7 +774,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           unison: { enabled: true, voices: 4, detune: 0.2 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
-        filter: { cutoff: 800, resonance: 1.5, envelopeAmount: 0.7 },
+        filter: { type: 'lowpass' as BiquadFilterType, cutoff: 800, resonance: 1.5, envelopeAmount: 0.7, keyTracking: 0.0 },
         envelope: { attack: 0.01, decay: 0.2, sustain: 0.8, release: 0.3 },
         filterEnvelope: { attack: 0.01, decay: 0.1, sustain: 0.6, release: 0.2 },
         lfo: { 
@@ -687,7 +785,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         },
         gain: 0.4,
         delay: { time: 0.25, feedback: 0.4, mix: 0.2 },
-        chorus: { rate: 2, depth: 0.6, mix: 0.4 },
+        chorus: { rate: 2, depth: 0.6, mix: 0.4, drive: 0.2 },
         macros: { 1: 0.7, 2: 0.3, 3: 0.8, 4: 0.2 },
         performance: { maxPolyphony: 6, voiceStealing: true }
       }
