@@ -39,7 +39,7 @@ export function FilterSection({
     <div className="synth-section">
       <div className="synth-section-title text-left">FILTER</div>
       <div className="flex items-center justify-center mb-2">
-        <FilterTypeButtons selectedType={type} onChange={(t) => onTypeChange?.(t)} />
+        <FilterTypeButtons selectedType={type as FilterTypeOption} onChange={(t) => onTypeChange?.(t as BiquadFilterType)} />
       </div>
       
       <div className="grid grid-cols-3 gap-1 mb-2">

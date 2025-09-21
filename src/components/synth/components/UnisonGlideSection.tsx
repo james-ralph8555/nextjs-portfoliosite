@@ -96,7 +96,7 @@ export function UnisonGlideSection({
                   <span className="text-[9px] font-mono text-gray-500">UNISON</span>
                   <button
                     onClick={toggleUnison}
-                    className={`synth-skeu-button text-[8px] ml-1 ${
+                    className={`synth-skeu-button text-[8px] ml-1 w-10 ${
                       unison.enabled ? 'bg-amber-600 text-white border-amber-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                     }`}
                   >
@@ -139,7 +139,7 @@ export function UnisonGlideSection({
                   <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
                   <button
                     onClick={toggleGlide}
-                    className={`synth-skeu-button text-[8px] ml-1 ${
+                    className={`synth-skeu-button text-[8px] ml-1 w-10 ${
                       glide.enabled ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                     }`}
                   >
@@ -195,7 +195,7 @@ export function UnisonGlideSection({
                 <span className="text-[9px] font-mono text-gray-500">UNISON</span>
                 <button
                   onClick={toggleUnison}
-                  className={`synth-skeu-button text-[8px] ${
+                  className={`synth-skeu-button text-[8px] w-10 ${
                     unison.enabled ? 'bg-amber-600 text-white border-amber-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
                 >
@@ -248,7 +248,7 @@ export function UnisonGlideSection({
                 <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
                 <button
                   onClick={toggleGlide}
-                  className={`synth-skeu-button text-[8px] ${
+                  className={`synth-skeu-button text-[8px] w-10 ${
                     glide.enabled ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
                 >
@@ -302,7 +302,7 @@ export function UnisonGlideSection({
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
                 <button
                   onClick={() => onArpeggiatorChange({ enabled: !arpeggiator.enabled })}
-                  className={`synth-skeu-button text-[8px] ${
+                  className={`synth-skeu-button text-[8px] w-10 ${
                     arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
                 >

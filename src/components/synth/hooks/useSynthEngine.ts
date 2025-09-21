@@ -795,12 +795,88 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
     // Update active oscillators
     voicesRef.current.forEach(voice => {
-      if (updates.waveform && audioState.oscillator.enabled1) {
+      // Handle oscillator enable/disable
+      if (typeof updates.enabled1 === 'boolean') {
+        if (updates.enabled1 && voice.oscillators1.length === 0) {
+          // Enable oscillator 1 - create new oscillators
+          const now = audioContext?.currentTime ?? 0
+          const newOscillators = createUnisonOscillatorsForWaveform(
+            audioContext!,
+            voice.baseFrequency,
+            next.unison.detune,
+            next.waveform,
+            (next.tune1 || 0) * 100
+          )
+          newOscillators.forEach(osc => {
+            osc.start(now)
+            osc.connect(voice.osc1GainNode)
+          })
+          voice.oscillators1 = newOscillators
+          
+          // Connect to the signal chain if mix > 0
+          if (next.mix1 > 0) {
+            voice.osc1GainNode.connect(voice.preDriveGain)
+          }
+        } else if (!updates.enabled1 && voice.oscillators1.length > 0) {
+          // Disable oscillator 1 - stop and disconnect existing oscillators
+          const now = audioContext?.currentTime ?? 0
+          voice.oscillators1.forEach(osc => {
+            try {
+              osc.stop(now)
+              osc.disconnect()
+            } catch (e) {
+              console.warn('Error stopping oscillator 1:', e)
+            }
+          })
+          voice.oscillators1 = []
+          voice.osc1GainNode.disconnect()
+        }
+      }
+
+      if (typeof updates.enabled2 === 'boolean') {
+        if (updates.enabled2 && voice.oscillators2.length === 0) {
+          // Enable oscillator 2 - create new oscillators
+          const now = audioContext?.currentTime ?? 0
+          const newOscillators = createUnisonOscillatorsForWaveform(
+            audioContext!,
+            voice.baseFrequency,
+            next.unison.detune,
+            next.waveform2 || next.waveform,
+            (next.tune2 || 0) * 100
+          )
+          newOscillators.forEach(osc => {
+            osc.start(now)
+            osc.connect(voice.osc2GainNode)
+          })
+          voice.oscillators2 = newOscillators
+          
+          // Connect to the signal chain if mix > 0
+          if (next.mix2 > 0) {
+            voice.osc2GainNode.connect(voice.preDriveGain)
+          }
+        } else if (!updates.enabled2 && voice.oscillators2.length > 0) {
+          // Disable oscillator 2 - stop and disconnect existing oscillators
+          const now = audioContext?.currentTime ?? 0
+          voice.oscillators2.forEach(osc => {
+            try {
+              osc.stop(now)
+              osc.disconnect()
+            } catch (e) {
+              console.warn('Error stopping oscillator 2:', e)
+            }
+          })
+          voice.oscillators2 = []
+          voice.osc2GainNode.disconnect()
+        }
+      }
+
+      // Handle other updates (waveform, mix, tune) only for enabled oscillators
+      if (updates.waveform && next.enabled1) {
         voice.oscillators1.forEach(osc => {
           osc.type = updates.waveform as OscillatorType
         })
       }
-      if (updates.waveform2 && audioState.oscillator.enabled2) {
+      if (updates.waveform2 && next.enabled2) {
         voice.oscillators2.forEach(osc => {
           osc.type = updates.waveform2 as OscillatorType
         })
@@ -808,18 +884,30 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       if (typeof (updates as any).mix1 === 'number') {
         const mix1 = Math.max(0, Math.min(1, (updates as any).mix1))
         voice.osc1GainNode.gain.value = mix1
+        // Handle connection/disconnection based on mix
+        if (mix1 > 0 && next.enabled1 && voice.oscillators1.length > 0) {
+          voice.osc1GainNode.connect(voice.preDriveGain)
+        } else if (mix1 === 0) {
+          voice.osc1GainNode.disconnect()
+        }
       }
       if (typeof (updates as any).mix2 === 'number') {
         const mix2 = Math.max(0, Math.min(1, (updates as any).mix2))
         voice.osc2GainNode.gain.value = mix2
+        // Handle connection/disconnection based on mix
+        if (mix2 > 0 && next.enabled2 && voice.oscillators2.length > 0) {
+          voice.osc2GainNode.connect(voice.preDriveGain)
+        } else if (mix2 === 0) {
+          voice.osc2GainNode.disconnect()
+        }
       }
-      if (tune1DeltaCents !== 0 && audioState.oscillator.enabled1) {
+      if (tune1DeltaCents !== 0 && next.enabled1) {
         const now = audioContext?.currentTime ?? 0
         voice.oscillators1.forEach(osc => {
           osc.detune.setValueAtTime(osc.detune.value + tune1DeltaCents, now)
         })
       }
-      if (tune2DeltaCents !== 0 && audioState.oscillator.enabled2) {
+      if (tune2DeltaCents !== 0 && next.enabled2) {
         const now = audioContext?.currentTime ?? 0
         voice.oscillators2.forEach(osc => {
           osc.detune.setValueAtTime(osc.detune.value + tune2DeltaCents, now)

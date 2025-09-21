@@ -117,7 +117,7 @@ export function WaveButtonGroup({
     <SynthButtonGroup
       options={options}
       selectedKey={selectedWaveform}
-      onChange={onWaveformChange}
+      onChange={onWaveformChange as (key: string) => void}
       size={size}
       className={`${size === 'sm' ? 'w-28' : 'w-32'} ${className}`}
       showIcons={showIcons || labelMode === 'icons-only'}

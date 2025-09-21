@@ -76,7 +76,7 @@ export function ArpeggiatorSection({
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
                 <button
                   onClick={toggleArpeggiator}
-                  className={`synth-skeu-button text-[8px] ml-1 ${
+                  className={`synth-skeu-button text-[8px] ml-1 w-10 ${
                     arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
                 >
@@ -180,7 +180,7 @@ export function ArpeggiatorSection({
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
                 <button
                   onClick={toggleArpeggiator}
-                  className={`synth-skeu-button text-[8px] ${
+                  className={`synth-skeu-button text-[8px] w-10 ${
                     arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
                 >

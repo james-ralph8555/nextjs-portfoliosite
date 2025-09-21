@@ -125,8 +125,8 @@ export function HybridSynth() {
             onMix2Change={(mix2) => updateOscillator({ mix2 } as any)}
             onTune1Change={(tune1) => updateOscillator({ tune1 } as any)}
             onTune2Change={(tune2) => updateOscillator({ tune2 } as any)}
-            onEnabled1Change={(enabled1) => updateOscillator({ enabled1 })}
-            onEnabled2Change={(enabled2) => updateOscillator({ enabled2 })}
+            onEnabled1Change={() => updateOscillator({ enabled1: !audioState.oscillator.enabled1 })}
+            onEnabled2Change={() => updateOscillator({ enabled2: !audioState.oscillator.enabled2 })}
             onUnisonChange={(unison) => updateOscillator({ unison: { ...audioState.oscillator.unison, ...unison } })}
             onGlideChange={(glide) => updateOscillator({ glide: { ...audioState.oscillator.glide, ...glide } })}
           />

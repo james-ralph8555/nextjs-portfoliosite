@@ -24,7 +24,7 @@ export function FilterTypeButtons({ selectedType, onChange, size = 'md', classNa
     <SynthButtonGroup
       options={TYPES}
       selectedKey={selectedType}
-      onChange={onChange}
+      onChange={onChange as (key: string) => void}
       size={size}
       className={`${size === 'sm' ? 'w-28' : 'w-32'} ${className}`}
     />

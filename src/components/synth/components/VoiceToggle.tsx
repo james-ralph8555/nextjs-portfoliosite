@@ -5,7 +5,7 @@ import { LED } from './LED'
 
 interface VoiceToggleProps {
   enabled: boolean
-  onToggle: () => void
+  onToggle: (enabled: boolean) => void
   voiceNumber: 1 | 2
   color?: 'amber' | 'cyan'
   className?: string
@@ -24,6 +24,7 @@ export function VoiceToggle({
     synth-skeu-button 
     text-[8px] 
     ml-1
+    w-10
     ${toggleColor}
     ${className}
   `.trim()
@@ -33,7 +34,7 @@ export function VoiceToggle({
       <LED active={enabled} color={color} size="xxs" />
       <span className="text-[9px] font-mono text-gray-500">V{voiceNumber}</span>
       <button
-        onClick={onToggle}
+        onClick={() => onToggle(!enabled)}
         className={buttonClasses}
       >
         {enabled ? 'ON' : 'OFF'}
