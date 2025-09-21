@@ -327,7 +327,7 @@ export function ScopesMasterSection({
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-100"
-                  style={{ width: formatLevel(Math.min(100, gain * 120)) }}
+                  style={{ width: formatLevel(gain) }}
                 />
               </div>
             </div>
@@ -338,7 +338,7 @@ export function ScopesMasterSection({
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-yellow-600 to-red-500 transition-all duration-100"
-                  style={{ width: delayTime > 0 ? formatLevel(Math.min(100, delayFeedback * 120)) : '0%' }}
+                  style={{ width: formatLevel(delayTime > 0 ? delayMix : 0) }}
                 />
               </div>
             </div>

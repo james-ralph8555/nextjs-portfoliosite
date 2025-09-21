@@ -28,9 +28,9 @@ export function ChorusSection({
         <LED active={mix > 0} color="amber" size="xs" />
       </div>
       
-      <div className="flex gap-4">
+      <div className="flex justify-between items-stretch">
         {/* Rate Knob */}
-        <div className="synth-knob-compact">
+        <div className="synth-knob-compact flex-1 flex flex-col items-center">
           <Knob
             value={rate}
             min={0.1}
@@ -44,7 +44,7 @@ export function ChorusSection({
         </div>
 
         {/* Depth Knob */}
-        <div className="synth-knob-compact">
+        <div className="synth-knob-compact flex-1 flex flex-col items-center">
           <Knob
             value={depth}
             min={0}
@@ -58,7 +58,7 @@ export function ChorusSection({
         </div>
 
         {/* Mix Knob */}
-        <div className="synth-knob-compact">
+        <div className="synth-knob-compact flex-1 flex flex-col items-center">
           <Knob
             value={mix}
             min={0}

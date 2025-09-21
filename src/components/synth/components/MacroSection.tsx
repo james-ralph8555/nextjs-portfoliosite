@@ -40,7 +40,7 @@ export function MacroSection({
                 min={0}
                 max={1}
                 step={0.01}
-                label={`M${num}`}
+                label=""
                 unit="%"
                 onChange={(v) => onMacroChange(parseInt(num), v)}
                 size="md"
@@ -50,11 +50,6 @@ export function MacroSection({
         ))}
       </div>
 
-      <div className="mt-3 p-2 bg-gray-900 rounded border border-gray-700">
-        <div className="text-[9px] font-mono text-gray-500 text-center">
-          Macros control multiple parameters simultaneously
-        </div>
-      </div>
     </div>
   )
 }
