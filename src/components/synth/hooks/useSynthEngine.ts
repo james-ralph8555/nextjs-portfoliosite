@@ -346,23 +346,24 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
   // Arpeggiator utilities
   const getArpNoteFrequencies = (baseNotes: string[]): string[] => {
-    const { octaveRange, pattern } = audioState.arpeggiator
+    const { octaveRange } = audioState.arpeggiator
     const allNotes: string[] = []
     
-    baseNotes.forEach(baseNote => {
+    // Sort base notes by frequency first
+    const sortedBaseNotes = [...baseNotes].sort((a, b) => {
+      const freqA = noteToFrequency(a)
+      const freqB = noteToFrequency(b)
+      return freqA - freqB
+    })
+    
+    // Generate notes across octave range
+    sortedBaseNotes.forEach(baseNote => {
       const [noteName, octave] = baseNote.split(/(\d+)/).filter(Boolean)
       const baseOctave = parseInt(octave)
       
       for (let oct = 0; oct < octaveRange; oct++) {
         allNotes.push(`${noteName}${baseOctave + oct}`)
       }
-    })
-    
-    // Sort notes for pattern generation
-    allNotes.sort((a, b) => {
-      const freqA = noteToFrequency(a)
-      const freqB = noteToFrequency(b)
-      return freqA - freqB
     })
     
     return allNotes
@@ -378,9 +379,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       case 'down':
         return [...sortedNotes].reverse()
       case 'upDown':
+        if (sortedNotes.length <= 1) return sortedNotes
         return [...sortedNotes, ...sortedNotes.slice(1, -1).reverse()]
       case 'random':
         const shuffled = [...sortedNotes]
+        // Fisher-Yates shuffle for better randomization
         for (let i = shuffled.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1))
           ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
@@ -404,23 +407,24 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       }
       
       const currentNote = arpNotesRef.current[arpCurrentIndexRef.current]
-      playNote(currentNote, 0.8)
+      
+      // Play note through arpeggiator (not direct)
+      _playNoteDirect(currentNote, 0.8)
       
       // Schedule note release
-      if (audioContext) {
-        setTimeout(() => {
-          releaseNote(currentNote)
-        }, interval * gate)
-      }
+      setTimeout(() => {
+        _releaseNoteDirect(currentNote)
+      }, interval * gate)
       
       // Move to next note
       arpCurrentIndexRef.current = (arpCurrentIndexRef.current + 1) % arpNotesRef.current.length
       
       // For random pattern, regenerate on each cycle
-      if (audioState.arpeggiator.pattern === 'random') {
+      if (audioState.arpeggiator.pattern === 'random' && arpCurrentIndexRef.current === 0) {
         arpNotesRef.current = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
       }
       
+      // Schedule next note
       arpTimerRef.current = window.setTimeout(playNextArpNote, interval)
     }
     
@@ -440,18 +444,23 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   }
 
   const updateArpeggiatorNotes = () => {
-    if (!audioState.arpeggiator.enabled || arpHeldNotesRef.current.size === 0) {
+    if (!audioState.arpeggiator.enabled) {
       stopArpeggiator()
       return
     }
     
-    // Only regenerate the notes if arpeggiator is already running
-    if (arpTimerRef.current !== null) {
-      // Generate new pattern without stopping the timer
-      arpNotesRef.current = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
-      arpCurrentIndexRef.current = 0
-    } else {
-      // Start arpeggiator if not already running
+    if (arpHeldNotesRef.current.size === 0) {
+      stopArpeggiator()
+      return
+    }
+    
+    // Generate new pattern and reset index
+    const newPattern = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
+    arpNotesRef.current = newPattern
+    arpCurrentIndexRef.current = 0
+    
+    // If arpeggiator is not running, start it
+    if (arpTimerRef.current === null) {
       startArpeggiator()
     }
   }
@@ -501,17 +510,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return oscillators
   }
 
-  const playNote = (note: string, velocity: number = 0.8) => {
+  const _playNoteDirect = (note: string, velocity: number = 0.8) => {
     if (!audioContext) return
-
-    // Handle arpeggiator mode
-    if (audioState.arpeggiator.enabled) {
-      arpHeldNotesRef.current.add(note)
-      if (!audioState.arpeggiator.hold || arpHeldNotesRef.current.size === 1) {
-        updateArpeggiatorNotes()
-      }
-      return
-    }
 
     const baseFrequency = noteToFrequency(note)
     const now = audioContext.currentTime
@@ -527,7 +527,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     // Check for voice stealing
     const voiceToSteal = getVoiceToSteal()
     if (voiceToSteal) {
-      releaseNote(voiceToSteal)
+      _releaseNoteDirect(voiceToSteal)
     }
 
     // Create voice ID
@@ -661,17 +661,22 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     setIsPlaying(true)
   }
 
-  const releaseNote = (note: string) => {
+  const playNote = (note: string, velocity: number = 0.8) => {
     if (!audioContext) return
 
     // Handle arpeggiator mode
     if (audioState.arpeggiator.enabled) {
-      arpHeldNotesRef.current.delete(note)
-      if (!audioState.arpeggiator.hold || arpHeldNotesRef.current.size === 0) {
-        updateArpeggiatorNotes()
-      }
+      arpHeldNotesRef.current.add(note)
+      // Always update arpeggiator notes when a new note is pressed
+      updateArpeggiatorNotes()
       return
     }
+
+    _playNoteDirect(note, velocity)
+  }
+
+  const _releaseNoteDirect = (note: string) => {
+    if (!audioContext) return
 
     // Find voice(s) for this note
     const voicesToRemove: string[] = []
@@ -728,6 +733,29 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         }
       }, Math.max(audioState.envelope.release, audioState.filterEnvelope.release) * 1000)
     })
+  }
+
+  const releaseNote = (note: string) => {
+    if (!audioContext) return
+
+    // Handle arpeggiator mode
+    if (audioState.arpeggiator.enabled) {
+      arpHeldNotesRef.current.delete(note)
+      
+      // If hold is off, update arpeggiator immediately
+      if (!audioState.arpeggiator.hold) {
+        updateArpeggiatorNotes()
+      }
+      // If hold is on but no notes remain, stop arpeggiator
+      else if (arpHeldNotesRef.current.size === 0) {
+        stopArpeggiator()
+      }
+      // If hold is on and notes remain, do nothing (keep playing)
+      
+      return
+    }
+
+    _releaseNoteDirect(note)
   }
 
   const updateOscillator = (updates: Partial<AudioState['oscillator']>) => {
@@ -846,22 +874,19 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   }
 
   const updateArpeggiator = (updates: Partial<AudioState['arpeggiator']>) => {
-    const prev = audioState
-    const next = { ...prev.arpeggiator, ...updates }
+    const prevArpState = audioState.arpeggiator
+    const nextArpState = { ...prevArpState, ...updates }
     
     setAudioState(prev => ({
       ...prev,
-      arpeggiator: next
+      arpeggiator: nextArpState
     }))
 
     // Handle arpeggiator state changes
     if (typeof updates.enabled === 'boolean') {
       if (!updates.enabled) {
         stopArpeggiator()
-        // Release all held notes
-        arpHeldNotesRef.current.forEach(note => {
-          releaseNote(note)
-        })
+        // Clear held notes
         arpHeldNotesRef.current.clear()
       } else if (updates.enabled && arpHeldNotesRef.current.size > 0) {
         updateArpeggiatorNotes()
@@ -871,7 +896,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     // Update running arpeggiator if parameters changed
     if (updates.pattern !== undefined || updates.rate !== undefined || 
         updates.octaveRange !== undefined || updates.gate !== undefined) {
-      if (audioState.arpeggiator.enabled && arpHeldNotesRef.current.size > 0) {
+      if (nextArpState.enabled && arpHeldNotesRef.current.size > 0) {
         updateArpeggiatorNotes()
       }
     }
