@@ -1,9 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
 import { WaveButtonGroup, type WaveformType } from './WaveButton'
+import { VoiceToggle } from './VoiceToggle'
 
 interface OscillatorSectionProps {
   waveform: OscillatorType
@@ -12,6 +13,8 @@ interface OscillatorSectionProps {
   mix2: number
   tune1: number
   tune2: number
+  enabled1: boolean
+  enabled2: boolean
   unison: {
     enabled: boolean
     voices: number
@@ -28,6 +31,8 @@ interface OscillatorSectionProps {
   onMix2Change: (mix: number) => void
   onTune1Change: (tune: number) => void
   onTune2Change: (tune: number) => void
+  onEnabled1Change: (enabled: boolean) => void
+  onEnabled2Change: (enabled: boolean) => void
   onUnisonChange: (unison: Partial<{ enabled: boolean; voices: number; detune: number }>) => void
   onGlideChange: (glide: Partial<{ enabled: boolean; time: number; legato: boolean }>) => void
 }
@@ -41,23 +46,57 @@ export function OscillatorSection({
   mix2,
   tune1,
   tune2,
+  enabled1,
+  enabled2,
   unison,
   glide,
   onWaveformChange,
   onWaveform2Change,
   onMix1Change,
-  onMix2Change
-  ,onTune1Change,
-  onTune2Change
+  onMix2Change,
+  onTune1Change,
+  onTune2Change,
+  onEnabled1Change,
+  onEnabled2Change
 }: OscillatorSectionProps) {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
   return (
     <div className="synth-section">
       
       {/* Two oscillator blocks stacked vertically */}
       <div className="flex flex-col gap-2">
         {/* OSC 1 */}
-        <div className="synth-subsection-desktop">
+        <div className={isMobile ? "synth-subsection-mobile" : "synth-subsection-desktop"}>
           <div className="flex flex-col items-center gap-2">
+            {/* Voice toggle above waveform on mobile, integrated on desktop */}
+            {isMobile ? (
+              <VoiceToggle
+                enabled={enabled1}
+                onToggle={onEnabled1Change}
+                voiceNumber={1}
+                color="amber"
+              />
+            ) : (
+              <div className="flex justify-center w-full">
+                <VoiceToggle
+                  enabled={enabled1}
+                  onToggle={onEnabled1Change}
+                  voiceNumber={1}
+                  color="amber"
+                />
+              </div>
+            )}
+            
             <WaveButtonGroup
               waveforms={WAVEFORMS}
               selectedWaveform={waveform as WaveformType}
@@ -96,9 +135,28 @@ export function OscillatorSection({
         </div>
 
         {/* OSC 2 */}
-        <div className="synth-subsection-desktop">
+        <div className={isMobile ? "synth-subsection-mobile" : "synth-subsection-desktop"}>
           <div className="flex flex-col items-center gap-2">
-              <WaveButtonGroup
+            {/* Voice toggle above waveform on mobile, integrated on desktop */}
+            {isMobile ? (
+              <VoiceToggle
+                enabled={enabled2}
+                onToggle={onEnabled2Change}
+                voiceNumber={2}
+                color="cyan"
+              />
+            ) : (
+              <div className="flex justify-center w-full">
+                <VoiceToggle
+                  enabled={enabled2}
+                  onToggle={onEnabled2Change}
+                  voiceNumber={2}
+                  color="cyan"
+                />
+              </div>
+            )}
+            
+            <WaveButtonGroup
               waveforms={WAVEFORMS}
               selectedWaveform={waveform2 as WaveformType}
               onWaveformChange={onWaveform2Change}

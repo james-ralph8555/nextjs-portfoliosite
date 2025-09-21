@@ -8,6 +8,8 @@ export interface AudioState {
     mix2: number
     tune1?: number // semitones
     tune2?: number // semitones
+    enabled1: boolean
+    enabled2: boolean
     unison: {
       enabled: boolean
       voices: number
@@ -109,6 +111,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       mix2: 0.5,
       tune1: 0,
       tune2: 0,
+      enabled1: true,
+      enabled2: false,
       unison: { enabled: true, voices: 3, detune: 0.1 },
       glide: { enabled: false, time: 0.1, legato: true }
     },
@@ -533,21 +537,26 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     // Create voice ID
     const voiceId = `${note}-${Date.now()}-${Math.random()}`
 
-    // Create voice nodes
-    const oscillators1 = createUnisonOscillatorsForWaveform(
-      audioContext,
-      targetFrequency,
-      audioState.oscillator.unison.detune,
-      audioState.oscillator.waveform,
-      (audioState.oscillator.tune1 || 0) * 100
-    )
-    const oscillators2 = createUnisonOscillatorsForWaveform(
-      audioContext,
-      targetFrequency,
-      audioState.oscillator.unison.detune,
-      audioState.oscillator.waveform2 || audioState.oscillator.waveform,
-      (audioState.oscillator.tune2 || 0) * 100
-    )
+    // Create voice nodes - only create oscillators if enabled
+    const oscillators1 = audioState.oscillator.enabled1 
+      ? createUnisonOscillatorsForWaveform(
+          audioContext,
+          targetFrequency,
+          audioState.oscillator.unison.detune,
+          audioState.oscillator.waveform,
+          (audioState.oscillator.tune1 || 0) * 100
+        )
+      : []
+    
+    const oscillators2 = audioState.oscillator.enabled2 
+      ? createUnisonOscillatorsForWaveform(
+          audioContext,
+          targetFrequency,
+          audioState.oscillator.unison.detune,
+          audioState.oscillator.waveform2 || audioState.oscillator.waveform,
+          (audioState.oscillator.tune2 || 0) * 100
+        )
+      : []
     const preDriveGain = audioContext.createGain()
     const waveshaper = audioContext.createWaveShaper()
     const filter = audioContext.createBiquadFilter()
@@ -604,12 +613,16 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     osc1GainNode.gain.value = mix1
     osc2GainNode.gain.value = mix2
 
-    groupMixer1.connect(osc1GainNode)
-    groupMixer2.connect(osc2GainNode)
-
-    // Sum into drive -> shaper -> filter
-    osc1GainNode.connect(preDriveGain)
-    osc2GainNode.connect(preDriveGain)
+    // Only connect enabled oscillators
+    if (audioState.oscillator.enabled1 && oscillators1.length > 0) {
+      groupMixer1.connect(osc1GainNode)
+      osc1GainNode.connect(preDriveGain)
+    }
+    
+    if (audioState.oscillator.enabled2 && oscillators2.length > 0) {
+      groupMixer2.connect(osc2GainNode)
+      osc2GainNode.connect(preDriveGain)
+    }
     preDriveGain.connect(waveshaper)
     waveshaper.connect(filter)
 
@@ -628,12 +641,21 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
     // Handle glide if enabled
     if (audioState.oscillator.glide.enabled && lastNoteRef.current && targetFrequency !== baseFrequency) {
-      const allOscs = [...oscillators1, ...oscillators2]
-      allOscs.forEach(osc => {
-        osc.frequency.cancelScheduledValues(now)
-        osc.frequency.setValueAtTime(targetFrequency, now)
-        osc.frequency.exponentialRampToValueAtTime(baseFrequency, now + audioState.oscillator.glide.time)
-      })
+      // Apply glide to enabled oscillators only
+      if (audioState.oscillator.enabled1) {
+        oscillators1.forEach(osc => {
+          osc.frequency.cancelScheduledValues(now)
+          osc.frequency.setValueAtTime(targetFrequency, now)
+          osc.frequency.exponentialRampToValueAtTime(baseFrequency, now + audioState.oscillator.glide.time)
+        })
+      }
+      if (audioState.oscillator.enabled2) {
+        oscillators2.forEach(osc => {
+          osc.frequency.cancelScheduledValues(now)
+          osc.frequency.setValueAtTime(targetFrequency, now)
+          osc.frequency.exponentialRampToValueAtTime(baseFrequency, now + audioState.oscillator.glide.time)
+        })
+      }
     }
 
     // Store voice
@@ -709,8 +731,10 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       voice.filterEnvelopeGain.gain.linearRampToValueAtTime(0, now + audioState.filterEnvelope.release)
 
       // Stop oscillators after release
-      const allOscs = [...voice.oscillators1, ...voice.oscillators2]
-      allOscs.forEach(osc => {
+      voice.oscillators1.forEach(osc => {
+        osc.stop(now + Math.max(audioState.envelope.release, audioState.filterEnvelope.release))
+      })
+      voice.oscillators2.forEach(osc => {
         osc.stop(now + Math.max(audioState.envelope.release, audioState.filterEnvelope.release))
       })
 
@@ -771,12 +795,12 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
     // Update active oscillators
     voicesRef.current.forEach(voice => {
-      if (updates.waveform) {
+      if (updates.waveform && audioState.oscillator.enabled1) {
         voice.oscillators1.forEach(osc => {
           osc.type = updates.waveform as OscillatorType
         })
       }
-      if (updates.waveform2) {
+      if (updates.waveform2 && audioState.oscillator.enabled2) {
         voice.oscillators2.forEach(osc => {
           osc.type = updates.waveform2 as OscillatorType
         })
@@ -789,13 +813,13 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         const mix2 = Math.max(0, Math.min(1, (updates as any).mix2))
         voice.osc2GainNode.gain.value = mix2
       }
-      if (tune1DeltaCents !== 0) {
+      if (tune1DeltaCents !== 0 && audioState.oscillator.enabled1) {
         const now = audioContext?.currentTime ?? 0
         voice.oscillators1.forEach(osc => {
           osc.detune.setValueAtTime(osc.detune.value + tune1DeltaCents, now)
         })
       }
-      if (tune2DeltaCents !== 0) {
+      if (tune2DeltaCents !== 0 && audioState.oscillator.enabled2) {
         const now = audioContext?.currentTime ?? 0
         voice.oscillators2.forEach(osc => {
           osc.detune.setValueAtTime(osc.detune.value + tune2DeltaCents, now)
@@ -947,6 +971,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           mix2: 0.5,
           tune1: 0,
           tune2: 0,
+          enabled1: true,
+          enabled2: false,
           unison: { enabled: true, voices: 3, detune: 0.1 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
@@ -976,6 +1002,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           mix2: 0.6,
           tune1: 0,
           tune2: 0,
+          enabled1: true,
+          enabled2: true,
           unison: { enabled: true, voices: 4, detune: 0.2 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
