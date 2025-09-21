@@ -86,35 +86,40 @@ export function EnvelopeSection({
         </div>
       </div>
 
-      {/* Envelope Visualization */}
-      <div className="synth-visualizer">
-        <svg width="100%" height="100%" viewBox="0 0 240 90" className="overflow-visible">
-          {/* Grid */}
+      {/* Envelope Visualization – styled like scopes */}
+      <div className="relative bezel">
+        <svg
+          width={240}
+          height={120}
+          viewBox="0 0 240 90"
+          className="w-full h-24 bg-black border border-gray-700 rounded overflow-visible"
+        >
+          {/* Subtle grid */}
           <defs>
             <pattern id="grid-compact" width="20" height="8" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 8" fill="none" stroke="#1a1a1a" strokeWidth="0.5"/>
+              <path d="M 20 0 L 0 0 0 8" fill="none" stroke="#1f2937" strokeWidth="0.5"/>
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid-compact)" />
-          
+
           {/* Axes */}
-          <line x1="0" y1="75" x2="240" y2="75" stroke="#333" strokeWidth="1" />
-          <line x1="0" y1="15" x2="0" y2="75" stroke="#333" strokeWidth="1" />
-          
+          <line x1="0" y1="75" x2="240" y2="75" stroke="#374151" strokeWidth="1" />
+          <line x1="0" y1="15" x2="0" y2="75" stroke="#374151" strokeWidth="1" />
+
           {/* ADSR Envelope Path */}
-          <path 
+          <path
             d={generateEnvelopePath(attack, decay, sustain, release)}
-            stroke="#FF00FF" 
-            strokeWidth="1.5" 
+            stroke="#22d3ee"
+            strokeWidth="1.5"
             fill="none"
-            className="opacity-80"
+            className="opacity-90"
           />
-          
+
           {/* Phase markers */}
-          <circle cx="0" cy="70" r="2" fill="#FF00FF" />
-          <circle cx={Math.min(attack * 40, 80)} cy="20" r="2" fill="#FF00FF" />
-          <circle cx={Math.min((attack + decay) * 40, 120)} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
-          <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
+          <circle cx="0" cy="70" r="2" fill="#22d3ee" />
+          <circle cx={Math.min(attack * 40, 80)} cy="20" r="2" fill="#22d3ee" />
+          <circle cx={Math.min((attack + decay) * 40, 120)} cy={70 - sustain * 50} r="2" fill="#22d3ee" />
+          <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={70 - sustain * 50} r="2" fill="#22d3ee" />
           {(() => {
             // Keep marker logic in sync with path endpoint so they never detach
             const scaleX = 40
@@ -122,16 +127,16 @@ export function EnvelopeSection({
             const sustainDuration = 30
             const viewWidth = 240
             const releaseEndX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
-            return <circle cx={releaseEndX} cy="70" r="2" fill="#FF00FF" />
+            return <circle cx={releaseEndX} cy="70" r="2" fill="#22d3ee" />
           })()}
-          
+
           {/* Labels */}
-          <text x="5" y="17" fill="#666" fontSize="7" fontFamily="monospace">1.0</text>
-          <text x="5" y="77" fill="#666" fontSize="7" fontFamily="monospace">0.0</text>
-          <text x="8" y="77" fill="#666" fontSize="7" fontFamily="monospace">Atk</text>
-          <text x={Math.min(attack * 40, 80) - 5} y="77" fill="#666" fontSize="7" fontFamily="monospace">Dec</text>
-          <text x={Math.min((attack + decay) * 40, 120) - 5} y="77" fill="#666" fontSize="7" fontFamily="monospace">Sus</text>
-          <text x={Math.min((attack + decay) * 40, 120) + 25} y="77" fill="#666" fontSize="7" fontFamily="monospace">Rel</text>
+          <text x="5" y="17" fill="#6b7280" fontSize="7" fontFamily="monospace">1.0</text>
+          <text x="5" y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">0.0</text>
+          <text x="8" y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Atk</text>
+          <text x={Math.min(attack * 40, 80) - 5} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Dec</text>
+          <text x={Math.min((attack + decay) * 40, 120) - 5} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Sus</text>
+          <text x={Math.min((attack + decay) * 40, 120) + 25} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Rel</text>
         </svg>
       </div>
     </div>

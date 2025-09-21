@@ -79,35 +79,40 @@ export function FilterSection({
         </div>
       </div>
 
-      {/* Filter Response Visualization */}
-      <div className="synth-visualizer">
-        <svg width="100%" height="100%" viewBox="0 0 200 60" className="overflow-visible">
-          {/* Grid lines */}
-          <line x1="0" y1="45" x2="200" y2="45" stroke="#333" strokeWidth="1" />
-          <line x1="0" y1="15" x2="200" y2="15" stroke="#1a1a1a" strokeWidth="0.5" />
-          
+      {/* Filter Response Visualization – styled like scopes */}
+      <div className="relative bezel">
+        <svg
+          width={200}
+          height={120}
+          viewBox="0 0 200 60"
+          className="w-full h-24 bg-black border border-gray-700 rounded overflow-visible"
+        >
+          {/* Axes */}
+          <line x1="0" y1="45" x2="200" y2="45" stroke="#374151" strokeWidth="1" />
+          <line x1="0" y1="15" x2="200" y2="15" stroke="#1f2937" strokeWidth="0.5" />
+
           {/* Frequency labels */}
-          <text x="5" y="55" fill="#666" fontSize="8" fontFamily="monospace">20Hz</text>
-          <text x="85" y="55" fill="#666" fontSize="8" fontFamily="monospace">1k</text>
-          <text x="165" y="55" fill="#666" fontSize="8" fontFamily="monospace">20k</text>
-          
+          <text x="5" y="58" fill="#6b7280" fontSize="8" fontFamily="monospace">20Hz</text>
+          <text x="85" y="58" fill="#6b7280" fontSize="8" fontFamily="monospace">1k</text>
+          <text x="165" y="58" fill="#6b7280" fontSize="8" fontFamily="monospace">20k</text>
+
           {/* Filter curve */}
-          <path 
+          <path
             d={filterCurvePath}
-            stroke="#00FFFF" 
-            strokeWidth="2" 
+            stroke="#22d3ee"
+            strokeWidth="2"
             fill="none"
-            className="opacity-80"
+            className="opacity-90"
           />
-          
+
           {/* Cutoff indicator */}
-          <line 
-            x1={cutoffXPosition} 
-            y1="15" 
-            x2={cutoffXPosition} 
-            y2="45" 
-            stroke="#00FFFF" 
-            strokeWidth="1" 
+          <line
+            x1={cutoffXPosition}
+            y1="15"
+            x2={cutoffXPosition}
+            y2="45"
+            stroke="#22d3ee"
+            strokeWidth="1"
             strokeDasharray="2,2"
             opacity="0.5"
           />
