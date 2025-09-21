@@ -1,0 +1,9 @@
+/* === SYNTHESIZER COMPONENT STYLES === */
+/* Component-specific styles for synthesizer interface elements */
+
+@tailwind components;
+
+@layer components {
+  /* Component styles are now consolidated in synth-base.css */
+  /* This file can be used for future component-specific extensions */
+}
