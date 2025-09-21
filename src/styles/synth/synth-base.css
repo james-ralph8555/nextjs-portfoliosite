@@ -31,6 +31,10 @@
     @apply flex flex-col items-center space-y-1;
   }
 
+  .synth-knob-mini {
+    @apply flex flex-col items-center;
+  }
+
   .synth-knob-label {
     @apply text-[10px] font-mono text-gray-500 uppercase tracking-wider;
   }

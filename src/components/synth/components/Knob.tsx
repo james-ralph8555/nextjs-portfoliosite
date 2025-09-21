@@ -13,6 +13,7 @@ interface KnobProps {
   color?: 'green' | 'amber' | 'red' | 'cyan' | 'magenta' | 'purple'
   onChange: (value: number) => void
   size?: 'xs' | 'sm' | 'md' | 'lg'
+  showValue?: boolean
 }
 
 export function Knob({
@@ -24,7 +25,8 @@ export function Knob({
   unit = '',
   color = 'green',
   onChange,
-  size = 'md'
+  size = 'md',
+  showValue = true
 }: KnobProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [isLoaded, setIsLoaded] = useState(false)
@@ -268,9 +270,11 @@ export function Knob({
       </div>
 
       {/* Value display */}
-      <div className={`synth-knob-value text-gray-400`}>
-        {displayValue}
-      </div>
+      {showValue && (
+        <div className={`synth-knob-value text-gray-400`}>
+          {displayValue}
+        </div>
+      )}
     </div>
   )
 }

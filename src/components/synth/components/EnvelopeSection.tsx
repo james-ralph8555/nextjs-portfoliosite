@@ -26,39 +26,53 @@ export function EnvelopeSection({
 }: EnvelopeSectionProps) {
   return (
     <div className="synth-section">
-      <div className="synth-section-title">ENVELOPE</div>
+      <div className="synth-section-title flex items-center justify-between">
+        <span>ENVELOPE</span>
+        <div className="flex items-center space-x-2">
+          <div className="
+            led led--amber
+            w-1.5 h-1.5 
+            bg-amber-400 
+            shadow-lg shadow-amber-400/50
+            rounded-full 
+            transition-all duration-300
+            
+            opacity-100
+          " data-on="true"></div>
+        </div>
+      </div>
       
       {/* ADSR Controls Grid */}
-      <div className="grid grid-cols-4 gap-1 mb-2">
-        <div className="synth-knob-compact">
+      <div className="grid grid-cols-4 gap-1 mb-1">
+        <div className="synth-knob-mini">
           <Knob
             value={attack}
             min={0.001}
             max={2}
             step={0.001}
             label="Atk"
-            unit="s"
             color="magenta"
             onChange={onAttackChange}
-            size="sm"
+            size="xs"
+            showValue={false}
           />
         </div>
         
-        <div className="synth-knob-compact">
+        <div className="synth-knob-mini">
           <Knob
             value={decay}
             min={0.001}
             max={2}
             step={0.001}
             label="Dec"
-            unit="s"
             color="magenta"
             onChange={onDecayChange}
-            size="sm"
+            size="xs"
+            showValue={false}
           />
         </div>
         
-        <div className="synth-knob-compact">
+        <div className="synth-knob-mini">
           <Knob
             value={sustain}
             min={0}
@@ -67,21 +81,22 @@ export function EnvelopeSection({
             label="Sus"
             color="magenta"
             onChange={onSustainChange}
-            size="sm"
+            size="xs"
+            showValue={false}
           />
         </div>
         
-        <div className="synth-knob-compact">
+        <div className="synth-knob-mini">
           <Knob
             value={release}
             min={0.001}
             max={5}
             step={0.001}
             label="Rel"
-            unit="s"
             color="magenta"
             onChange={onReleaseChange}
-            size="sm"
+            size="xs"
+            showValue={false}
           />
         </div>
       </div>
@@ -90,21 +105,20 @@ export function EnvelopeSection({
       <div className="relative bezel">
         <svg
           width={240}
-          height={120}
-          viewBox="0 0 240 90"
-          className="w-full h-24 bg-black border border-gray-700 rounded overflow-visible"
+          height={100}
+          viewBox="0 0 240 75"
+          className="w-full h-20 bg-black border border-gray-700 rounded overflow-visible"
         >
           {/* Subtle grid */}
           <defs>
-            <pattern id="grid-compact" width="20" height="8" patternUnits="userSpaceOnUse">
-              <path d="M 20 0 L 0 0 0 8" fill="none" stroke="#1f2937" strokeWidth="0.5"/>
+            <pattern id="grid-compact" width="20" height="6" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 6" fill="none" stroke="#1f2937" strokeWidth="0.5"/>
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#grid-compact)" />
 
           {/* Axes */}
-          <line x1="0" y1="75" x2="240" y2="75" stroke="#374151" strokeWidth="1" />
-          <line x1="0" y1="15" x2="0" y2="75" stroke="#374151" strokeWidth="1" />
+          <line x1="0" y1="60" x2="240" y2="60" stroke="#374151" strokeWidth="1" />
+          <line x1="0" y1="15" x2="0" y2="60" stroke="#374151" strokeWidth="1" />
 
           {/* ADSR Envelope Path */}
           <path
@@ -116,27 +130,31 @@ export function EnvelopeSection({
           />
 
           {/* Phase markers */}
-          <circle cx="0" cy="70" r="2" fill="#22d3ee" />
-          <circle cx={Math.min(attack * 40, 80)} cy="20" r="2" fill="#22d3ee" />
-          <circle cx={Math.min((attack + decay) * 40, 120)} cy={70 - sustain * 50} r="2" fill="#22d3ee" />
-          <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={70 - sustain * 50} r="2" fill="#22d3ee" />
+          <circle cx="0" cy="60" r="2" fill="#22d3ee" />
+          <circle cx={Math.min(attack * 40, 80)} cy="15" r="2" fill="#22d3ee" />
+          <circle cx={Math.min((attack + decay) * 40, 120)} cy={60 - sustain * 45} r="2" fill="#22d3ee" />
+          <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={60 - sustain * 45} r="2" fill="#22d3ee" />
           {(() => {
             // Keep marker logic in sync with path endpoint so they never detach
-            const scaleX = 40
-            const decayX = Math.min((attack + decay) * scaleX, 120)
-            const sustainDuration = 30
-            const viewWidth = 240
-            const releaseEndX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
-            return <circle cx={releaseEndX} cy="70" r="2" fill="#22d3ee" />
+            const scaleX = 40 // Horizontal scale factor
+            const scaleY = 40 // Vertical scale factor for amplitude
+            const viewWidth = 240 // Matches SVG viewBox width
+
+            const attackX = Math.min(attack * scaleX, 80) // Cap at 80 to leave room
+            const decayX = Math.min((attack + decay) * scaleX, 120) // Cap at 120
+            const sustainY = 60 - (sustain * scaleY) // Base at 60, scale down
+            const sustainDuration = 30 // Fixed sustain duration for display
+            // Ensure the release segment reaches the right edge at high values
+            const releaseX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
+            return <circle cx={releaseX} cy="60" r="2" fill="#22d3ee" />
           })()}
 
-          {/* Labels */}
-          <text x="5" y="17" fill="#6b7280" fontSize="7" fontFamily="monospace">1.0</text>
-          <text x="5" y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">0.0</text>
-          <text x="8" y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Atk</text>
-          <text x={Math.min(attack * 40, 80) - 5} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Dec</text>
-          <text x={Math.min((attack + decay) * 40, 120) - 5} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Sus</text>
-          <text x={Math.min((attack + decay) * 40, 120) + 25} y="77" fill="#6b7280" fontSize="7" fontFamily="monospace">Rel</text>
+          {/* Value labels on graph */}
+          <text x={Math.min(attack * 40, 80) - 10} y="75" fill="#22d3ee" fontSize="7" fontFamily="monospace" fontWeight="bold">A: {attack.toFixed(2)}s</text>
+          <text x={Math.min(attack * 40, 80) - 10} y="12" fill="#22d3ee" fontSize="7" fontFamily="monospace" fontWeight="bold">D: {decay.toFixed(2)}s</text>
+          <text x={Math.min((attack + decay) * 40, 120) - 8} y={50 - sustain * 40 - 3} fill="#22d3ee" fontSize="7" fontFamily="monospace" fontWeight="bold">S: {sustain.toFixed(2)}</text>
+          <text x={Math.min((attack + decay) * 40, 120) + 25} y="12" fill="#22d3ee" fontSize="7" fontFamily="monospace" fontWeight="bold">R: {release.toFixed(2)}s</text>
+
         </svg>
       </div>
     </div>
@@ -146,15 +164,15 @@ export function EnvelopeSection({
 // Helper function to generate ADSR envelope path
 function generateEnvelopePath(attack: number, decay: number, sustain: number, release: number): string {
   const scaleX = 40 // Horizontal scale factor
-  const scaleY = 50 // Vertical scale factor for amplitude
+  const scaleY = 45 // Vertical scale factor for amplitude
   const viewWidth = 240 // Matches SVG viewBox width
 
   const attackX = Math.min(attack * scaleX, 80) // Cap at 80 to leave room
   const decayX = Math.min((attack + decay) * scaleX, 120) // Cap at 120
-  const sustainY = 70 - (sustain * scaleY) // Base at 70, scale down
+  const sustainY = 60 - (sustain * scaleY) // Base at 60, scale down
   const sustainDuration = 30 // Fixed sustain duration for display
   // Ensure the release segment reaches the right edge at high values
   const releaseX = Math.min(decayX + sustainDuration + (release * scaleX), viewWidth)
 
-  return `M 0 70 L ${attackX} 20 L ${decayX} ${sustainY} L ${decayX + sustainDuration} ${sustainY} L ${releaseX} 70`
+  return `M 0 60 L ${attackX} 15 L ${decayX} ${sustainY} L ${decayX + sustainDuration} ${sustainY} L ${releaseX} 60`
 }
