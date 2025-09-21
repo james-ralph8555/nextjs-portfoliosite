@@ -31,7 +31,7 @@ export function MacroSection({
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {Object.entries(macros).map(([num, value]) => (
           <div key={num} className="synth-knob-compact">
-            <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
+            <div className="synth-text-sm synth-mb-1 text-center synth-var-ink-1">
               {MACRO_LABELS[parseInt(num) as keyof typeof MACRO_LABELS]}
             </div>
             <div className="flex justify-center">

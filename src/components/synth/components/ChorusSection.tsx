@@ -35,7 +35,7 @@ export function ChorusSection({
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {/* Rate Knob */}
         <div className="synth-knob-compact">
-          <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
+          <div className="synth-text-sm synth-mb-1 text-center synth-var-ink-1">
             RATE
           </div>
           <div className="flex justify-center">
@@ -54,7 +54,7 @@ export function ChorusSection({
 
         {/* Depth Knob */}
         <div className="synth-knob-compact">
-          <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
+          <div className="synth-text-sm synth-mb-1 text-center synth-var-ink-1">
             DEPTH
           </div>
           <div className="flex justify-center">
@@ -73,7 +73,7 @@ export function ChorusSection({
 
         {/* Mix Knob */}
         <div className="synth-knob-compact">
-          <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
+          <div className="synth-text-sm synth-mb-1 text-center synth-var-ink-1">
             MIX
           </div>
           <div className="flex justify-center">
@@ -92,7 +92,7 @@ export function ChorusSection({
 
         {/* Drive Knob */}
         <div className="synth-knob-compact">
-          <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
+          <div className="synth-text-sm synth-mb-1 text-center synth-var-ink-1">
             DRIVE
           </div>
           <div className="flex justify-center">

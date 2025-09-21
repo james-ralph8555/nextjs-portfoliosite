@@ -96,10 +96,10 @@ export function MasterSection({
       <div className="grid grid-cols-2 gap-1">
         {/* Input Level */}
         <div className="bg-black border border-gray-700 rounded p-1">
-          <div className="text-[8px] font-mono mb-1" style={{ color: 'var(--ink-1)' }}>IN</div>
+          <div className="synth-text-xs synth-mb-1 synth-var-ink-1">IN</div>
           <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-100"
+              className="h-full bg-gradient-to-r from-green-600 to-green-400 synth-transition-fast synth-width-dynamic"
               style={{ width: formatLevel(Math.min(100, gain * 120)) }}
             />
           </div>
@@ -107,10 +107,10 @@ export function MasterSection({
         
         {/* Delay Level */}
         <div className="bg-black border border-gray-700 rounded p-1">
-          <div className="text-[8px] font-mono mb-1" style={{ color: 'var(--ink-1)' }}>DLY</div>
+          <div className="synth-text-xs synth-mb-1 synth-var-ink-1">DLY</div>
           <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-yellow-600 to-red-500 transition-all duration-100"
+              className="h-full bg-gradient-to-r from-yellow-600 to-red-500 synth-transition-fast synth-width-dynamic"
               style={{ width: delayTime > 0 ? formatLevel(Math.min(100, delayFeedback * 120)) : '0%' }}
             />
           </div>
