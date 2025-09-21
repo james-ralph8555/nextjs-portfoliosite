@@ -64,7 +64,7 @@ export function OscillatorSection({
               onWaveformChange={onWaveformChange}
               labelMode="abbreviated"
               showIcons={true}
-              size="md"
+              size="sm"
             />
             <div className="grid grid-cols-2 gap-2 w-full place-items-center">
               <div className="synth-knob-compact">
@@ -98,13 +98,13 @@ export function OscillatorSection({
         {/* OSC 2 */}
         <div className="synth-subsection-desktop">
           <div className="flex flex-col items-center gap-2">
-            <WaveButtonGroup
+              <WaveButtonGroup
               waveforms={WAVEFORMS}
               selectedWaveform={waveform2 as WaveformType}
               onWaveformChange={onWaveform2Change}
               labelMode="abbreviated"
               showIcons={true}
-              size="md"
+              size="sm"
             />
             <div className="grid grid-cols-2 gap-2 w-full place-items-center">
               <div className="synth-knob-compact">

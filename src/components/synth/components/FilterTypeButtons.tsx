@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import { SynthButtonGroup } from './SynthButtonGroup'
 
 export type FilterTypeOption = 'lowpass' | 'highpass' | 'bandpass' | 'notch'
 
@@ -19,40 +20,14 @@ const TYPES: { key: FilterTypeOption; label: string }[] = [
 ]
 
 export function FilterTypeButtons({ selectedType, onChange, size = 'md', className = '' }: Props) {
-  const sizeClasses = {
-    sm: 'h-8 text-[9px]',
-    md: 'h-10 text-[10px]'
-  }
-
   return (
-    <div className={`flex ${size === 'sm' ? 'w-40' : 'w-48'} ${className}`}>
-      {TYPES.map((t, index) => {
-        const isSelected = selectedType === t.key
-        const isFirst = index === 0
-        const isLast = index === TYPES.length - 1
-        return (
-          <button
-            key={t.key}
-            className={`
-              synth-button-waveform
-              flex-1
-              ${sizeClasses[size]}
-              ${isFirst ? 'rounded-l rounded-r-none' : ''}
-              ${isLast ? 'rounded-r rounded-l-none' : 'rounded-none'}
-              ${!isFirst && !isLast ? 'border-l-0' : ''}
-              ${isSelected ? 'active' : ''}
-              flex items-center justify-center
-            `}
-            style={isSelected ? { boxShadow: '0 0 8px rgba(56, 189, 248, 0.5)' } : undefined}
-            onClick={() => onChange(t.key)}
-            aria-label={`${t.label} filter${isSelected ? ' (selected)' : ''}`}
-            aria-pressed={isSelected}
-          >
-            <span>{t.label}</span>
-          </button>
-        )
-      })}
-    </div>
+    <SynthButtonGroup
+      options={TYPES}
+      selectedKey={selectedType}
+      onChange={onChange}
+      size={size}
+      className={`${size === 'sm' ? 'w-28' : 'w-32'} ${className}`}
+    />
   )
 }
 

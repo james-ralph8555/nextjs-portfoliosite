@@ -50,6 +50,34 @@
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
   }
 
+  /* Fused button group for mobile - single rounded rectangle */
+  .synth-button-group-container {
+    @apply bg-gray-700 border border-gray-600;
+    box-shadow: 
+      inset 0 1px 2px rgba(255, 255, 255, 0.1),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.3),
+      0 1px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .synth-button-group-item {
+    @apply text-gray-400 hover:bg-gray-600 hover:text-white;
+    @apply transition-all duration-150 active:scale-95;
+    @apply border-r border-gray-600 border-b border-gray-600;
+  }
+
+  .synth-button-group-item:nth-child(2n) {
+    @apply border-r-0;
+  }
+
+  .synth-button-group-item:nth-child(n+3) {
+    @apply border-b-0;
+  }
+
+  .synth-button-group-item-active {
+    @apply bg-cyan-600 text-white;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+  }
+
   .synth-button-small {
     @apply px-2 py-1 text-[10px] font-mono border border-gray-600 rounded;
     @apply bg-gray-700 text-gray-400 hover:bg-gray-600 hover:text-white;

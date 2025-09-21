@@ -53,7 +53,7 @@
 
   /* Responsive adjustments for subsections */
   @media (max-width: 767px) {
-    .synth-subsection-desktop {
+    .synth-subsection-desktop:not(.synth-grid-osc .synth-subsection-desktop) {
       @apply hidden;
     }
   }

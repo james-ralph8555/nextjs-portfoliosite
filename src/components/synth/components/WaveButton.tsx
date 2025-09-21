@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { SynthButtonGroup } from './SynthButtonGroup'
 
 export type WaveformType = 'sawtooth' | 'square' | 'sine' | 'triangle'
 export type LabelMode = 'full' | 'abbreviated' | 'single' | 'icons-only'
@@ -91,11 +92,6 @@ export function WaveButtonGroup({
   size = 'md',
   className = ''
 }: WaveButtonGroupProps) {
-  const sizeClasses = {
-    sm: 'h-8 text-[9px]',
-    md: 'h-10 text-[10px]'
-  }
-
   const getLabel = (waveform: WaveformType) => {
     const config = WAVEFORM_CONFIG[waveform]
     switch (labelMode) {
@@ -111,45 +107,20 @@ export function WaveButtonGroup({
     }
   }
 
+  const options = waveforms.map(waveform => ({
+    key: waveform,
+    label: getLabel(waveform),
+    icon: (showIcons || labelMode === 'icons-only') ? WAVEFORM_CONFIG[waveform].icon : undefined
+  }))
+
   return (
-    <div className={`flex ${size === 'sm' ? 'w-32' : 'w-40'} ${className}`}>
-      {waveforms.map((waveform, index) => {
-        const config = WAVEFORM_CONFIG[waveform]
-        const isSelected = selectedWaveform === waveform
-        const isFirst = index === 0
-        const isLast = index === waveforms.length - 1
-        
-        return (
-          <button
-            key={waveform}
-            className={`
-              synth-button-waveform
-              flex-1
-              ${sizeClasses[size]}
-              ${isFirst ? 'rounded-l rounded-r-none' : ''}
-              ${isLast ? 'rounded-r rounded-l-none' : 'rounded-none'}
-              ${!isFirst && !isLast ? 'border-l-0' : ''}
-              ${isSelected ? 'active' : ''}
-              ${labelMode === 'icons-only' ? 'flex items-center justify-center' : showIcons ? 'flex flex-col items-center justify-center gap-0.5' : 'flex items-center justify-center'}
-            `}
-            style={isSelected ? { boxShadow: '0 0 8px rgba(56, 189, 248, 0.5)' } : undefined}
-            onClick={() => onWaveformChange(waveform)}
-            aria-label={`${waveform} waveform${isSelected ? ' (selected)' : ''}`}
-            aria-pressed={isSelected}
-          >
-            {(showIcons || labelMode === 'icons-only') && (
-              <div className={`${labelMode === 'icons-only' ? 'w-6 h-3' : 'w-6 h-3'} opacity-60`}>
-                {config.icon}
-              </div>
-            )}
-            {labelMode !== 'icons-only' && (
-              <span className={showIcons ? 'text-[8px]' : ''}>
-                {getLabel(waveform)}
-              </span>
-            )}
-          </button>
-        )
-      })}
-    </div>
+    <SynthButtonGroup
+      options={options}
+      selectedKey={selectedWaveform}
+      onChange={onWaveformChange}
+      size={size}
+      className={`${size === 'sm' ? 'w-28' : 'w-32'} ${className}`}
+      showIcons={showIcons || labelMode === 'icons-only'}
+    />
   )
 }

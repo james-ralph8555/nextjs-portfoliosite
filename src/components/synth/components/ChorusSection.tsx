@@ -61,36 +61,32 @@ export function ChorusSection({
           />
         </div>
 
-        {/* Mix Knob - Span full width */}
-        <div className="col-span-2">
-          <div className="synth-knob-compact">
-            <Knob
-              value={mix}
-              min={0}
-              max={1}
-              step={0.01}
-              label="Mix"
-              unit="%"
-              onChange={(v) => onMixChange(v)}
-              size="sm"
-            />
-          </div>
+        {/* Mix Knob */}
+        <div className="synth-knob-compact">
+          <Knob
+            value={mix}
+            min={0}
+            max={1}
+            step={0.01}
+            label="Mix"
+            unit="%"
+            onChange={(v) => onMixChange(v)}
+            size="sm"
+          />
         </div>
 
-        {/* Drive Knob - Span full width (FX bus) */}
-        <div className="col-span-2">
-          <div className="synth-knob-compact">
-            <Knob
-              value={drive}
-              min={0}
-              max={1}
-              step={0.01}
-              label="Drive"
-              unit="%"
-              onChange={(v) => onDriveChange(v)}
-              size="sm"
-            />
-          </div>
+        {/* Drive Knob */}
+        <div className="synth-knob-compact">
+          <Knob
+            value={drive}
+            min={0}
+            max={1}
+            step={0.01}
+            label="Drive"
+            unit="%"
+            onChange={(v) => onDriveChange(v)}
+            size="sm"
+          />
         </div>
 
         {/* LED Level Meter - Span full width */}
