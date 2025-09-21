@@ -35,10 +35,20 @@ export function LED({ active, color, label, size = 'md', pulse = false }: LEDPro
     magenta: active ? 'shadow-lg shadow-purple-400/50' : ''
   }
 
+  // Arturia LED capsule color mapping
+  const arturiaColor = {
+    green: 'led--teal',
+    cyan: 'led--teal',
+    amber: 'led--amber',
+    red: 'led--red',
+    magenta: 'led--magenta'
+  }[color]
+
   return (
     <div className="flex items-center space-x-2">
       <div
         className={`
+          led ${arturiaColor}
           ${sizeClasses[size]} 
           ${colorClasses[color]} 
           ${glowClasses[color]}
@@ -47,6 +57,7 @@ export function LED({ active, color, label, size = 'md', pulse = false }: LEDPro
           ${active && pulse ? 'animate-pulse' : ''}
           ${active ? 'opacity-100' : 'opacity-40'}
         `}
+        data-on={active}
       />
       {label && (
         <span className="text-xs font-mono text-table-text uppercase tracking-wider">
@@ -79,6 +90,7 @@ export function BlinkingLED({
     <div className="flex items-center space-x-2">
       <div
         className={`
+          led ${color === 'green' || color === 'cyan' ? 'led--teal' : color === 'amber' ? 'led--amber' : color === 'red' ? 'led--red' : 'led--magenta'}
           ${size === 'sm' ? 'w-2 h-2' : size === 'lg' ? 'w-4 h-4' : 'w-3 h-3'} 
           rounded-full 
           transition-all duration-300
@@ -90,6 +102,7 @@ export function BlinkingLED({
                    'bg-gray-700 opacity-40'
           }
         `}
+        data-on={active}
       />
       {label && (
         <span className="text-xs font-mono text-table-text uppercase tracking-wider">

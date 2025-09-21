@@ -73,7 +73,7 @@ export function HybridSynth() {
   }
 
   return (
-    <div className="synth-chassis max-w-7xl mx-auto flex flex-col">
+    <div className="synth-chassis synth--noise max-w-7xl mx-auto flex flex-col">
       {/* Status Bar */}
       <div className="synth-status-bar">
         <div className="flex items-center space-x-3">

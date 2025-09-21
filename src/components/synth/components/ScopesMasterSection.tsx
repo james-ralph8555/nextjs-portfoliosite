@@ -219,7 +219,7 @@ export function ScopesMasterSection({
           {/* Dual Scopes */}
           <div className="grid grid-cols-2 gap-2">
             {/* Waveform Scope */}
-            <div className="relative">
+            <div className="relative bezel">
               <canvas
                 ref={waveCanvasRef}
                 width={120}
@@ -236,7 +236,7 @@ export function ScopesMasterSection({
             </div>
             
             {/* Spectrum Scope */}
-            <div className="relative">
+            <div className="relative bezel">
               <canvas
                 ref={spectrumCanvasRef}
                 width={120}
@@ -322,7 +322,7 @@ export function ScopesMasterSection({
           {/* Compact Level Meters */}
           <div className="grid grid-cols-2 gap-1">
             {/* Input Level */}
-            <div className="bg-black border border-gray-700 rounded p-1">
+            <div className="screen">
               <div className="text-[8px] font-mono text-gray-500 mb-1">IN</div>
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
@@ -333,7 +333,7 @@ export function ScopesMasterSection({
             </div>
             
             {/* Delay Level */}
-            <div className="bg-black border border-gray-700 rounded p-1">
+            <div className="screen">
               <div className="text-[8px] font-mono text-gray-500 mb-1">DLY</div>
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
@@ -349,7 +349,7 @@ export function ScopesMasterSection({
       {/* Modal for full scope view */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
-          <div className="bg-gray-900 border border-gray-700 rounded-lg p-4 max-w-4xl w-full mx-4">
+          <div className="panel p-4 max-w-4xl w-full mx-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-mono text-cyan-400">
                 Dual Analyzer
@@ -368,7 +368,7 @@ export function ScopesMasterSection({
                   ref={modalWaveCanvasRef}
                   width={400}
                   height={300}
-                  className="w-full bg-black border border-gray-700 rounded"
+                  className="w-full"
                 />
               </div>
               <div>
@@ -377,7 +377,7 @@ export function ScopesMasterSection({
                   ref={modalSpectrumCanvasRef}
                   width={400}
                   height={300}
-                  className="w-full bg-black border border-gray-700 rounded"
+                  className="w-full"
                 />
               </div>
             </div>
