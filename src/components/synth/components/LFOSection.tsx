@@ -86,29 +86,7 @@ export function LFOSection({
           />
         </div>
 
-        {/* Targets */}
-        <div className="col-span-2">
-          <div className="text-[10px] font-mono text-gray-500 mb-1">Targets</div>
-          <div className="grid grid-cols-2 gap-1">
-            {Object.entries(targets).map(([target, enabled]) => (
-              <button
-                key={target}
-                className={`synth-button-small text-[9px] ${
-                  enabled ? 'bg-cyan-600 text-white border-cyan-500' : ''
-                }`}
-                onClick={() =>
-                  onTargetChange(
-                    target as keyof LFOSectionProps['targets'],
-                    !enabled
-                  )
-                }
-              >
-                {target.replace(/([A-Z])/g, ' $1').trim()}
-              </button>
-            ))}
-          </div>
         </div>
-      </div>
     </div>
   )
 }

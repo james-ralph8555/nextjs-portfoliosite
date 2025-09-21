@@ -32,7 +32,7 @@ export function ChorusSection({
         <LED active={mix > 0} color="amber" size="xs" />
       </div>
       
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-4 gap-2">
         {/* Rate Knob */}
         <div className="synth-knob-compact">
           <Knob
@@ -87,23 +87,6 @@ export function ChorusSection({
             onChange={(v) => onDriveChange(v)}
             size="sm"
           />
-        </div>
-
-        {/* LED Level Meter - Span full width */}
-        <div className="col-span-2">
-          <div className="flex items-center gap-2 mt-1">
-            <div className="text-[9px] font-mono text-gray-500">Level</div>
-            <div className="flex-1 flex gap-0.5">
-              {Array.from({ length: 8 }, (_, i) => (
-                <LED
-                  key={i}
-                  active={(mix + drive * 0.5) > (i / 8)}
-                  color="green"
-                  size="xxs"
-                />
-              ))}
-            </div>
-          </div>
         </div>
       </div>
     </div>
