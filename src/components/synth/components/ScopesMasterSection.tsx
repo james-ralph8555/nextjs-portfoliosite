@@ -255,7 +255,7 @@ export function ScopesMasterSection({
         </div>
 
         {/* Master Section */}
-        <div className="border-t border-gray-600 pt-3">
+        <div className="border-t border-gray-600 pt-3 flex flex-col flex-1">
           {/* Master Controls Grid */}
           <div className="grid grid-cols-4 gap-1 mb-2">
             {/* Volume Control */}
@@ -342,6 +342,15 @@ export function ScopesMasterSection({
                 />
               </div>
             </div>
+          </div>
+
+          {/* Korgi Logo */}
+          <div className="flex justify-end mt-auto mb-1">
+            <img 
+              src="/assets/korgi-original.webp"
+              alt="Korgi Logo"
+              className="h-8 md:h-10 lg:h-12 w-auto object-contain"
+            />
           </div>
         </div>
       </div>
