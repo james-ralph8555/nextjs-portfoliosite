@@ -88,7 +88,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       unison: { enabled: true, voices: 3, detune: 0.1 },
       glide: { enabled: false, time: 0.1, legato: true }
     },
-    filter: { cutoff: 1000, resonance: 1, envelopeAmount: 0.5 },
+    filter: { cutoff: 4000, resonance: 1, envelopeAmount: 0.5 },
     envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
     filterEnvelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
     lfo: { 
@@ -542,7 +542,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
           unison: { enabled: true, voices: 3, detune: 0.1 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
-        filter: { cutoff: 1000, resonance: 1, envelopeAmount: 0.5 },
+        filter: { cutoff: 4000, resonance: 1, envelopeAmount: 0.5 },
         envelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
         filterEnvelope: { attack: 0.1, decay: 0.3, sustain: 0.7, release: 0.5 },
         lfo: { 
