@@ -349,7 +349,7 @@ export function ScopesMasterSection({
             <img 
               src="/assets/korgi-original.webp"
               alt="Korgi Logo"
-              className="h-8 md:h-10 lg:h-12 w-auto object-contain"
+              className="w-[80%] md:w-auto h-auto max-h-16 md:max-h-10 lg:max-h-12 object-contain"
             />
           </div>
         </div>
