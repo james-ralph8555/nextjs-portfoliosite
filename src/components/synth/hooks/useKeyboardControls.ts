@@ -6,9 +6,9 @@ interface KeyboardControlsProps {
 }
 
 const KEY_MAPPING: Record<string, string> = {
-  // White keys: a s d f g h j k l ; '
+  // White keys: a s d f g h j k l ; 
   'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4',
-  'k': 'C5', 'l': 'D5', ';': 'E5', "'": 'F5',
+  'k': 'C5', 'l': 'D5', ';': 'E5',
   
   // Black keys: w e t y u o p
   'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4',

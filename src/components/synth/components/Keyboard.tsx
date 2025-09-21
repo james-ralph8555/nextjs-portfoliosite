@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 
 interface KeyboardProps {
   activeKeys: Record<string, string>
@@ -21,9 +21,9 @@ const BLACK_KEY_POSITIONS = {
 }
 
 const KEY_MAPPING: Record<string, string> = {
-  // White keys: a s d f g h j k l ; '
+  // White keys: a s d f g h j k l ; 
   'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4',
-  'k': 'C5', 'l': 'D5', ';': 'E5', "'": 'F5',
+  'k': 'C5', 'l': 'D5', ';': 'E5',
   
   // Black keys: w e t y u o p
   'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4',
@@ -36,6 +36,7 @@ const REVERSE_MAPPING: Record<string, string> = Object.entries(KEY_MAPPING).redu
 }, {} as Record<string, string>)
 
 export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
+  const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
   const octaves = [4, 5] // Two octaves
   const allNotes: string[] = []
 
@@ -58,7 +59,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
   }
 
   const isKeyActive = (note: string) => {
-    return Object.values(activeKeys).includes(note)
+    return Object.values(activeKeys).includes(note) || mouseActiveKeys.has(note)
   }
 
   const getKeyLabel = (note: string) => {
@@ -66,20 +67,32 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
   }
 
   const handleMouseDown = (note: string) => {
+    setMouseActiveKeys(prev => new Set(prev).add(note))
     onNoteOn(note)
   }
 
   const handleMouseUp = (note: string) => {
+    setMouseActiveKeys(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(note)
+      return newSet
+    })
     onNoteOff(note)
   }
 
   const handleTouchStart = (e: React.TouchEvent, note: string) => {
     e.preventDefault()
+    setMouseActiveKeys(prev => new Set(prev).add(note))
     onNoteOn(note)
   }
 
   const handleTouchEnd = (e: React.TouchEvent, note: string) => {
     e.preventDefault()
+    setMouseActiveKeys(prev => {
+      const newSet = new Set(prev)
+      newSet.delete(note)
+      return newSet
+    })
     onNoteOff(note)
   }
 
