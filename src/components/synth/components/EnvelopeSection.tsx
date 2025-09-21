@@ -88,7 +88,7 @@ export function EnvelopeSection({
 
       {/* Envelope Visualization */}
       <div className="synth-visualizer">
-        <svg width="100%" height="100%" viewBox="0 0 240 60" className="overflow-visible">
+        <svg width="100%" height="100%" viewBox="0 0 240 90" className="overflow-visible">
           {/* Grid */}
           <defs>
             <pattern id="grid-compact" width="20" height="8" patternUnits="userSpaceOnUse">
@@ -98,8 +98,8 @@ export function EnvelopeSection({
           <rect width="100%" height="100%" fill="url(#grid-compact)" />
           
           {/* Axes */}
-          <line x1="0" y1="50" x2="240" y2="50" stroke="#333" strokeWidth="1" />
-          <line x1="0" y1="10" x2="0" y2="50" stroke="#333" strokeWidth="1" />
+          <line x1="0" y1="75" x2="240" y2="75" stroke="#333" strokeWidth="1" />
+          <line x1="0" y1="15" x2="0" y2="75" stroke="#333" strokeWidth="1" />
           
           {/* ADSR Envelope Path */}
           <path 
@@ -111,19 +111,19 @@ export function EnvelopeSection({
           />
           
           {/* Phase markers */}
-          <circle cx="0" cy="50" r="2" fill="#FF00FF" />
-          <circle cx={attack * 60} cy="10" r="2" fill="#FF00FF" />
-          <circle cx={(attack + decay) * 60} cy={50 - sustain * 35} r="2" fill="#FF00FF" />
-          <circle cx={(attack + decay + 1) * 60} cy={50 - sustain * 35} r="2" fill="#FF00FF" />
-          <circle cx={(attack + decay + 1 + release) * 60} cy="50" r="2" fill="#FF00FF" />
+          <circle cx="0" cy="70" r="2" fill="#FF00FF" />
+          <circle cx={Math.min(attack * 40, 80)} cy="20" r="2" fill="#FF00FF" />
+          <circle cx={Math.min((attack + decay) * 40, 120)} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
+          <circle cx={Math.min((attack + decay) * 40, 120) + 30} cy={70 - sustain * 50} r="2" fill="#FF00FF" />
+          <circle cx={Math.min((attack + decay) * 40, 120) + 30 + Math.min(release * 40, 70)} cy="70" r="2" fill="#FF00FF" />
           
           {/* Labels */}
-          <text x="5" y="8" fill="#666" fontSize="7" fontFamily="monospace">1.0</text>
-          <text x="5" y="55" fill="#666" fontSize="7" fontFamily="monospace">0.0</text>
-          <text x="8" y="55" fill="#666" fontSize="7" fontFamily="monospace">Atk</text>
-          <text x={attack * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Dec</text>
-          <text x={(attack + decay) * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Sus</text>
-          <text x={(attack + decay + 1) * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Rel</text>
+          <text x="5" y="17" fill="#666" fontSize="7" fontFamily="monospace">1.0</text>
+          <text x="5" y="77" fill="#666" fontSize="7" fontFamily="monospace">0.0</text>
+          <text x="8" y="77" fill="#666" fontSize="7" fontFamily="monospace">Atk</text>
+          <text x={Math.min(attack * 40, 80) - 5} y="77" fill="#666" fontSize="7" fontFamily="monospace">Dec</text>
+          <text x={Math.min((attack + decay) * 40, 120) - 5} y="77" fill="#666" fontSize="7" fontFamily="monospace">Sus</text>
+          <text x={Math.min((attack + decay) * 40, 120) + 25} y="77" fill="#666" fontSize="7" fontFamily="monospace">Rel</text>
         </svg>
       </div>
     </div>
@@ -132,13 +132,14 @@ export function EnvelopeSection({
 
 // Helper function to generate ADSR envelope path
 function generateEnvelopePath(attack: number, decay: number, sustain: number, release: number): string {
-  const scaleX = 60 // Scale factor for time (1 second = 60 units)
-  const scaleY = 35 // Scale factor for amplitude (smaller for compact display)
+  const scaleX = 40 // Reduced scale factor to prevent overflow
+  const scaleY = 50 // Scale factor for amplitude
   
-  const attackX = attack * scaleX
-  const decayX = (attack + decay) * scaleX
-  const sustainY = 50 - (sustain * scaleY)
-  const releaseX = (attack + decay + 1 + release) * scaleX // +1 for sustain duration
+  const attackX = Math.min(attack * scaleX, 80) // Cap at 80 to leave room
+  const decayX = Math.min((attack + decay) * scaleX, 120) // Cap at 120
+  const sustainY = 70 - (sustain * scaleY) // Base at 70, scale down
+  const sustainDuration = 30 // Fixed sustain duration for display
+  const releaseX = Math.min(decayX + sustainDuration + (release * scaleX), 220) // Cap at 220
   
-  return `M 0 50 L ${attackX} 10 L ${decayX} ${sustainY} L ${(attack + decay + 1) * scaleX} ${sustainY} L ${releaseX} 50`
+  return `M 0 70 L ${attackX} 20 L ${decayX} ${sustainY} L ${decayX + sustainDuration} ${sustainY} L ${releaseX} 70`
 }

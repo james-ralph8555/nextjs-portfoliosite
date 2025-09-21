@@ -197,16 +197,6 @@
     C 63 36, 64 31, 66 28 Z"
     fill="url(#gloss)" opacity="0.45"/>
 
-  <!-- ====== INDICATOR NOTCH (ROTATABLE) ====== -->
-  <!-- Animation hook: rotate this line around (50, 50) -->
-  <g id="indicatorGroup" transform="rotate(0 50 50)">
-    <line id="indicator" x1="50" y1="15.5" x2="50" y2="22.5"
-          stroke="#ffffff" stroke-width="2.2" stroke-linecap="round"/>
-    <!-- A soft amber glow behind the indicator for readability -->
-    <line x1="50" y1="15.5" x2="50" y2="22.5"
-          stroke="url(#accentAmber)" stroke-width="5" stroke-linecap="round" opacity="0.22"/>
-  </g>
-
   <!-- ====== TOP MARK (fixed notch at 12 o'clock on the rim) ====== -->
   <circle cx="50" cy="3.5" r="1.2" fill="#e2e5e8" opacity="0.9"/>
 

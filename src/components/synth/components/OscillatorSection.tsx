@@ -53,7 +53,7 @@ export function OscillatorSection({
       </div>
 
       {/* Mix Knob */}
-      <div className="synth-knob-compact">
+      <div className="synth-knob-compact mb-4">
         <Knob
           value={mix}
           min={0}
@@ -65,6 +65,9 @@ export function OscillatorSection({
           size="sm"
         />
       </div>
+
+      {/* Spacer to match height of sections with visualizers */}
+      <div className="flex-1 min-h-[60px]"></div>
     </div>
   )
 }

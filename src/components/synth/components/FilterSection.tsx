@@ -87,9 +87,9 @@ export function FilterSection({
           <line x1="0" y1="15" x2="200" y2="15" stroke="#1a1a1a" strokeWidth="0.5" />
           
           {/* Frequency labels */}
-          <text x="5" y="58" fill="#666" fontSize="8" fontFamily="monospace">20Hz</text>
-          <text x="85" y="58" fill="#666" fontSize="8" fontFamily="monospace">1k</text>
-          <text x="165" y="58" fill="#666" fontSize="8" fontFamily="monospace">20k</text>
+          <text x="5" y="55" fill="#666" fontSize="8" fontFamily="monospace">20Hz</text>
+          <text x="85" y="55" fill="#666" fontSize="8" fontFamily="monospace">1k</text>
+          <text x="165" y="55" fill="#666" fontSize="8" fontFamily="monospace">20k</text>
           
           {/* Filter curve */}
           <path 
@@ -138,8 +138,8 @@ function generateFilterCurve(cutoff: number, resonance: number): string {
     const normalizedFreq = freq / cutoff
     const response = 1 / Math.sqrt(1 + Math.pow(normalizedFreq, 2) * resonance)
     
-    const y = 50 - (response * 35) // Scale and invert for display
-    points.push(`${x},${Math.max(10, Math.min(50, y))}`)
+    const y = 52.5 - (response * 37.5) // Scale and invert for display
+    points.push(`${x},${Math.max(12, Math.min(48, y))}`)
   }
   
   return `M ${points.join(' L ')}`
