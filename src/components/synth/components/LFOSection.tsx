@@ -57,30 +57,30 @@ export function LFOSection({
 
         {/* Rate Knob */}
         <div className="synth-knob-compact">
-          <div className="synth-knob-label">Rate</div>
           <Knob
             value={rate}
             min={0.1}
             max={20}
             step={0.1}
+            label="Rate"
+            unit=" Hz"
             onChange={onRateChange}
             size="sm"
           />
-          <div className="synth-knob-value">{rate.toFixed(1)} Hz</div>
         </div>
 
         {/* Depth Knob */}
         <div className="synth-knob-compact">
-          <div className="synth-knob-label">Depth</div>
           <Knob
-            value={depth}
+            value={depth * 100}
             min={0}
-            max={1}
-            step={0.01}
-            onChange={onDepthChange}
+            max={100}
+            step={1}
+            label="Depth"
+            unit="%"
+            onChange={(v) => onDepthChange(v / 100)}
             size="sm"
           />
-          <div className="synth-knob-value">{(depth * 100).toFixed(0)}%</div>
         </div>
 
         {/* Targets */}

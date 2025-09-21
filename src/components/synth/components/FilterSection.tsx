@@ -2,6 +2,7 @@
 
 import React, { useMemo } from 'react'
 import { Knob } from './Knob'
+import { formatFrequencykHz } from '@/lib/synth-utils'
 
 interface FilterSectionProps {
   cutoff: number
@@ -145,8 +146,5 @@ function generateFilterCurve(cutoff: number, resonance: number): string {
 }
 
 function formatFrequency(freq: number): string {
-  if (freq >= 1000) {
-    return `${(freq / 1000).toFixed(1)}k`
-  }
-  return Math.round(freq).toString()
+  return formatFrequencykHz(freq).replace(' Hz', '').replace(' kHz', 'k')
 }

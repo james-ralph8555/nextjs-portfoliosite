@@ -14,6 +14,8 @@ import { ScopesMasterSection } from './components/ScopesMasterSection'
 import { Keyboard } from './components/Keyboard'
 import { Analyzer } from './components/Analyzer'
 import { LED } from './components/LED'
+import { PowerButton } from './components/PowerButton'
+import { PanicButton } from './components/PanicButton'
 import { useSynthEngine } from './hooks/useSynthEngine'
 import { useKeyboardControls } from './hooks/useKeyboardControls'
 
@@ -83,21 +85,14 @@ export function HybridSynth() {
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
-          {!isInitialized && (
-            <button
-              onClick={handleInitClick}
-              className="synth-button-small bg-cyan-600 text-cyan-100 border-cyan-500 hover:bg-cyan-500"
-            >
-              INIT
-            </button>
-          )}
-          <button
-            onClick={handlePanicClick}
-            className="synth-button-small bg-red-600 text-red-100 border-red-500 hover:bg-red-500"
-          >
-            PANIC
-          </button>
+        <div className="flex items-center space-x-4">
+          <PowerButton 
+            isOn={isInitialized}
+            onToggle={handleInitClick}
+          />
+          <PanicButton 
+            onPanic={handlePanicClick}
+          />
         </div>
       </div>
 

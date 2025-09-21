@@ -57,19 +57,6 @@ export function UnisonGlideSection({
 
   return (
     <div className="synth-section">
-      <div className="synth-section-title flex items-center justify-between">
-        <span>UNISON/GLIDE</span>
-        <div className="flex gap-1">
-          <div className="flex items-center gap-1">
-            <LED active={unison.enabled} color="amber" size="xxs" />
-            <span className="text-[8px] font-mono text-gray-500">UNI</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <LED active={glide.enabled} color="green" size="xxs" />
-            <span className="text-[8px] font-mono text-gray-500">GLI</span>
-          </div>
-        </div>
-      </div>
       
       {/* Desktop Layout - Integrated Controls (Always Visible) */}
       {!isMobile && (
@@ -93,28 +80,26 @@ export function UnisonGlideSection({
             
             <div className="grid grid-cols-2 gap-1">
               <div className="synth-knob-compact">
-                <div className="text-[8px] font-mono text-gray-500">Voices</div>
                 <Knob
                   value={unison.voices}
                   min={2}
                   max={6}
                   step={1}
+                  label="Voices"
                   onChange={(v) => onUnisonChange({ voices: Math.round(v) })}
                   size="xs"
                 />
-                <div className="text-[8px] font-mono text-gray-400">{unison.voices}</div>
               </div>
               <div className="synth-knob-compact">
-                <div className="text-[8px] font-mono text-gray-500">Detune</div>
                 <Knob
                   value={unison.detune}
                   min={0.01}
                   max={0.5}
                   step={0.01}
+                  label="Detune"
                   onChange={(v) => onUnisonChange({ detune: v })}
                   size="xs"
                 />
-                <div className="text-[8px] font-mono text-gray-400">{unison.detune.toFixed(2)}</div>
               </div>
             </div>
           </div>
@@ -138,16 +123,16 @@ export function UnisonGlideSection({
             
             <div className="grid grid-cols-2 gap-1">
               <div className="synth-knob-compact">
-                <div className="text-[8px] font-mono text-gray-500">Time</div>
                 <Knob
                   value={glide.time}
                   min={0.01}
                   max={1}
                   step={0.01}
+                  label="Time"
+                  unit="s"
                   onChange={(v) => onGlideChange({ time: v })}
                   size="xs"
                 />
-                <div className="text-[8px] font-mono text-gray-400">{glide.time.toFixed(2)}s</div>
               </div>
               <div className="synth-knob-compact">
                 <div className="text-[8px] font-mono text-gray-500">Legato</div>
@@ -170,18 +155,12 @@ export function UnisonGlideSection({
         <div className="space-y-2">
           {/* Unison Section - Mobile */}
           <div className="synth-subsection-mobile">
-            <button
-              onClick={toggleMobileUnison}
-              className="flex items-center justify-between w-full hover:bg-gray-700 transition-colors p-1 rounded"
-            >
+            <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
                 <LED active={unison.enabled} color="amber" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">UNISON</span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleUnison()
-                  }}
+                  onClick={toggleUnison}
                   className={`synth-skeu-button text-[8px] ${
                     unison.enabled ? 'bg-amber-600 text-white border-amber-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
@@ -189,37 +168,38 @@ export function UnisonGlideSection({
                   {unison.enabled ? 'ON' : 'OFF'}
                 </button>
               </div>
-              <span className="text-[8px] font-mono text-gray-400">
+              <button
+                onClick={toggleMobileUnison}
+                className="text-[8px] font-mono text-gray-400 hover:text-gray-300 transition-colors"
+              >
                 {mobileUnisonExpanded ? '▼' : '▶'}
-              </span>
-            </button>
+              </button>
+            </div>
             
             {mobileUnisonExpanded && (
               <div className="mt-2 space-y-1">
                 <div className="grid grid-cols-2 gap-1">
                   <div className="synth-knob-compact">
-                    <div className="text-[8px] font-mono text-gray-500">Voices</div>
                     <Knob
                       value={unison.voices}
                       min={2}
                       max={6}
                       step={1}
+                      label="Voices"
                       onChange={(v) => onUnisonChange({ voices: Math.round(v) })}
                       size="xs"
                     />
-                    <div className="text-[8px] font-mono text-gray-400">{unison.voices}</div>
                   </div>
                   <div className="synth-knob-compact">
-                    <div className="text-[8px] font-mono text-gray-500">Detune</div>
                     <Knob
                       value={unison.detune}
                       min={0.01}
                       max={0.5}
                       step={0.01}
+                      label="Detune"
                       onChange={(v) => onUnisonChange({ detune: v })}
                       size="xs"
                     />
-                    <div className="text-[8px] font-mono text-gray-400">{unison.detune.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
@@ -228,18 +208,12 @@ export function UnisonGlideSection({
 
           {/* Glide Section - Mobile */}
           <div className="synth-subsection-mobile">
-            <button
-              onClick={toggleMobileGlide}
-              className="flex items-center justify-between w-full hover:bg-gray-700 transition-colors p-1 rounded"
-            >
+            <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
                 <LED active={glide.enabled} color="green" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    toggleGlide()
-                  }}
+                  onClick={toggleGlide}
                   className={`synth-skeu-button text-[8px] ${
                     glide.enabled ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 border-gray-600'
                   }`}
@@ -247,25 +221,28 @@ export function UnisonGlideSection({
                   {glide.enabled ? 'ON' : 'OFF'}
                 </button>
               </div>
-              <span className="text-[8px] font-mono text-gray-400">
+              <button
+                onClick={toggleMobileGlide}
+                className="text-[8px] font-mono text-gray-400 hover:text-gray-300 transition-colors"
+              >
                 {mobileGlideExpanded ? '▼' : '▶'}
-              </span>
-            </button>
+              </button>
+            </div>
             
             {mobileGlideExpanded && (
               <div className="mt-2 space-y-1">
                 <div className="grid grid-cols-2 gap-1">
                   <div className="synth-knob-compact">
-                    <div className="text-[8px] font-mono text-gray-500">Time</div>
                     <Knob
                       value={glide.time}
                       min={0.01}
                       max={1}
                       step={0.01}
+                      label="Time"
+                      unit="s"
                       onChange={(v) => onGlideChange({ time: v })}
                       size="xs"
                     />
-                    <div className="text-[8px] font-mono text-gray-400">{glide.time.toFixed(2)}s</div>
                   </div>
                   <div className="synth-knob-compact">
                     <div className="text-[8px] font-mono text-gray-500">Legato</div>

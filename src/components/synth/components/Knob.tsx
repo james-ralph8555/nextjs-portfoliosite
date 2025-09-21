@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
+import { formatPercentage, formatFrequency, formatDecimal } from '@/lib/synth-utils'
 
 interface KnobProps {
   value: number
@@ -152,7 +153,19 @@ export function Knob({
   }, [])
 
   const rotation = valueToRotation(value)
-  const displayValue = unit ? `${value}${unit}` : value.toString()
+  
+  // Format display value based on unit to avoid IEEE 754 precision issues
+  let displayValue: string
+  if (unit === '%') {
+    displayValue = formatPercentage(value, 0) // Percentages as integers
+  } else if (unit === 'Hz') {
+    displayValue = formatFrequency(value, 1) // Frequency with 1 decimal
+  } else if (unit === 'kHz') {
+    displayValue = formatDecimal(value, 2) + unit // kHz with 2 decimals
+  } else {
+    displayValue = unit ? `${formatDecimal(value, 2)}${unit}` : formatDecimal(value, 2)
+  }
+  
   const { width, height } = svgSizes[size]
 
   return (
