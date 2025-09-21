@@ -95,11 +95,11 @@ export function ArpeggiatorSection({
               <div className="synth-knob-compact">
                 <Knob
                   value={arpeggiator.rate}
-                  min={1}
-                  max={32}
+                  min={20}
+                  max={200}
                   step={1}
                   label="Rate"
-                  unit="BPM"
+                  unit="Hz"
                   onChange={(v) => onArpeggiatorChange({ rate: Math.round(v) })}
                   size="xs"
                 />
@@ -204,11 +204,11 @@ export function ArpeggiatorSection({
                   <div className="synth-knob-compact">
                     <Knob
                       value={arpeggiator.rate}
-                      min={1}
-                      max={32}
+                      min={20}
+                      max={200}
                       step={1}
                       label="Rate"
-                      unit="BPM"
+                      unit="Hz"
                       onChange={(v) => onArpeggiatorChange({ rate: Math.round(v) })}
                       size="xs"
                     />

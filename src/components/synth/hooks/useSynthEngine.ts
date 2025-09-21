@@ -128,7 +128,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     gain: 0.3,
     delay: { time: 0.3, feedback: 0.3, mix: 0.3 },
     chorus: { rate: 1.5, depth: 0.5, mix: 0.3, drive: 0.0 },
-    arpeggiator: { enabled: false, rate: 8, pattern: 'up', octaveRange: 1, gate: 0.8, hold: false },
+    arpeggiator: { enabled: false, rate: 60, pattern: 'upDown', octaveRange: 1, gate: 0.5, hold: false },
     macros: { 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5 },
     performance: { maxPolyphony: 8, voiceStealing: true }
   })
