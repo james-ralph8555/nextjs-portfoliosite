@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 
 interface KeyboardProps {
   activeKeys: Record<string, string>
   onNoteOn: (note: string) => void
   onNoteOff: (note: string) => void
+  onMouseActiveKeysChange?: (activeKeys: Set<string>) => void
 }
 
 const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -35,8 +36,12 @@ const REVERSE_MAPPING: Record<string, string> = Object.entries(KEY_MAPPING).redu
   return acc
 }, {} as Record<string, string>)
 
-export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
+export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysChange }: KeyboardProps) {
   const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
+  const [isMouseDown, setIsMouseDown] = useState(false)
+  const [isTouchActive, setIsTouchActive] = useState(false)
+  const [currentMouseKey, setCurrentMouseKey] = useState<string | null>(null)
+  const keyboardRef = useRef<HTMLDivElement>(null)
   const octaves = [4, 5] // Two octaves
   const allNotes: string[] = []
 
@@ -66,28 +71,25 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
     return REVERSE_MAPPING[note] || ''
   }
 
-  const handleMouseDown = (note: string) => {
-    setMouseActiveKeys(prev => new Set(prev).add(note))
-    onNoteOn(note)
-  }
-
   const handleMouseUp = (note: string) => {
+    if (currentMouseKey === note) {
+      setIsMouseDown(false)
+      setCurrentMouseKey(null)
+    }
     setMouseActiveKeys(prev => {
       const newSet = new Set(prev)
       newSet.delete(note)
       return newSet
     })
     onNoteOff(note)
-  }
-
-  const handleTouchStart = (e: React.TouchEvent, note: string) => {
-    e.preventDefault()
-    setMouseActiveKeys(prev => new Set(prev).add(note))
-    onNoteOn(note)
   }
 
   const handleTouchEnd = (e: React.TouchEvent, note: string) => {
     e.preventDefault()
+    if (currentMouseKey === note) {
+      setIsTouchActive(false)
+      setCurrentMouseKey(null)
+    }
     setMouseActiveKeys(prev => {
       const newSet = new Set(prev)
       newSet.delete(note)
@@ -95,13 +97,172 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
     })
     onNoteOff(note)
   }
+
+  // Find the key at a given position
+  const getKeyAtPosition = (x: number, y: number): string | null => {
+    if (!keyboardRef.current) return null
+    
+    const containerRect = keyboardRef.current.getBoundingClientRect()
+    const relativeX = x - containerRect.left
+    const relativeY = y - containerRect.top
+    
+    // Check black keys first (they're on top)
+    const blackKeyElements = keyboardRef.current.querySelectorAll('.key-black')
+    for (const element of blackKeyElements) {
+      const rect = element.getBoundingClientRect()
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        const note = element.getAttribute('data-note')
+        return note || null
+      }
+    }
+    
+    // Check white keys
+    const whiteKeyElements = keyboardRef.current.querySelectorAll('.key-white')
+    for (const element of whiteKeyElements) {
+      const rect = element.getBoundingClientRect()
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
+        const note = element.getAttribute('data-note')
+        return note || null
+      }
+    }
+    
+    return null
+  }
+
+  // Handle mouse movement while dragging
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDown || !keyboardRef.current) return
+    
+    const key = getKeyAtPosition(e.clientX, e.clientY)
+    if (key && key !== currentMouseKey) {
+      // Release previous key
+      if (currentMouseKey) {
+        setMouseActiveKeys(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(currentMouseKey)
+          return newSet
+        })
+        onNoteOff(currentMouseKey)
+      }
+      
+      // Activate new key
+      setCurrentMouseKey(key)
+      setMouseActiveKeys(prev => new Set(prev).add(key))
+      onNoteOn(key)
+    }
+  }
+
+  // Handle touch movement while dragging
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isTouchActive || !keyboardRef.current) return
+    
+    e.preventDefault()
+    const touch = e.touches[0]
+    const key = getKeyAtPosition(touch.clientX, touch.clientY)
+    
+    if (key && key !== currentMouseKey) {
+      // Release previous key
+      if (currentMouseKey) {
+        setMouseActiveKeys(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(currentMouseKey)
+          return newSet
+        })
+        onNoteOff(currentMouseKey)
+      }
+      
+      // Activate new key
+      setCurrentMouseKey(key)
+      setMouseActiveKeys(prev => new Set(prev).add(key))
+      onNoteOn(key)
+    }
+  }
+
+  // Global mouse up handler
+  const handleGlobalMouseUp = () => {
+    if (isMouseDown && currentMouseKey) {
+      setMouseActiveKeys(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(currentMouseKey)
+        return newSet
+      })
+      onNoteOff(currentMouseKey)
+    }
+    setIsMouseDown(false)
+    setCurrentMouseKey(null)
+  }
+
+  // Global touch end handler
+  const handleGlobalTouchEnd = () => {
+    if (isTouchActive && currentMouseKey) {
+      setMouseActiveKeys(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(currentMouseKey)
+        return newSet
+      })
+      onNoteOff(currentMouseKey)
+    }
+    setIsTouchActive(false)
+    setCurrentMouseKey(null)
+  }
+
+  // Notify parent of mouseActiveKeys changes
+  useEffect(() => {
+    if (onMouseActiveKeysChange) {
+      onMouseActiveKeysChange(mouseActiveKeys)
+    }
+  }, [mouseActiveKeys, onMouseActiveKeysChange])
+
+  // Add global event listeners
+  useEffect(() => {
+    document.addEventListener('mouseup', handleGlobalMouseUp)
+    document.addEventListener('touchend', handleGlobalTouchEnd)
+    
+    return () => {
+      document.removeEventListener('mouseup', handleGlobalMouseUp)
+      document.removeEventListener('touchend', handleGlobalTouchEnd)
+    }
+  }, [isMouseDown, isTouchActive, currentMouseKey])
 
   // Hardware-inspired keyboard layout
   // Get the actual white keys that will be rendered (filtered by key mapping)
   const renderedWhiteKeys = allNotes.filter(note => !BLACK_KEYS.some(bk => note.includes(bk)))
   
+  // Update mouse down handler to enable continuous movement
+  const handleMouseDown = (note: string) => {
+    setIsMouseDown(true)
+    setCurrentMouseKey(note)
+    setMouseActiveKeys(prev => new Set(prev).add(note))
+    onNoteOn(note)
+  }
+
+  // Update touch start handler to enable continuous movement
+  const handleTouchStart = (e: React.TouchEvent, note: string) => {
+    e.preventDefault()
+    setIsTouchActive(true)
+    setCurrentMouseKey(note)
+    setMouseActiveKeys(prev => new Set(prev).add(note))
+    onNoteOn(note)
+  }
+
   return (
-    <div className="relative h-24">
+    <div 
+      ref={keyboardRef}
+      className="relative h-24"
+      onMouseMove={handleMouseMove}
+      onTouchMove={handleTouchMove}
+      onMouseLeave={() => {
+        if (isMouseDown && currentMouseKey) {
+          setMouseActiveKeys(prev => {
+            const newSet = new Set(prev)
+            newSet.delete(currentMouseKey)
+            return newSet
+          })
+          onNoteOff(currentMouseKey)
+          setCurrentMouseKey(null)
+        }
+      }}
+    >
       {/* White keys using CSS Grid for consistent sizing */}
       <div className="grid h-full relative" style={{ gridTemplateColumns: `repeat(${renderedWhiteKeys.length}, 1fr)` }}>
         {renderedWhiteKeys.map((note, index) => {
@@ -118,6 +279,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
                 flex flex-col justify-between items-center py-1
               `}
               data-active={isActive}
+              data-note={note}
               onMouseDown={() => handleMouseDown(note)}
               onMouseUp={() => handleMouseUp(note)}
               onMouseLeave={() => {
@@ -175,6 +337,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff }: KeyboardProps) {
                 `}
                 style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                 data-active={isActive}
+                data-note={note}
                 onMouseDown={() => handleMouseDown(note)}
                 onMouseUp={() => handleMouseUp(note)}
                 onMouseLeave={() => {

@@ -22,6 +22,7 @@ import { useKeyboardControls } from './hooks/useKeyboardControls'
 
 export function HybridSynth() {
   const [isInitialized, setIsInitialized] = useState(false)
+  const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
   const audioContextRef = useRef<AudioContext | null>(null)
   
   const {
@@ -74,6 +75,10 @@ export function HybridSynth() {
     panic()
   }
 
+  const handleMouseActiveKeysChange = (activeKeys: Set<string>) => {
+    setMouseActiveKeys(activeKeys)
+  }
+
   return (
     <div className="synth-chassis synth--noise max-w-7xl mx-auto flex flex-col">
       {/* Status Bar */}
@@ -81,7 +86,7 @@ export function HybridSynth() {
         <div className="flex items-center space-x-3">
           <LED active={isInitialized} color="green" size="sm" />
           <LED active={isPlaying} color="amber" size="sm" />
-          <LED active={Object.keys(activeKeys).length > 0} color="cyan" size="sm" />
+          <LED active={Object.keys(activeKeys).length > 0 || mouseActiveKeys.size > 0} color="cyan" size="sm" />
           </div>
         
         <div className="flex items-center space-x-4">
@@ -101,6 +106,7 @@ export function HybridSynth() {
           activeKeys={activeKeys}
           onNoteOn={playNote}
           onNoteOff={releaseNote}
+          onMouseActiveKeysChange={handleMouseActiveKeysChange}
         />
       </div>
 
