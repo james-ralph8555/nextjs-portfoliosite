@@ -312,7 +312,7 @@ export function ScopesMasterSection({
                 step={0.01}
                 label="MIX"
                 unit="%"
-                color="purple"
+                color="magenta"
                 onChange={onDelayMixChange}
                 size="xs"
               />

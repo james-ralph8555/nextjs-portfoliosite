@@ -18,7 +18,17 @@ export function ToggleButtonWithLED({
   color,
   className = ''
 }: ToggleButtonWithLEDProps) {
-  const toggleColor = enabled ? `bg-${color}-600 text-white border-${color}-500` : 'bg-gray-700 text-gray-300 border-gray-600'
+  const toggleColor = enabled 
+    ? color === 'amber' 
+      ? 'bg-amber-600 text-white border-amber-500'
+      : color === 'cyan'
+      ? 'bg-cyan-600 text-white border-cyan-500'
+      : color === 'green'
+      ? 'bg-green-600 text-white border-green-500'
+      : color === 'purple'
+      ? 'bg-purple-600 text-white border-purple-500'
+      : 'bg-magenta-600 text-white border-magenta-500'
+    : 'bg-gray-700 text-gray-300 border-gray-600'
   
   const buttonClasses = `
     synth-skeu-button 

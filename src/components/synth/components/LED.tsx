@@ -4,7 +4,7 @@ import React from 'react'
 
 interface LEDProps {
   active: boolean
-  color: 'green' | 'amber' | 'red' | 'cyan' | 'magenta'
+  color: 'green' | 'amber' | 'red' | 'cyan' | 'magenta' | 'purple'
   label?: string
   size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg'
   pulse?: boolean
@@ -25,7 +25,8 @@ export function LED({ active, color, label, size = 'md', pulse = false, classNam
     amber: active ? 'bg-amber-400' : 'bg-gray-700',
     red: active ? 'bg-red-400' : 'bg-gray-700',
     cyan: active ? 'bg-cyan-400' : 'bg-gray-700',
-    magenta: active ? 'bg-purple-400' : 'bg-gray-700'
+    magenta: active ? 'bg-purple-400' : 'bg-gray-700',
+    purple: active ? 'bg-purple-400' : 'bg-gray-700'
   }
 
   const glowClasses = {
@@ -33,7 +34,8 @@ export function LED({ active, color, label, size = 'md', pulse = false, classNam
     amber: active ? 'shadow-lg shadow-amber-400/50' : '',
     red: active ? 'shadow-lg shadow-red-400/50' : '',
     cyan: active ? 'shadow-lg shadow-cyan-400/50' : '',
-    magenta: active ? 'shadow-lg shadow-purple-400/50' : ''
+    magenta: active ? 'shadow-lg shadow-purple-400/50' : '',
+    purple: active ? 'shadow-lg shadow-purple-400/50' : ''
   }
 
   // Arturia LED capsule color mapping
@@ -42,7 +44,8 @@ export function LED({ active, color, label, size = 'md', pulse = false, classNam
     cyan: 'led--teal',
     amber: 'led--amber',
     red: 'led--red',
-    magenta: 'led--magenta'
+    magenta: 'led--magenta',
+    purple: 'led--magenta'
   }[color]
 
   return (
@@ -118,7 +121,7 @@ export function BlinkingLED({
 interface LEDArrayProps {
   leds: Array<{
     active: boolean
-    color: 'green' | 'amber' | 'red' | 'cyan' | 'magenta'
+    color: 'green' | 'amber' | 'red' | 'cyan' | 'magenta' | 'purple'
     label?: string
   }>
   direction?: 'horizontal' | 'vertical'

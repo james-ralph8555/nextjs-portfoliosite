@@ -18,7 +18,11 @@ export function VoiceToggle({
   color = voiceNumber === 1 ? 'amber' : 'cyan',
   className = ''
 }: VoiceToggleProps) {
-  const toggleColor = enabled ? `bg-${color}-600 text-white border-${color}-500` : 'bg-gray-700 text-gray-300 border-gray-600'
+  const toggleColor = enabled 
+    ? color === 'amber' 
+      ? 'bg-amber-600 text-white border-amber-500' 
+      : 'bg-cyan-600 text-white border-cyan-500'
+    : 'bg-gray-700 text-gray-300 border-gray-600'
   
   const buttonClasses = `
     synth-skeu-button 
