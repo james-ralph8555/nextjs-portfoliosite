@@ -149,7 +149,7 @@ export function Knob({
         // Fallback after timeout
         setTimeout(() => setIsLoaded(true), 1000)
       }
-      img.src = '/synth-skins/knob.svg'
+      img.src = '/synth-skins/knob2.svg'
     }
     
     checkSvgLoad()
@@ -234,9 +234,9 @@ export function Knob({
             transition: 'opacity 0.3s ease-in-out'
           }}
         >
-            {/* Use the knob.svg as background */}
+            {/* Use the knob2.svg as background */}
             <image 
-              href="/synth-skins/knob.svg" 
+              href="/synth-skins/knob2.svg" 
               width="100" 
               height="100" 
               preserveAspectRatio="xMidYMid meet"
@@ -246,23 +246,19 @@ export function Knob({
             <g transform={`rotate(${rotation} 50 50)`}>
               <line
                 x1="50"
-                y1="15.5"
+                y1="1.5"
                 x2="50"
-                y2="22.5"
-                stroke="#ffffff"
+                y2="30"
+                stroke="#ffbf3a"
                 strokeWidth="2.2"
                 strokeLinecap="round"
               />
               <line
                 x1="50"
-                y1="15.5"
+                y1="1.5"
                 x2="50"
-                y2="22.5"
-                stroke={color === 'amber' ? '#ffbf3a' : 
-                       color === 'green' ? '#4ade80' :
-                       color === 'red' ? '#f87171' :
-                       color === 'cyan' ? '#22d3ee' :
-                       color === 'magenta' ? '#f472b6' : '#f472b6'}
+                y2="30"
+                stroke="#ffbf3a"
                 strokeWidth="5"
                 strokeLinecap="round"
                 opacity="0.22"
