@@ -31,6 +31,18 @@
   }
 }
 
+@keyframes button-flash-blue {
+  0% {
+    background-color: #374151;
+    border-color: #4B5563;
+  }
+  100% {
+    background-color: #0891B2;
+    border-color: #06B6D4;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+  }
+}
+
 @keyframes speed-grid-flash {
   0% {
     background-color: #CF202B;
@@ -182,6 +194,10 @@
 
 .animate-button-flash-red {
   animation: button-flash-red 1s ease-in-out infinite;
+}
+
+.animate-button-flash-blue {
+  animation: button-flash-blue 1s ease-in-out infinite alternate;
 }
 
 .animate-speed-grid-flash {

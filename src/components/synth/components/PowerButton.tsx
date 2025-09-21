@@ -18,10 +18,10 @@ export function PowerButton({ isOn, onToggle }: PowerButtonProps) {
         ${
           isOn
             ? 'bg-green-600 border-green-500 text-white shadow-lg shadow-green-600/25 hover:bg-green-500 hover:border-green-400 focus:ring-green-500'
-            : 'bg-gray-800 border-gray-600 text-gray-400 hover:bg-gray-700 hover:border-gray-500 hover:text-gray-300 focus:ring-gray-500'
+            : 'bg-gray-700 border-gray-600 text-gray-400 animate-button-flash-blue hover:bg-gray-600 hover:text-white focus:ring-gray-500'
         }
       `}
-      aria-label={isOn ? "Power on" : "Power off"}
+      aria-label={isOn ? "Power on" : "Initialize audio"}
     >
       {/* Metallic shine effect */}
       <div className="absolute inset-0 rounded-sm opacity-0 group-hover:opacity-20 transition-opacity duration-200">
