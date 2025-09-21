@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
+import { ToggleButtonWithLED } from './ToggleButtonWithLED'
 
 interface ArpeggiatorSectionProps {
   arpeggiator: {
@@ -69,19 +70,16 @@ export function ArpeggiatorSection({
       {!isMobile && (
         <div className="space-y-2">
           {/* Arpeggiator Section */}
-          <div className="synth-subsection-desktop">
+          <div className="synth-subsection-desktop subsection-with-led">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
-                <button
-                  onClick={toggleArpeggiator}
-                  className={`synth-skeu-button text-[8px] ml-1 w-10 ${
-                    arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                  }`}
-                >
-                  {arpeggiator.enabled ? 'ON' : 'OFF'}
-                </button>
+                <ToggleButtonWithLED
+                  enabled={arpeggiator.enabled}
+                  onToggle={toggleArpeggiator}
+                  label="ARP"
+                  color="purple"
+                />
               </div>
               <button
                 className={`synth-skeu-button text-[8px] ${
@@ -173,19 +171,16 @@ export function ArpeggiatorSection({
       {/* Mobile Layout */}
       {isMobile && (
         <div className="space-y-2">
-          <div className="synth-subsection-mobile">
+          <div className="synth-subsection-mobile subsection-with-led">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
-                <button
-                  onClick={toggleArpeggiator}
-                  className={`synth-skeu-button text-[8px] w-10 ${
-                    arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                  }`}
-                >
-                  {arpeggiator.enabled ? 'ON' : 'OFF'}
-                </button>
+                <ToggleButtonWithLED
+                  enabled={arpeggiator.enabled}
+                  onToggle={toggleArpeggiator}
+                  label="ARP"
+                  color="purple"
+                />
                 <button
                   className={`synth-skeu-button text-[8px] ${
                     arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'

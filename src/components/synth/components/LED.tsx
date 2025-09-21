@@ -8,9 +8,10 @@ interface LEDProps {
   label?: string
   size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg'
   pulse?: boolean
+  className?: string
 }
 
-export function LED({ active, color, label, size = 'md', pulse = false }: LEDProps) {
+export function LED({ active, color, label, size = 'md', pulse = false, className = '' }: LEDProps) {
   const sizeClasses = {
     xxs: 'w-1 h-1',
     xs: 'w-1.5 h-1.5',
@@ -45,7 +46,7 @@ export function LED({ active, color, label, size = 'md', pulse = false }: LEDPro
   }[color]
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className={className}>
       <div
         className={`
           led ${arturiaColor}

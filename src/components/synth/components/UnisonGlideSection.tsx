@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
+import { ToggleButtonWithLED } from './ToggleButtonWithLED'
 import { ArpeggiatorSection } from './ArpeggiatorSection'
 
 interface UnisonGlideSectionProps {
@@ -89,19 +90,16 @@ export function UnisonGlideSection({
           {/* Unison and Glide Sections Side by Side */}
           <div className="grid grid-cols-2 gap-2">
             {/* Unison Section */}
-            <div className="synth-subsection-desktop">
+            <div className="synth-subsection-desktop subsection-with-led">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1">
-                  <LED active={unison.enabled} color="amber" size="xxs" />
                   <span className="text-[9px] font-mono text-gray-500">UNISON</span>
-                  <button
-                    onClick={toggleUnison}
-                    className={`synth-skeu-button text-[8px] ml-1 w-10 ${
-                      unison.enabled ? 'bg-amber-600 text-white border-amber-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                    }`}
-                  >
-                    {unison.enabled ? 'ON' : 'OFF'}
-                  </button>
+                  <ToggleButtonWithLED
+                    enabled={unison.enabled}
+                    onToggle={toggleUnison}
+                    label="UNISON"
+                    color="amber"
+                  />
                 </div>
               </div>
               
@@ -132,19 +130,16 @@ export function UnisonGlideSection({
             </div>
 
             {/* Glide Section */}
-            <div className="synth-subsection-desktop">
+            <div className="synth-subsection-desktop subsection-with-led">
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-1">
-                  <LED active={glide.enabled} color="green" size="xxs" />
                   <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
-                  <button
-                    onClick={toggleGlide}
-                    className={`synth-skeu-button text-[8px] ml-1 w-10 ${
-                      glide.enabled ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                    }`}
-                  >
-                    {glide.enabled ? 'ON' : 'OFF'}
-                  </button>
+                  <ToggleButtonWithLED
+                    enabled={glide.enabled}
+                    onToggle={toggleGlide}
+                    label="GLIDE"
+                    color="green"
+                  />
                 </div>
               </div>
               
@@ -188,19 +183,16 @@ export function UnisonGlideSection({
       {isMobile && (
         <div className="space-y-2">
           {/* Unison Section - Mobile */}
-          <div className="synth-subsection-mobile">
+          <div className="synth-subsection-mobile subsection-with-led">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={unison.enabled} color="amber" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">UNISON</span>
-                <button
-                  onClick={toggleUnison}
-                  className={`synth-skeu-button text-[8px] w-10 ${
-                    unison.enabled ? 'bg-amber-600 text-white border-amber-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                  }`}
-                >
-                  {unison.enabled ? 'ON' : 'OFF'}
-                </button>
+                <ToggleButtonWithLED
+                  enabled={unison.enabled}
+                  onToggle={toggleUnison}
+                  label="UNISON"
+                  color="amber"
+                />
               </div>
               <button
                 onClick={toggleMobileUnison}
@@ -241,19 +233,16 @@ export function UnisonGlideSection({
           </div>
 
           {/* Glide Section - Mobile */}
-          <div className="synth-subsection-mobile">
+          <div className="synth-subsection-mobile subsection-with-led">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={glide.enabled} color="green" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">GLIDE</span>
-                <button
-                  onClick={toggleGlide}
-                  className={`synth-skeu-button text-[8px] w-10 ${
-                    glide.enabled ? 'bg-green-600 text-white border-green-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                  }`}
-                >
-                  {glide.enabled ? 'ON' : 'OFF'}
-                </button>
+                <ToggleButtonWithLED
+                  enabled={glide.enabled}
+                  onToggle={toggleGlide}
+                  label="GLIDE"
+                  color="green"
+                />
               </div>
               <button
                 onClick={toggleMobileGlide}
@@ -295,19 +284,16 @@ export function UnisonGlideSection({
           </div>
 
           {/* Arpeggiator Section - Mobile */}
-          <div className="synth-subsection-mobile">
+          <div className="synth-subsection-mobile subsection-with-led">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">ARP</span>
-                <button
-                  onClick={() => onArpeggiatorChange({ enabled: !arpeggiator.enabled })}
-                  className={`synth-skeu-button text-[8px] w-10 ${
-                    arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
-                  }`}
-                >
-                  {arpeggiator.enabled ? 'ON' : 'OFF'}
-                </button>
+                <ToggleButtonWithLED
+                  enabled={arpeggiator.enabled}
+                  onToggle={() => onArpeggiatorChange({ enabled: !arpeggiator.enabled })}
+                  label="ARP"
+                  color="purple"
+                />
               </div>
               <button
                 onClick={toggleMobileArpeggiator}

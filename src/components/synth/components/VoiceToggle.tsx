@@ -30,8 +30,8 @@ export function VoiceToggle({
   `.trim()
 
   return (
-    <div className="flex items-center gap-1">
-      <LED active={enabled} color={color} size="xxs" />
+    <div className="subsection-with-led flex items-center gap-1">
+      <LED active={enabled} color={color} size="xxs" className="absolute top-1 right-1" />
       <span className="text-[9px] font-mono text-gray-500">V{voiceNumber}</span>
       <button
         onClick={() => onToggle(!enabled)}
