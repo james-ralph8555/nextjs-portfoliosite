@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
+import { ArpeggiatorSection } from './ArpeggiatorSection'
 
 interface UnisonGlideSectionProps {
   unison: {
@@ -15,19 +16,38 @@ interface UnisonGlideSectionProps {
     time: number
     legato: boolean
   }
+  arpeggiator: {
+    enabled: boolean
+    rate: number
+    pattern: 'up' | 'down' | 'upDown' | 'random'
+    octaveRange: number
+    gate: number
+    hold: boolean
+  }
   onUnisonChange: (unison: Partial<{ enabled: boolean; voices: number; detune: number }>) => void
   onGlideChange: (glide: Partial<{ enabled: boolean; time: number; legato: boolean }>) => void
+  onArpeggiatorChange: (arpeggiator: Partial<{
+    enabled: boolean
+    rate: number
+    pattern: 'up' | 'down' | 'upDown' | 'random'
+    octaveRange: number
+    gate: number
+    hold: boolean
+  }>) => void
 }
 
 export function UnisonGlideSection({
   unison,
   glide,
+  arpeggiator,
   onUnisonChange,
-  onGlideChange
+  onGlideChange,
+  onArpeggiatorChange
 }: UnisonGlideSectionProps) {
   const [isMobile, setIsMobile] = useState(false)
   const [mobileUnisonExpanded, setMobileUnisonExpanded] = useState(false)
   const [mobileGlideExpanded, setMobileGlideExpanded] = useState(false)
+  const [mobileArpeggiatorExpanded, setMobileArpeggiatorExpanded] = useState(false)
 
   useEffect(() => {
     const checkMobile = () => {
@@ -53,6 +73,10 @@ export function UnisonGlideSection({
 
   const toggleMobileGlide = () => {
     setMobileGlideExpanded(!mobileGlideExpanded)
+  }
+
+  const toggleMobileArpeggiator = () => {
+    setMobileArpeggiatorExpanded(!mobileArpeggiatorExpanded)
   }
 
   return (
@@ -147,6 +171,12 @@ export function UnisonGlideSection({
               </div>
             </div>
           </div>
+
+          {/* Arpeggiator Section */}
+          <ArpeggiatorSection
+            arpeggiator={arpeggiator}
+            onArpeggiatorChange={onArpeggiatorChange}
+          />
         </div>
       )}
 
@@ -255,6 +285,118 @@ export function UnisonGlideSection({
                       {glide.legato ? 'YES' : 'NO'}
                     </button>
                   </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Arpeggiator Section - Mobile */}
+          <div className="synth-subsection-mobile">
+            <div className="flex items-center justify-between p-1">
+              <div className="flex items-center gap-1">
+                <LED active={arpeggiator.enabled} color="purple" size="xxs" />
+                <span className="text-[9px] font-mono text-gray-500">ARPEGGIATOR</span>
+                <button
+                  onClick={() => onArpeggiatorChange({ enabled: !arpeggiator.enabled })}
+                  className={`synth-skeu-button text-[8px] ${
+                    arpeggiator.enabled ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
+                  }`}
+                >
+                  {arpeggiator.enabled ? 'ON' : 'OFF'}
+                </button>
+              </div>
+              <button
+                onClick={toggleMobileArpeggiator}
+                className="text-[8px] font-mono text-gray-400 hover:text-gray-300 transition-colors"
+              >
+                {mobileArpeggiatorExpanded ? '▼' : '▶'}
+              </button>
+            </div>
+            
+            {mobileArpeggiatorExpanded && (
+              <div className="mt-2 space-y-1">
+                <div className="grid grid-cols-3 gap-1">
+                  <div className="synth-knob-compact">
+                    <Knob
+                      value={arpeggiator.rate}
+                      min={1}
+                      max={32}
+                      step={1}
+                      label="Rate"
+                      unit="BPM"
+                      onChange={(v) => onArpeggiatorChange({ rate: Math.round(v) })}
+                      size="xs"
+                    />
+                  </div>
+                  <div className="synth-knob-compact">
+                    <Knob
+                      value={arpeggiator.octaveRange}
+                      min={1}
+                      max={4}
+                      step={1}
+                      label="Octaves"
+                      onChange={(v) => onArpeggiatorChange({ octaveRange: Math.round(v) })}
+                      size="xs"
+                    />
+                  </div>
+                  <div className="synth-knob-compact">
+                    <Knob
+                      value={arpeggiator.gate}
+                      min={0.1}
+                      max={1}
+                      step={0.05}
+                      label="Gate"
+                      unit="%"
+                      onChange={(v) => onArpeggiatorChange({ gate: v })}
+                      size="xs"
+                    />
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-1">
+                  <button
+                    className={`synth-button-small text-[7px] ${
+                      arpeggiator.pattern === 'up' ? 'bg-purple-600 text-white border-purple-500' : ''
+                    }`}
+                    onClick={() => onArpeggiatorChange({ pattern: 'up' })}
+                  >
+                    UP
+                  </button>
+                  <button
+                    className={`synth-button-small text-[7px] ${
+                      arpeggiator.pattern === 'down' ? 'bg-purple-600 text-white border-purple-500' : ''
+                    }`}
+                    onClick={() => onArpeggiatorChange({ pattern: 'down' })}
+                  >
+                    DOWN
+                  </button>
+                  <button
+                    className={`synth-button-small text-[7px] ${
+                      arpeggiator.pattern === 'upDown' ? 'bg-purple-600 text-white border-purple-500' : ''
+                    }`}
+                    onClick={() => onArpeggiatorChange({ pattern: 'upDown' })}
+                  >
+                    UP/DN
+                  </button>
+                  <button
+                    className={`synth-button-small text-[7px] ${
+                      arpeggiator.pattern === 'random' ? 'bg-purple-600 text-white border-purple-500' : ''
+                    }`}
+                    onClick={() => onArpeggiatorChange({ pattern: 'random' })}
+                  >
+                    RAND
+                  </button>
+                </div>
+                
+                <div>
+                  <button
+                    className={`synth-button-small text-[8px] w-full ${
+                      arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : ''
+                    }`}
+                    onClick={() => onArpeggiatorChange({ hold: !arpeggiator.hold })}
+                  >
+                    HOLD: {arpeggiator.hold ? 'ON' : 'OFF'}
+                  </button>
                 </div>
               </div>
             )}

@@ -61,6 +61,14 @@ export interface AudioState {
     mix: number
     drive: number
   }
+  arpeggiator: {
+    enabled: boolean
+    rate: number
+    pattern: 'up' | 'down' | 'upDown' | 'random'
+    octaveRange: number
+    gate: number
+    hold: boolean
+  }
   macros: {
     1: number
     2: number
@@ -116,6 +124,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     gain: 0.3,
     delay: { time: 0.3, feedback: 0.3, mix: 0.3 },
     chorus: { rate: 1.5, depth: 0.5, mix: 0.3, drive: 0.0 },
+    arpeggiator: { enabled: false, rate: 8, pattern: 'up', octaveRange: 1, gate: 0.8, hold: false },
     macros: { 1: 0.5, 2: 0.5, 3: 0.5, 4: 0.5 },
     performance: { maxPolyphony: 8, voiceStealing: true }
   })
@@ -137,6 +146,12 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   const lfoGainRef = useRef<GainNode | null>(null)
   const analyserRef = useRef<AnalyserNode | null>(null)
   const lastNoteRef = useRef<{ note: string; frequency: number } | null>(null)
+  
+  // Arpeggiator state
+  const arpNotesRef = useRef<string[]>([])
+  const arpCurrentIndexRef = useRef<number>(0)
+  const arpTimerRef = useRef<number | null>(null)
+  const arpHeldNotesRef = useRef<Set<string>>(new Set())
 
   // Initialize audio nodes
   useEffect(() => {
@@ -206,6 +221,9 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     delayGainRef.current.connect(audioContext.destination)
 
     return () => {
+      // Stop arpeggiator
+      stopArpeggiator()
+      
       // Clean up all voices
       voicesRef.current.forEach(voice => {
         voice.oscillators1.forEach(osc => {
@@ -326,6 +344,111 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return Math.max(20, Math.min(20000, tracked))
   }
 
+  // Arpeggiator utilities
+  const getArpNoteFrequencies = (baseNotes: string[]): string[] => {
+    const { octaveRange, pattern } = audioState.arpeggiator
+    const allNotes: string[] = []
+    
+    baseNotes.forEach(baseNote => {
+      const [noteName, octave] = baseNote.split(/(\d+)/).filter(Boolean)
+      const baseOctave = parseInt(octave)
+      
+      for (let oct = 0; oct < octaveRange; oct++) {
+        allNotes.push(`${noteName}${baseOctave + oct}`)
+      }
+    })
+    
+    // Sort notes for pattern generation
+    allNotes.sort((a, b) => {
+      const freqA = noteToFrequency(a)
+      const freqB = noteToFrequency(b)
+      return freqA - freqB
+    })
+    
+    return allNotes
+  }
+
+  const getArpPatternNotes = (baseNotes: string[]): string[] => {
+    const { pattern } = audioState.arpeggiator
+    const sortedNotes = getArpNoteFrequencies(baseNotes)
+    
+    switch (pattern) {
+      case 'up':
+        return sortedNotes
+      case 'down':
+        return [...sortedNotes].reverse()
+      case 'upDown':
+        return [...sortedNotes, ...sortedNotes.slice(1, -1).reverse()]
+      case 'random':
+        const shuffled = [...sortedNotes]
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1))
+          ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+        }
+        return shuffled
+      default:
+        return sortedNotes
+    }
+  }
+
+  const startArpeggiator = () => {
+    if (arpTimerRef.current !== null) return
+    
+    const { rate, gate } = audioState.arpeggiator
+    const interval = 60000 / rate / 4 // Convert rate (BPM) to interval (ms)
+    
+    const playNextArpNote = () => {
+      if (arpNotesRef.current.length === 0) {
+        stopArpeggiator()
+        return
+      }
+      
+      const currentNote = arpNotesRef.current[arpCurrentIndexRef.current]
+      playNote(currentNote, 0.8)
+      
+      // Schedule note release
+      if (audioContext) {
+        setTimeout(() => {
+          releaseNote(currentNote)
+        }, interval * gate)
+      }
+      
+      // Move to next note
+      arpCurrentIndexRef.current = (arpCurrentIndexRef.current + 1) % arpNotesRef.current.length
+      
+      // For random pattern, regenerate on each cycle
+      if (audioState.arpeggiator.pattern === 'random') {
+        arpNotesRef.current = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
+      }
+      
+      arpTimerRef.current = window.setTimeout(playNextArpNote, interval)
+    }
+    
+    // Generate initial pattern and start
+    arpNotesRef.current = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
+    arpCurrentIndexRef.current = 0
+    playNextArpNote()
+  }
+
+  const stopArpeggiator = () => {
+    if (arpTimerRef.current !== null) {
+      clearTimeout(arpTimerRef.current)
+      arpTimerRef.current = null
+    }
+    arpNotesRef.current = []
+    arpCurrentIndexRef.current = 0
+  }
+
+  const updateArpeggiatorNotes = () => {
+    if (!audioState.arpeggiator.enabled || arpHeldNotesRef.current.size === 0) {
+      stopArpeggiator()
+      return
+    }
+    
+    stopArpeggiator()
+    startArpeggiator()
+  }
+
   const getVoiceToSteal = (): string | null => {
     if (!audioState.performance.voiceStealing) return null
     
@@ -373,6 +496,15 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
   const playNote = (note: string, velocity: number = 0.8) => {
     if (!audioContext) return
+
+    // Handle arpeggiator mode
+    if (audioState.arpeggiator.enabled) {
+      arpHeldNotesRef.current.add(note)
+      if (!audioState.arpeggiator.hold || arpHeldNotesRef.current.size === 1) {
+        updateArpeggiatorNotes()
+      }
+      return
+    }
 
     const baseFrequency = noteToFrequency(note)
     const now = audioContext.currentTime
@@ -524,6 +656,15 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
   const releaseNote = (note: string) => {
     if (!audioContext) return
+
+    // Handle arpeggiator mode
+    if (audioState.arpeggiator.enabled) {
+      arpHeldNotesRef.current.delete(note)
+      if (!audioState.arpeggiator.hold || arpHeldNotesRef.current.size === 0) {
+        updateArpeggiatorNotes()
+      }
+      return
+    }
 
     // Find voice(s) for this note
     const voicesToRemove: string[] = []
@@ -697,6 +838,38 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     }
   }
 
+  const updateArpeggiator = (updates: Partial<AudioState['arpeggiator']>) => {
+    const prev = audioState
+    const next = { ...prev.arpeggiator, ...updates }
+    
+    setAudioState(prev => ({
+      ...prev,
+      arpeggiator: next
+    }))
+
+    // Handle arpeggiator state changes
+    if (typeof updates.enabled === 'boolean') {
+      if (!updates.enabled) {
+        stopArpeggiator()
+        // Release all held notes
+        arpHeldNotesRef.current.forEach(note => {
+          releaseNote(note)
+        })
+        arpHeldNotesRef.current.clear()
+      } else if (updates.enabled && arpHeldNotesRef.current.size > 0) {
+        updateArpeggiatorNotes()
+      }
+    }
+
+    // Update running arpeggiator if parameters changed
+    if (updates.pattern !== undefined || updates.rate !== undefined || 
+        updates.octaveRange !== undefined || updates.gate !== undefined) {
+      if (audioState.arpeggiator.enabled && arpHeldNotesRef.current.size > 0) {
+        updateArpeggiatorNotes()
+      }
+    }
+  }
+
   const updateMacros = (updates: Partial<AudioState['macros']>) => {
     setAudioState(prev => ({
       ...prev,
@@ -803,6 +976,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     updateDelay,
     updateLFO,
     updateChorus,
+    updateArpeggiator,
     updateMacros,
     updatePerformance,
     playNote,

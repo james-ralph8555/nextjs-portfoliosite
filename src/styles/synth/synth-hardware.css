@@ -18,6 +18,7 @@
   --accent-teal: #3dd6c6;
   --accent-amber: #ffb454;
   --accent-red: #ef4b4b;
+  --accent-purple: #a855f7;
 
   /* Depth */
   --elev-1: 0 1px 2px rgba(0,0,0,.45), 0 8px 20px rgba(0,0,0,.35);
@@ -110,6 +111,7 @@
 .led--teal  { color: var(--accent-teal); }
 .led--amber { color: var(--accent-amber); }
 .led--red   { color: var(--accent-red); }
+.led--purple { color: var(--accent-purple); }
 .led--magenta { color: #ff65df; }
 
 .led[data-on="true"] {

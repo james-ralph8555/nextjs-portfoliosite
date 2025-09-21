@@ -10,6 +10,7 @@ import { ChorusSection } from './components/ChorusSection'
 import { Scopes } from './components/Scopes'
 import { MacroSection } from './components/MacroSection'
 import { UnisonGlideSection } from './components/UnisonGlideSection'
+import { ArpeggiatorSection } from './components/ArpeggiatorSection'
 import { ScopesMasterSection } from './components/ScopesMasterSection'
 import { Keyboard } from './components/Keyboard'
 import { Analyzer } from './components/Analyzer'
@@ -33,6 +34,7 @@ export function HybridSynth() {
     updateDelay,
     updateLFO,
     updateChorus,
+    updateArpeggiator,
     updateMacros,
     updatePerformance,
     playNote,
@@ -130,8 +132,10 @@ export function HybridSynth() {
           <UnisonGlideSection
             unison={audioState.oscillator.unison}
             glide={audioState.oscillator.glide}
+            arpeggiator={audioState.arpeggiator}
             onUnisonChange={(unison) => updateOscillator({ unison: { ...audioState.oscillator.unison, ...unison } })}
             onGlideChange={(glide) => updateOscillator({ glide: { ...audioState.oscillator.glide, ...glide } })}
+            onArpeggiatorChange={updateArpeggiator}
           />
         </div>
 
