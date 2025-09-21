@@ -1,6 +1,6 @@
 # Synthesizer Component: Web Audio Guide
 
-This document maps the synthesizer’s UI to its Web Audio graph and behavior. It focuses on concrete API usage, signal flow, scheduling, and current gaps — no generic README fluff.
+This document maps the synthesizer’s UI to its Web Audio graph and behavior. It focuses on concrete API usage, signal flow, scheduling, and current gaps.
 
 ## Locations
 

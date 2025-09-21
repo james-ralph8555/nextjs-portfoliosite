@@ -8,7 +8,7 @@ import projectsConfig from '@/content/projects'
 import Star from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-const ProjectItemDesktop = ({ title, summary, image, url, github, stars, index }) => {
+const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, stars, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
   
   const handleProjectClick = (e) => {
@@ -20,7 +20,8 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, stars, index }
     e.preventDefault();
     e.stopPropagation();
     if (github) {
-      window.open(`https://github.com/${github}`, '_blank');
+      const target = githubUrl ? githubUrl : `https://github.com/${github}`;
+      window.open(target, '_blank');
     }
   };
 
@@ -52,7 +53,7 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, stars, index }
   );
 };
 
-const ProjectItem = ({ title, summary, image, url, github, stars, index }) => {
+const ProjectItem = ({ title, summary, image, url, github, githubUrl, stars, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
   const status = github ? 'ACTIVE' : 'ARCHIVED';
   const statusColor = status === 'ACTIVE' ? 'text-terminal-green' : 'text-terminal-orange';
@@ -66,7 +67,8 @@ const ProjectItem = ({ title, summary, image, url, github, stars, index }) => {
     e.preventDefault();
     e.stopPropagation();
     if (github) {
-      window.open(`https://github.com/${github}`, '_blank');
+      const target = githubUrl ? githubUrl : `https://github.com/${github}`;
+      window.open(target, '_blank');
     }
   };
 
@@ -153,6 +155,7 @@ export const ProjectsBlock = () => {
                     image={project.image}
                     url={project.url}
                     github={project.github}
+                    githubUrl={project.githubUrl}
                     stars={project.github ? starCounts[project.github] : undefined}
                   />
                 ))}
@@ -169,6 +172,7 @@ export const ProjectsBlock = () => {
                 image={project.image}
                 url={project.url}
                 github={project.github}
+                githubUrl={project.githubUrl}
                 stars={project.github ? starCounts[project.github] : undefined}
               />
             ))}

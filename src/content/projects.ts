@@ -2,6 +2,15 @@ const projectsConfig = {
   title: "Projects",
   items: [
     {
+      title: "Web Audio Synthesizer",
+      summary:
+        "Browser synth with ADSR envelopes, filters, fx, unison detune, keyboard input, and live scopes.",
+      image: null,
+      url: "/synth",
+      github: "james-ralph8555/nextjs-portfoliosite",
+      githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
+    },
+    {
       title: "fdnix",
       summary:
         "Fast, relevant, filterable search for the Nix packages collection. Blends keyword matching with semantic (vector) search to find the right package quickly.",
@@ -61,4 +70,3 @@ const projectsConfig = {
 } as const;
 
 export default projectsConfig;
-
