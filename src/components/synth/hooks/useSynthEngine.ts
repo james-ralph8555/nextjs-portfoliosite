@@ -445,8 +445,15 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       return
     }
     
-    stopArpeggiator()
-    startArpeggiator()
+    // Only regenerate the notes if arpeggiator is already running
+    if (arpTimerRef.current !== null) {
+      // Generate new pattern without stopping the timer
+      arpNotesRef.current = getArpPatternNotes(Array.from(arpHeldNotesRef.current))
+      arpCurrentIndexRef.current = 0
+    } else {
+      // Start arpeggiator if not already running
+      startArpeggiator()
+    }
   }
 
   const getVoiceToSteal = (): string | null => {

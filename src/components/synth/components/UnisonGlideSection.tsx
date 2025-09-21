@@ -294,7 +294,7 @@ export function UnisonGlideSection({
           <div className="synth-subsection-mobile">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="purple" size="xxs" />
+                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
                 <span className="text-[9px] font-mono text-gray-500">ARPEGGIATOR</span>
                 <button
                   onClick={() => onArpeggiatorChange({ enabled: !arpeggiator.enabled })}

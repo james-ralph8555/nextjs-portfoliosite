@@ -63,7 +63,7 @@ export function ArpeggiatorSection({
   }
 
   return (
-    <div className="synth-section">
+    <>
       
       {/* Desktop Layout */}
       {!isMobile && (
@@ -72,8 +72,8 @@ export function ArpeggiatorSection({
           <div className="synth-subsection-desktop">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="purple" size="xxs" />
-                <span className="text-[9px] font-mono text-gray-500">ARPEGGIATOR</span>
+                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
+                <span className="text-[9px] font-mono text-gray-500">ARP</span>
                 <button
                   onClick={toggleArpeggiator}
                   className={`synth-skeu-button text-[8px] ml-1 ${
@@ -179,8 +179,8 @@ export function ArpeggiatorSection({
           <div className="synth-subsection-mobile">
             <div className="flex items-center justify-between p-1">
               <div className="flex items-center gap-1">
-                <LED active={arpeggiator.enabled} color="purple" size="xxs" />
-                <span className="text-[9px] font-mono text-gray-500">ARPEGGIATOR</span>
+                <LED active={arpeggiator.enabled} color="magenta" size="xxs" />
+                <span className="text-[9px] font-mono text-gray-500">ARP</span>
                 <button
                   onClick={toggleArpeggiator}
                   className={`synth-skeu-button text-[8px] ${
@@ -288,6 +288,6 @@ export function ArpeggiatorSection({
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
