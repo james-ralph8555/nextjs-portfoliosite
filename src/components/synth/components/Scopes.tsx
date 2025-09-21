@@ -14,7 +14,7 @@ export function Scopes({ audioContext, analyser }: ScopesProps) {
   const [activeTab, setActiveTab] = useState<ScopeType>('wave')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   
   // Throttle rendering for performance
   const lastRenderRef = useRef<number>(0)
@@ -93,7 +93,7 @@ export function Scopes({ audioContext, analyser }: ScopesProps) {
     animationRef.current = requestAnimationFrame(draw)
 
     return () => {
-      if (animationRef.current) {
+      if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current)
       }
     }

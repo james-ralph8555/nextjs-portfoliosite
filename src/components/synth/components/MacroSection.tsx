@@ -32,7 +32,7 @@ export function MacroSection({
         {Object.entries(macros).map(([num, value]) => (
           <div key={num} className="synth-knob-compact">
             <div className="text-[9px] font-mono text-gray-400 mb-1 text-center">
-              {MACRO_LABELS[num as keyof typeof MACRO_LABELS]}
+              {MACRO_LABELS[parseInt(num) as keyof typeof MACRO_LABELS]}
             </div>
             <div className="flex justify-center">
               <Knob

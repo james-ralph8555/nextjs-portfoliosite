@@ -175,8 +175,10 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return () => {
       // Clean up all voices
       voicesRef.current.forEach(voice => {
-        voice.oscillator.stop()
-        voice.oscillator.disconnect()
+        voice.oscillators.forEach(osc => {
+          try { osc.stop() } catch {}
+          try { osc.disconnect() } catch {}
+        })
         voice.filter.disconnect()
         voice.gainNode.disconnect()
         voice.envelopeGain.disconnect()
@@ -267,12 +269,12 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return voiceToSteal[0]
   }
 
-  const createVoiceOscillators = (baseFrequency: number, detune: number): OscillatorNode[] => {
+  const createVoiceOscillators = (ac: AudioContext, baseFrequency: number, detune: number): OscillatorNode[] => {
     const oscillators: OscillatorNode[] = []
     const unisonVoices = audioState.oscillator.unison.enabled ? audioState.oscillator.unison.voices : 1
     
     for (let i = 0; i < unisonVoices; i++) {
-      const oscillator = audioContext.createOscillator()
+      const oscillator = ac.createOscillator()
       oscillator.type = audioState.oscillator.waveform
       
       if (unisonVoices > 1) {
@@ -312,7 +314,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     const voiceId = `${note}-${Date.now()}-${Math.random()}`
 
     // Create voice nodes
-    const oscillators = createVoiceOscillators(targetFrequency, audioState.oscillator.unison.detune)
+    const oscillators = createVoiceOscillators(audioContext, targetFrequency, audioState.oscillator.unison.detune)
     const filter = audioContext.createBiquadFilter()
     const gainNode = audioContext.createGain()
     const envelopeGain = audioContext.createGain()

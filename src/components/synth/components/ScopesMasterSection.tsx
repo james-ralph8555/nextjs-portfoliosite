@@ -35,10 +35,10 @@ export function ScopesMasterSection({
   const spectrumCanvasRef = useRef<HTMLCanvasElement>(null)
   const modalWaveCanvasRef = useRef<HTMLCanvasElement>(null)
   const modalSpectrumCanvasRef = useRef<HTMLCanvasElement>(null)
-  const waveAnimationRef = useRef<number>()
-  const spectrumAnimationRef = useRef<number>()
-  const modalWaveAnimationRef = useRef<number>()
-  const modalSpectrumAnimationRef = useRef<number>()
+  const waveAnimationRef = useRef<number | null>(null)
+  const spectrumAnimationRef = useRef<number | null>(null)
+  const modalWaveAnimationRef = useRef<number | null>(null)
+  const modalSpectrumAnimationRef = useRef<number | null>(null)
   
   // Throttle rendering for performance
   const lastWaveRenderRef = useRef<number>(0)
@@ -190,16 +190,16 @@ export function ScopesMasterSection({
     }
 
     return () => {
-      if (waveAnimationRef.current) {
+      if (waveAnimationRef.current !== null) {
         cancelAnimationFrame(waveAnimationRef.current)
       }
-      if (spectrumAnimationRef.current) {
+      if (spectrumAnimationRef.current !== null) {
         cancelAnimationFrame(spectrumAnimationRef.current)
       }
-      if (modalWaveAnimationRef.current) {
+      if (modalWaveAnimationRef.current !== null) {
         cancelAnimationFrame(modalWaveAnimationRef.current)
       }
-      if (modalSpectrumAnimationRef.current) {
+      if (modalSpectrumAnimationRef.current !== null) {
         cancelAnimationFrame(modalSpectrumAnimationRef.current)
       }
     }

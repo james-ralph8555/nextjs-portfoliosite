@@ -3,7 +3,7 @@
 import React from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
-import { WaveButtonGroup } from './WaveButton'
+import { WaveButtonGroup, type WaveformType } from './WaveButton'
 
 interface OscillatorSectionProps {
   waveform: OscillatorType
@@ -24,7 +24,7 @@ interface OscillatorSectionProps {
   onGlideChange: (glide: Partial<{ enabled: boolean; time: number; legato: boolean }>) => void
 }
 
-const WAVEFORMS = ['sawtooth', 'square', 'sine', 'triangle'] as const
+const WAVEFORMS: WaveformType[] = ['sawtooth', 'square', 'sine', 'triangle']
 
 export function OscillatorSection({
   waveform,
@@ -44,7 +44,7 @@ export function OscillatorSection({
       <div className="flex justify-center mb-2">
         <WaveButtonGroup
           waveforms={WAVEFORMS}
-          selectedWaveform={waveform}
+          selectedWaveform={waveform as WaveformType}
           onWaveformChange={onWaveformChange}
           labelMode="abbreviated"
           showIcons={true}

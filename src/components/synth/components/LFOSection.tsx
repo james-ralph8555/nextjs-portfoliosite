@@ -3,7 +3,7 @@
 import React from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
-import { WaveButtonGroup } from './WaveButton'
+import { WaveButtonGroup, type WaveformType } from './WaveButton'
 
 interface LFOSectionProps {
   waveform: OscillatorType
@@ -18,10 +18,13 @@ interface LFOSectionProps {
   onWaveformChange: (waveform: OscillatorType) => void
   onRateChange: (rate: number) => void
   onDepthChange: (depth: number) => void
-  onTargetChange: (target: keyof typeof targets, enabled: boolean) => void
+  onTargetChange: (
+    target: keyof LFOSectionProps['targets'],
+    enabled: boolean
+  ) => void
 }
 
-const WAVEFORMS = ['sine', 'square', 'sawtooth', 'triangle'] as const
+const WAVEFORMS: WaveformType[] = ['sine', 'square', 'sawtooth', 'triangle']
 
 export function LFOSection({
   waveform,
@@ -46,7 +49,7 @@ export function LFOSection({
           <div className="flex justify-center">
             <WaveButtonGroup
               waveforms={WAVEFORMS}
-              selectedWaveform={waveform}
+              selectedWaveform={waveform as WaveformType}
               onWaveformChange={onWaveformChange}
               labelMode="icons-only"
               showIcons={true}
@@ -93,7 +96,12 @@ export function LFOSection({
                 className={`synth-button-small text-[9px] ${
                   enabled ? 'bg-cyan-600 text-white border-cyan-500' : ''
                 }`}
-                onClick={() => onTargetChange(target as keyof typeof targets, !enabled)}
+                onClick={() =>
+                  onTargetChange(
+                    target as keyof LFOSectionProps['targets'],
+                    !enabled
+                  )
+                }
               >
                 {target.replace(/([A-Z])/g, ' $1').trim()}
               </button>
