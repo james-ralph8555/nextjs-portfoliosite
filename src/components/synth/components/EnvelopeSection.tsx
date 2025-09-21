@@ -36,7 +36,7 @@ export function EnvelopeSection({
             min={0.001}
             max={2}
             step={0.001}
-            label="A"
+            label="Atk"
             unit="s"
             color="magenta"
             onChange={onAttackChange}
@@ -50,7 +50,7 @@ export function EnvelopeSection({
             min={0.001}
             max={2}
             step={0.001}
-            label="D"
+            label="Dec"
             unit="s"
             color="magenta"
             onChange={onDecayChange}
@@ -64,7 +64,7 @@ export function EnvelopeSection({
             min={0}
             max={1}
             step={0.01}
-            label="S"
+            label="Sus"
             color="magenta"
             onChange={onSustainChange}
             size="sm"
@@ -77,7 +77,7 @@ export function EnvelopeSection({
             min={0.001}
             max={5}
             step={0.001}
-            label="R"
+            label="Rel"
             unit="s"
             color="magenta"
             onChange={onReleaseChange}
@@ -120,10 +120,10 @@ export function EnvelopeSection({
           {/* Labels */}
           <text x="5" y="8" fill="#666" fontSize="7" fontFamily="monospace">1.0</text>
           <text x="5" y="55" fill="#666" fontSize="7" fontFamily="monospace">0.0</text>
-          <text x="8" y="55" fill="#666" fontSize="7" fontFamily="monospace">A</text>
-          <text x={attack * 60 - 3} y="55" fill="#666" fontSize="7" fontFamily="monospace">D</text>
-          <text x={(attack + decay) * 60 - 3} y="55" fill="#666" fontSize="7" fontFamily="monospace">S</text>
-          <text x={(attack + decay + 1) * 60 - 3} y="55" fill="#666" fontSize="7" fontFamily="monospace">R</text>
+          <text x="8" y="55" fill="#666" fontSize="7" fontFamily="monospace">Atk</text>
+          <text x={attack * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Dec</text>
+          <text x={(attack + decay) * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Sus</text>
+          <text x={(attack + decay + 1) * 60 - 5} y="55" fill="#666" fontSize="7" fontFamily="monospace">Rel</text>
         </svg>
       </div>
     </div>
