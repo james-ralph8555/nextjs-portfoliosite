@@ -14,10 +14,10 @@ interface MacroSectionProps {
 }
 
 const MACRO_LABELS = {
-  1: 'Bright',
-  2: 'Thick', 
-  3: 'Move',
-  4: 'Space'
+  1: 'BRIGHT',
+  2: 'THICK', 
+  3: 'MOVE',
+  4: 'SPACE'
 }
 
 export function MacroSection({
@@ -28,10 +28,10 @@ export function MacroSection({
     <div className="synth-section">
       <div className="synth-section-title">MACRO</div>
       
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         {Object.entries(macros).map(([num, value]) => (
           <div key={num} className="synth-knob-compact">
-            <div className="text-[9px] font-mono text-gray-400 mb-1 text-center">
+            <div className="text-[9px] font-mono mb-1 text-center" style={{ color: 'var(--ink-1)' }}>
               {MACRO_LABELS[parseInt(num) as keyof typeof MACRO_LABELS]}
             </div>
             <div className="flex justify-center">

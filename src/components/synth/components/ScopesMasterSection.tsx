@@ -323,7 +323,7 @@ export function ScopesMasterSection({
           <div className="grid grid-cols-2 gap-1">
             {/* Input Level */}
             <div className="screen">
-              <div className="text-[8px] font-mono text-gray-500 mb-1">IN</div>
+              <div className="text-[8px] font-mono mb-1" style={{ color: 'var(--ink-1)' }}>IN</div>
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-green-600 to-green-400 transition-all duration-100"
@@ -334,7 +334,7 @@ export function ScopesMasterSection({
             
             {/* Delay Level */}
             <div className="screen">
-              <div className="text-[8px] font-mono text-gray-500 mb-1">DLY</div>
+              <div className="text-[8px] font-mono mb-1" style={{ color: 'var(--ink-1)' }}>DLY</div>
               <div className="h-4 bg-gray-900 rounded relative overflow-hidden">
                 <div 
                   className="h-full bg-gradient-to-r from-yellow-600 to-red-500 transition-all duration-100"
