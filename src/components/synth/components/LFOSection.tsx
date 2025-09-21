@@ -3,6 +3,7 @@
 import React from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
+import { WaveButtonGroup } from './WaveButton'
 
 interface LFOSectionProps {
   waveform: OscillatorType
@@ -20,7 +21,7 @@ interface LFOSectionProps {
   onTargetChange: (target: keyof typeof targets, enabled: boolean) => void
 }
 
-const WAVEFORMS: OscillatorType[] = ['sine', 'square', 'sawtooth', 'triangle']
+const WAVEFORMS = ['sine', 'square', 'sawtooth', 'triangle'] as const
 
 export function LFOSection({
   waveform,
@@ -42,16 +43,15 @@ export function LFOSection({
       <div className="grid grid-cols-2 gap-2">
         {/* Waveform Selection */}
         <div className="col-span-2">
-          <div className="flex gap-1 justify-center">
-            {WAVEFORMS.map((wf) => (
-              <button
-                key={wf}
-                className={`synth-button-waveform ${waveform === wf ? 'active' : ''}`}
-                onClick={() => onWaveformChange(wf)}
-              >
-                {wf.charAt(0).toUpperCase()}
-              </button>
-            ))}
+          <div className="flex justify-center">
+            <WaveButtonGroup
+              waveforms={WAVEFORMS}
+              selectedWaveform={waveform}
+              onWaveformChange={onWaveformChange}
+              labelMode="icons-only"
+              showIcons={true}
+              size="sm"
+            />
           </div>
         </div>
 

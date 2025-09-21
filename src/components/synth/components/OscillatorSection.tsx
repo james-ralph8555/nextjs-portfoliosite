@@ -3,6 +3,7 @@
 import React from 'react'
 import { Knob } from './Knob'
 import { LED } from './LED'
+import { WaveButtonGroup } from './WaveButton'
 
 interface OscillatorSectionProps {
   waveform: OscillatorType
@@ -23,12 +24,7 @@ interface OscillatorSectionProps {
   onGlideChange: (glide: Partial<{ enabled: boolean; time: number; legato: boolean }>) => void
 }
 
-const WAVEFORMS: { value: OscillatorType; label: string; color: string }[] = [
-  { value: 'sawtooth', label: 'SAW', color: 'amber' },
-  { value: 'square', label: 'SQR', color: 'red' },
-  { value: 'sine', label: 'SIN', color: 'green' },
-  { value: 'triangle', label: 'TRI', color: 'cyan' }
-]
+const WAVEFORMS = ['sawtooth', 'square', 'sine', 'triangle'] as const
 
 export function OscillatorSection({
   waveform,
@@ -45,19 +41,15 @@ export function OscillatorSection({
       </div>
       
       {/* Waveform Selection */}
-      <div className="grid grid-cols-4 gap-1 mb-2">
-        {WAVEFORMS.map(({ value, label }) => (
-          <button
-            key={value}
-            className={`
-              synth-button-waveform
-              ${waveform === value ? 'active' : ''}
-            `}
-            onClick={() => onWaveformChange(value)}
-          >
-            {label}
-          </button>
-        ))}
+      <div className="flex justify-center mb-2">
+        <WaveButtonGroup
+          waveforms={WAVEFORMS}
+          selectedWaveform={waveform}
+          onWaveformChange={onWaveformChange}
+          labelMode="abbreviated"
+          showIcons={true}
+          size="md"
+        />
       </div>
 
       {/* Mix Knob */}
