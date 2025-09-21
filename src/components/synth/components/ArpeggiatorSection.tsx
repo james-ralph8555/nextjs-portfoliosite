@@ -83,6 +83,14 @@ export function ArpeggiatorSection({
                   {arpeggiator.enabled ? 'ON' : 'OFF'}
                 </button>
               </div>
+              <button
+                className={`synth-skeu-button text-[8px] ${
+                  arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
+                }`}
+                onClick={() => onArpeggiatorChange({ hold: !arpeggiator.hold })}
+              >
+                HOLD
+              </button>
             </div>
             
             <div className="grid grid-cols-3 gap-1">
@@ -158,18 +166,7 @@ export function ArpeggiatorSection({
                 RAND
               </button>
             </div>
-            
-            <div className="mt-2">
-              <button
-                className={`synth-button-small text-[8px] w-full ${
-                  arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : ''
-                }`}
-                onClick={() => onArpeggiatorChange({ hold: !arpeggiator.hold })}
-              >
-                HOLD: {arpeggiator.hold ? 'ON' : 'OFF'}
-              </button>
             </div>
-          </div>
         </div>
       )}
 
@@ -188,6 +185,14 @@ export function ArpeggiatorSection({
                   }`}
                 >
                   {arpeggiator.enabled ? 'ON' : 'OFF'}
+                </button>
+                <button
+                  className={`synth-skeu-button text-[8px] ${
+                    arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : 'bg-gray-700 text-gray-300 border-gray-600'
+                  }`}
+                  onClick={() => onArpeggiatorChange({ hold: !arpeggiator.hold })}
+                >
+                  HOLD
                 </button>
               </div>
               <button
@@ -272,18 +277,7 @@ export function ArpeggiatorSection({
                     RAND
                   </button>
                 </div>
-                
-                <div>
-                  <button
-                    className={`synth-button-small text-[8px] w-full ${
-                      arpeggiator.hold ? 'bg-purple-600 text-white border-purple-500' : ''
-                    }`}
-                    onClick={() => onArpeggiatorChange({ hold: !arpeggiator.hold })}
-                  >
-                    HOLD: {arpeggiator.hold ? 'ON' : 'OFF'}
-                  </button>
                 </div>
-              </div>
             )}
           </div>
         </div>
