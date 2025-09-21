@@ -37,7 +37,7 @@ export function FilterSection({
 
   return (
     <div className="synth-section">
-      <div className="synth-section-title">FILTER</div>
+      <div className="synth-section-title text-left">FILTER</div>
       <div className="flex items-center justify-center mb-2">
         <FilterTypeButtons selectedType={type} onChange={(t) => onTypeChange?.(t)} />
       </div>

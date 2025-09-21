@@ -212,7 +212,7 @@ export function ScopesMasterSection({
   return (
     <>
       <div className="synth-section">
-        <div className="synth-section-title">SCOPES/MASTER</div>
+        <div className="synth-section-title text-left">SCOPES/MASTER</div>
         
         {/* Scopes Section */}
         <div className="mb-3">

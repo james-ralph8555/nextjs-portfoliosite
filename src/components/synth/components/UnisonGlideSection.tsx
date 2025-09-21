@@ -81,6 +81,7 @@ export function UnisonGlideSection({
 
   return (
     <div className="synth-section">
+      <div className="synth-section-title">PERFORM</div>
       
       {/* Desktop Layout - Integrated Controls (Always Visible) */}
       {!isMobile && (

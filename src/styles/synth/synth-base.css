@@ -24,7 +24,7 @@
   }
 
   .synth-section-title {
-    @apply text-xs font-mono text-gray-400 uppercase tracking-wider mb-2 text-center;
+    @apply text-xs font-mono text-gray-400 uppercase tracking-wider mb-2 text-left;
   }
 
   .synth-knob-compact {
