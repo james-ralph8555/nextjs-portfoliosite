@@ -3,7 +3,11 @@ import { useState, useRef, useEffect } from 'react'
 export interface AudioState {
   oscillator: {
     waveform: OscillatorType
-    mix: number
+    waveform2?: OscillatorType
+    mix1: number
+    mix2: number
+    tune1?: number // semitones
+    tune2?: number // semitones
     unison: {
       enabled: boolean
       voices: number
@@ -68,7 +72,10 @@ export interface AudioState {
 
 export interface Voice {
   id: string
-  oscillators: OscillatorNode[]
+  oscillators1: OscillatorNode[]
+  oscillators2: OscillatorNode[]
+  osc1GainNode: GainNode
+  osc2GainNode: GainNode
   filter: BiquadFilterNode
   gainNode: GainNode
   envelopeGain: GainNode
@@ -84,7 +91,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   const [audioState, setAudioState] = useState<AudioState>({
     oscillator: { 
       waveform: 'sawtooth',
-      mix: 0.5,
+      waveform2: 'square',
+      mix1: 0.5,
+      mix2: 0.5,
+      tune1: 0,
+      tune2: 0,
       unison: { enabled: true, voices: 3, detune: 0.1 },
       glide: { enabled: false, time: 0.1, legato: true }
     },
@@ -175,13 +186,20 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return () => {
       // Clean up all voices
       voicesRef.current.forEach(voice => {
-        voice.oscillators.forEach(osc => {
+        voice.oscillators1.forEach(osc => {
+          try { osc.stop() } catch {}
+          try { osc.disconnect() } catch {}
+        })
+        voice.oscillators2.forEach(osc => {
           try { osc.stop() } catch {}
           try { osc.disconnect() } catch {}
         })
         voice.filter.disconnect()
         voice.gainNode.disconnect()
         voice.envelopeGain.disconnect()
+        voice.filterEnvelopeGain.disconnect()
+        voice.osc1GainNode.disconnect()
+        voice.osc2GainNode.disconnect()
       })
       voicesRef.current.clear()
 
@@ -269,24 +287,31 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     return voiceToSteal[0]
   }
 
-  const createVoiceOscillators = (ac: AudioContext, baseFrequency: number, detune: number): OscillatorNode[] => {
+  const createUnisonOscillatorsForWaveform = (
+    ac: AudioContext,
+    baseFrequency: number,
+    detune: number,
+    waveform: OscillatorType,
+    baseTuneCents: number
+  ): OscillatorNode[] => {
     const oscillators: OscillatorNode[] = []
     const unisonVoices = audioState.oscillator.unison.enabled ? audioState.oscillator.unison.voices : 1
-    
+
     for (let i = 0; i < unisonVoices; i++) {
-      const oscillator = ac.createOscillator()
-      oscillator.type = audioState.oscillator.waveform
-      
+      const osc = ac.createOscillator()
+      osc.type = waveform
+
       if (unisonVoices > 1) {
-        // Detune oscillators for unison effect
         const detuneAmount = (i - (unisonVoices - 1) / 2) * detune * 100 // cents
-        oscillator.detune.value = detuneAmount
+        osc.detune.value = detuneAmount + baseTuneCents
+      } else {
+        osc.detune.value = baseTuneCents
       }
-      
-      oscillator.frequency.value = baseFrequency
-      oscillators.push(oscillator)
+
+      osc.frequency.value = baseFrequency
+      oscillators.push(osc)
     }
-    
+
     return oscillators
   }
 
@@ -314,7 +339,20 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     const voiceId = `${note}-${Date.now()}-${Math.random()}`
 
     // Create voice nodes
-    const oscillators = createVoiceOscillators(audioContext, targetFrequency, audioState.oscillator.unison.detune)
+    const oscillators1 = createUnisonOscillatorsForWaveform(
+      audioContext,
+      targetFrequency,
+      audioState.oscillator.unison.detune,
+      audioState.oscillator.waveform,
+      (audioState.oscillator.tune1 || 0) * 100
+    )
+    const oscillators2 = createUnisonOscillatorsForWaveform(
+      audioContext,
+      targetFrequency,
+      audioState.oscillator.unison.detune,
+      audioState.oscillator.waveform2 || audioState.oscillator.waveform,
+      (audioState.oscillator.tune2 || 0) * 100
+    )
     const filter = audioContext.createBiquadFilter()
     const gainNode = audioContext.createGain()
     const envelopeGain = audioContext.createGain()
@@ -335,17 +373,39 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     filterEnvelopeGain.gain.linearRampToValueAtTime(1, now + audioState.filterEnvelope.attack)
     filterEnvelopeGain.gain.linearRampToValueAtTime(audioState.filterEnvelope.sustain, now + audioState.filterEnvelope.attack + audioState.filterEnvelope.decay)
 
-    // Connect voice signal chain
-    const mixer = audioContext.createGain()
-    mixer.gain.value = 1 / oscillators.length // Mix down unison voices
-    
-    oscillators.forEach(osc => {
-      osc.connect(filter)
+    // Group mixers to normalize unison within each oscillator group
+    const groupMixer1 = audioContext.createGain()
+    const groupMixer2 = audioContext.createGain()
+    const unisonVoices = audioState.oscillator.unison.enabled ? audioState.oscillator.unison.voices : 1
+    groupMixer1.gain.value = 1 / unisonVoices
+    groupMixer2.gain.value = 1 / unisonVoices
+
+    oscillators1.forEach(osc => {
+      osc.connect(groupMixer1)
       osc.start(now)
     })
-    
-    filter.connect(mixer)
-    mixer.connect(envelopeGain)
+    oscillators2.forEach(osc => {
+      osc.connect(groupMixer2)
+      osc.start(now)
+    })
+
+    // Crossfade between osc1 and osc2 using mix
+    const osc1GainNode = audioContext.createGain()
+    const osc2GainNode = audioContext.createGain()
+    const mix1 = Math.max(0, Math.min(1, audioState.oscillator.mix1))
+    const mix2 = Math.max(0, Math.min(1, audioState.oscillator.mix2))
+    osc1GainNode.gain.value = mix1
+    osc2GainNode.gain.value = mix2
+
+    groupMixer1.connect(osc1GainNode)
+    groupMixer2.connect(osc2GainNode)
+
+    // Sum into filter
+    osc1GainNode.connect(filter)
+    osc2GainNode.connect(filter)
+
+    // Continue chain
+    filter.connect(envelopeGain)
     envelopeGain.connect(gainNode)
     
     // Apply filter envelope modulation
@@ -358,7 +418,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
 
     // Handle glide if enabled
     if (audioState.oscillator.glide.enabled && lastNoteRef.current && targetFrequency !== baseFrequency) {
-      oscillators.forEach(osc => {
+      const allOscs = [...oscillators1, ...oscillators2]
+      allOscs.forEach(osc => {
         osc.frequency.cancelScheduledValues(now)
         osc.frequency.setValueAtTime(targetFrequency, now)
         osc.frequency.exponentialRampToValueAtTime(baseFrequency, now + audioState.oscillator.glide.time)
@@ -368,7 +429,10 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     // Store voice
     const voice: Voice = {
       id: voiceId,
-      oscillators,
+      oscillators1,
+      oscillators2,
+      osc1GainNode,
+      osc2GainNode,
       filter,
       gainNode,
       envelopeGain,
@@ -419,17 +483,21 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       voice.filterEnvelopeGain.gain.linearRampToValueAtTime(0, now + audioState.filterEnvelope.release)
 
       // Stop oscillators after release
-      voice.oscillators.forEach(osc => {
+      const allOscs = [...voice.oscillators1, ...voice.oscillators2]
+      allOscs.forEach(osc => {
         osc.stop(now + Math.max(audioState.envelope.release, audioState.filterEnvelope.release))
       })
 
       // Clean up voice
       setTimeout(() => {
-        voice.oscillators.forEach(osc => osc.disconnect())
+        voice.oscillators1.forEach(osc => osc.disconnect())
+        voice.oscillators2.forEach(osc => osc.disconnect())
         voice.filter.disconnect()
         voice.gainNode.disconnect()
         voice.envelopeGain.disconnect()
         voice.filterEnvelopeGain.disconnect()
+        voice.osc1GainNode.disconnect()
+        voice.osc2GainNode.disconnect()
         voicesRef.current.delete(voiceId)
 
         if (voicesRef.current.size === 0) {
@@ -440,16 +508,46 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   }
 
   const updateOscillator = (updates: Partial<AudioState['oscillator']>) => {
-    setAudioState(prev => ({
+    const prev = audioState
+    const next = { ...prev.oscillator, ...updates }
+    const tune1DeltaCents = (typeof updates.tune1 === 'number' ? (updates.tune1 - (prev.oscillator.tune1 || 0)) * 100 : 0)
+    const tune2DeltaCents = (typeof updates.tune2 === 'number' ? (updates.tune2 - (prev.oscillator.tune2 || 0)) * 100 : 0)
+
+    setAudioState({
       ...prev,
-      oscillator: { ...prev.oscillator, ...updates }
-    }))
+      oscillator: next
+    })
 
     // Update active oscillators
     voicesRef.current.forEach(voice => {
       if (updates.waveform) {
-        voice.oscillators.forEach(osc => {
-          osc.type = updates.waveform!
+        voice.oscillators1.forEach(osc => {
+          osc.type = updates.waveform as OscillatorType
+        })
+      }
+      if (updates.waveform2) {
+        voice.oscillators2.forEach(osc => {
+          osc.type = updates.waveform2 as OscillatorType
+        })
+      }
+      if (typeof (updates as any).mix1 === 'number') {
+        const mix1 = Math.max(0, Math.min(1, (updates as any).mix1))
+        voice.osc1GainNode.gain.value = mix1
+      }
+      if (typeof (updates as any).mix2 === 'number') {
+        const mix2 = Math.max(0, Math.min(1, (updates as any).mix2))
+        voice.osc2GainNode.gain.value = mix2
+      }
+      if (tune1DeltaCents !== 0) {
+        const now = audioContext?.currentTime ?? 0
+        voice.oscillators1.forEach(osc => {
+          osc.detune.setValueAtTime(osc.detune.value + tune1DeltaCents, now)
+        })
+      }
+      if (tune2DeltaCents !== 0) {
+        const now = audioContext?.currentTime ?? 0
+        voice.oscillators2.forEach(osc => {
+          osc.detune.setValueAtTime(osc.detune.value + tune2DeltaCents, now)
         })
       }
     })
@@ -518,7 +616,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   const panic = () => {
     // Stop all notes immediately
     voicesRef.current.forEach((voice, voiceId) => {
-      voice.oscillators.forEach(osc => {
+      const allOscs = [...voice.oscillators1, ...voice.oscillators2]
+      allOscs.forEach(osc => {
         osc.stop()
         osc.disconnect()
       })
@@ -526,6 +625,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       voice.gainNode.disconnect()
       voice.envelopeGain.disconnect()
       voice.filterEnvelopeGain.disconnect()
+      voice.osc1GainNode.disconnect()
+      voice.osc2GainNode.disconnect()
     })
     voicesRef.current.clear()
     setIsPlaying(false)
@@ -538,7 +639,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       state: {
         oscillator: { 
           waveform: 'sawtooth' as OscillatorType,
-          mix: 0.5,
+          waveform2: 'square' as OscillatorType,
+          mix1: 0.5,
+          mix2: 0.5,
+          tune1: 0,
+          tune2: 0,
           unison: { enabled: true, voices: 3, detune: 0.1 },
           glide: { enabled: false, time: 0.1, legato: true }
         },
@@ -563,7 +668,11 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       state: {
         oscillator: { 
           waveform: 'sawtooth' as OscillatorType,
-          mix: 0.8,
+          waveform2: 'square' as OscillatorType,
+          mix1: 0.4,
+          mix2: 0.6,
+          tune1: 0,
+          tune2: 0,
           unison: { enabled: true, voices: 4, detune: 0.2 },
           glide: { enabled: false, time: 0.1, legato: true }
         },

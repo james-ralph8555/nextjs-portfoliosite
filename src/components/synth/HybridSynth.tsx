@@ -108,11 +108,19 @@ export function HybridSynth() {
         <div className="synth-grid-osc">
           <OscillatorSection 
             waveform={audioState.oscillator.waveform}
-            mix={audioState.oscillator.mix}
+            waveform2={audioState.oscillator.waveform2 || audioState.oscillator.waveform}
+            mix1={audioState.oscillator.mix1}
+            mix2={audioState.oscillator.mix2}
+            tune1={audioState.oscillator.tune1 || 0}
+            tune2={audioState.oscillator.tune2 || 0}
             unison={audioState.oscillator.unison}
             glide={audioState.oscillator.glide}
             onWaveformChange={(waveform) => updateOscillator({ waveform })}
-            onMixChange={(mix) => updateOscillator({ mix })}
+            onWaveform2Change={(waveform2) => updateOscillator({ waveform2 })}
+            onMix1Change={(mix1) => updateOscillator({ mix1 } as any)}
+            onMix2Change={(mix2) => updateOscillator({ mix2 } as any)}
+            onTune1Change={(tune1) => updateOscillator({ tune1 } as any)}
+            onTune2Change={(tune2) => updateOscillator({ tune2 } as any)}
             onUnisonChange={(unison) => updateOscillator({ unison: { ...audioState.oscillator.unison, ...unison } })}
             onGlideChange={(glide) => updateOscillator({ glide: { ...audioState.oscillator.glide, ...glide } })}
           />
