@@ -80,10 +80,7 @@ export function HybridSynth() {
           <LED active={isInitialized} color="green" size="sm" />
           <LED active={isPlaying} color="amber" size="sm" />
           <LED active={Object.keys(activeKeys).length > 0} color="cyan" size="sm" />
-          <div className="text-[10px] font-mono text-gray-400">
-            Voices: {Array.from(isPlaying ? [1] : [])}/8
           </div>
-        </div>
         
         <div className="flex items-center space-x-4">
           <PowerButton 

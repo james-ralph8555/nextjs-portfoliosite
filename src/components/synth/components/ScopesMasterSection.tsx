@@ -33,100 +33,161 @@ export function ScopesMasterSection({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const waveCanvasRef = useRef<HTMLCanvasElement>(null)
   const spectrumCanvasRef = useRef<HTMLCanvasElement>(null)
+  const modalWaveCanvasRef = useRef<HTMLCanvasElement>(null)
+  const modalSpectrumCanvasRef = useRef<HTMLCanvasElement>(null)
   const waveAnimationRef = useRef<number>()
   const spectrumAnimationRef = useRef<number>()
+  const modalWaveAnimationRef = useRef<number>()
+  const modalSpectrumAnimationRef = useRef<number>()
   
   // Throttle rendering for performance
   const lastWaveRenderRef = useRef<number>(0)
   const lastSpectrumRenderRef = useRef<number>(0)
+  const lastModalWaveRenderRef = useRef<number>(0)
+  const lastModalSpectrumRenderRef = useRef<number>(0)
   const FPS = 30
   const FRAME_TIME = 1000 / FPS
 
   useEffect(() => {
-    if (!analyser || !waveCanvasRef.current || !spectrumCanvasRef.current) return
-
-    const waveCanvas = waveCanvasRef.current
-    const spectrumCanvas = spectrumCanvasRef.current
-    const waveCtx = waveCanvas.getContext('2d')
-    const spectrumCtx = spectrumCanvas.getContext('2d')
-    if (!waveCtx || !spectrumCtx) return
+    if (!analyser) return
 
     const bufferLength = analyser.frequencyBinCount
     const waveDataArray = new Uint8Array(bufferLength)
     const spectrumDataArray = new Uint8Array(bufferLength)
 
-    const drawWave = (timestamp: number) => {
-      // Throttle rendering
-      if (timestamp - lastWaveRenderRef.current < FRAME_TIME) {
-        waveAnimationRef.current = requestAnimationFrame(drawWave)
-        return
-      }
-      lastWaveRenderRef.current = timestamp
-
+    // Helper function to draw waveform on any canvas
+    const drawWaveform = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
       analyser.getByteTimeDomainData(waveDataArray)
 
-      waveCtx.fillStyle = '#000000'
-      waveCtx.fillRect(0, 0, waveCanvas.width, waveCanvas.height)
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       // Draw waveform
-      waveCtx.lineWidth = 1
-      waveCtx.strokeStyle = '#22d3ee'
-      waveCtx.beginPath()
+      ctx.lineWidth = 1
+      ctx.strokeStyle = '#22d3ee'
+      ctx.beginPath()
 
-      const sliceWidth = waveCanvas.width / bufferLength
+      const sliceWidth = canvas.width / bufferLength
       let x = 0
 
       for (let i = 0; i < bufferLength; i++) {
         const v = waveDataArray[i] / 128.0
-        const y = v * waveCanvas.height / 2
+        const y = v * canvas.height / 2
 
         if (i === 0) {
-          waveCtx.moveTo(x, y)
+          ctx.moveTo(x, y)
         } else {
-          waveCtx.lineTo(x, y)
+          ctx.lineTo(x, y)
         }
 
         x += sliceWidth
       }
 
-      waveCtx.lineTo(waveCanvas.width, waveCanvas.height / 2)
-      waveCtx.stroke()
-
-      waveAnimationRef.current = requestAnimationFrame(drawWave)
+      ctx.lineTo(canvas.width, canvas.height / 2)
+      ctx.stroke()
     }
 
-    const drawSpectrum = (timestamp: number) => {
-      // Throttle rendering
-      if (timestamp - lastSpectrumRenderRef.current < FRAME_TIME) {
-        spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
-        return
-      }
-      lastSpectrumRenderRef.current = timestamp
-
+    // Helper function to draw spectrum on any canvas
+    const drawSpectrum = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
       analyser.getByteFrequencyData(spectrumDataArray)
 
-      spectrumCtx.fillStyle = '#000000'
-      spectrumCtx.fillRect(0, 0, spectrumCanvas.width, spectrumCanvas.height)
+      ctx.fillStyle = '#000000'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
       
-      const barWidth = (spectrumCanvas.width / bufferLength) * 2.5
+      const barWidth = (canvas.width / bufferLength) * 2.5
       let barHeight
       let x = 0
 
       for (let i = 0; i < bufferLength; i++) {
-        barHeight = (spectrumDataArray[i] / 255) * spectrumCanvas.height
+        barHeight = (spectrumDataArray[i] / 255) * canvas.height
 
         const hue = (i / bufferLength) * 240 // Blue to cyan gradient
-        spectrumCtx.fillStyle = `hsl(${180 + hue * 0.3}, 70%, 50%)`
-        spectrumCtx.fillRect(x, spectrumCanvas.height - barHeight, barWidth, barHeight)
+        ctx.fillStyle = `hsl(${180 + hue * 0.3}, 70%, 50%)`
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight)
 
         x += barWidth + 1
       }
-
-      spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
     }
 
-    waveAnimationRef.current = requestAnimationFrame(drawWave)
-    spectrumAnimationRef.current = requestAnimationFrame(drawSpectrum)
+    // Small canvas animations
+    const drawSmallWave = (timestamp: number) => {
+      if (!waveCanvasRef.current) return
+      
+      // Throttle rendering
+      if (timestamp - lastWaveRenderRef.current < FRAME_TIME) {
+        waveAnimationRef.current = requestAnimationFrame(drawSmallWave)
+        return
+      }
+      lastWaveRenderRef.current = timestamp
+
+      const ctx = waveCanvasRef.current.getContext('2d')
+      if (ctx) drawWaveform(waveCanvasRef.current, ctx)
+
+      waveAnimationRef.current = requestAnimationFrame(drawSmallWave)
+    }
+
+    const drawSmallSpectrum = (timestamp: number) => {
+      if (!spectrumCanvasRef.current) return
+      
+      // Throttle rendering
+      if (timestamp - lastSpectrumRenderRef.current < FRAME_TIME) {
+        spectrumAnimationRef.current = requestAnimationFrame(drawSmallSpectrum)
+        return
+      }
+      lastSpectrumRenderRef.current = timestamp
+
+      const ctx = spectrumCanvasRef.current.getContext('2d')
+      if (ctx) drawSpectrum(spectrumCanvasRef.current, ctx)
+
+      spectrumAnimationRef.current = requestAnimationFrame(drawSmallSpectrum)
+    }
+
+    // Modal canvas animations
+    const drawModalWave = (timestamp: number) => {
+      if (!modalWaveCanvasRef.current) return
+      
+      // Throttle rendering
+      if (timestamp - lastModalWaveRenderRef.current < FRAME_TIME) {
+        modalWaveAnimationRef.current = requestAnimationFrame(drawModalWave)
+        return
+      }
+      lastModalWaveRenderRef.current = timestamp
+
+      const ctx = modalWaveCanvasRef.current.getContext('2d')
+      if (ctx) drawWaveform(modalWaveCanvasRef.current, ctx)
+
+      modalWaveAnimationRef.current = requestAnimationFrame(drawModalWave)
+    }
+
+    const drawModalSpectrum = (timestamp: number) => {
+      if (!modalSpectrumCanvasRef.current) return
+      
+      // Throttle rendering
+      if (timestamp - lastModalSpectrumRenderRef.current < FRAME_TIME) {
+        modalSpectrumAnimationRef.current = requestAnimationFrame(drawModalSpectrum)
+        return
+      }
+      lastModalSpectrumRenderRef.current = timestamp
+
+      const ctx = modalSpectrumCanvasRef.current.getContext('2d')
+      if (ctx) drawSpectrum(modalSpectrumCanvasRef.current, ctx)
+
+      modalSpectrumAnimationRef.current = requestAnimationFrame(drawModalSpectrum)
+    }
+
+    // Start animations for available canvases
+    if (waveCanvasRef.current) {
+      waveAnimationRef.current = requestAnimationFrame(drawSmallWave)
+    }
+    if (spectrumCanvasRef.current) {
+      spectrumAnimationRef.current = requestAnimationFrame(drawSmallSpectrum)
+    }
+    if (modalWaveCanvasRef.current) {
+      modalWaveAnimationRef.current = requestAnimationFrame(drawModalWave)
+    }
+    if (modalSpectrumCanvasRef.current) {
+      modalSpectrumAnimationRef.current = requestAnimationFrame(drawModalSpectrum)
+    }
 
     return () => {
       if (waveAnimationRef.current) {
@@ -135,8 +196,14 @@ export function ScopesMasterSection({
       if (spectrumAnimationRef.current) {
         cancelAnimationFrame(spectrumAnimationRef.current)
       }
+      if (modalWaveAnimationRef.current) {
+        cancelAnimationFrame(modalWaveAnimationRef.current)
+      }
+      if (modalSpectrumAnimationRef.current) {
+        cancelAnimationFrame(modalSpectrumAnimationRef.current)
+      }
     }
-  }, [analyser])
+  }, [analyser, isModalOpen]) // Add isModalOpen to re-run when modal opens/closes
 
   const handleCanvasClick = () => {
     setIsModalOpen(true)
@@ -295,7 +362,7 @@ export function ScopesMasterSection({
               <div>
                 <div className="text-sm font-mono text-gray-400 mb-2">Waveform</div>
                 <canvas
-                  ref={waveCanvasRef}
+                  ref={modalWaveCanvasRef}
                   width={400}
                   height={300}
                   className="w-full bg-black border border-gray-700 rounded"
@@ -304,7 +371,7 @@ export function ScopesMasterSection({
               <div>
                 <div className="text-sm font-mono text-gray-400 mb-2">Spectrum</div>
                 <canvas
-                  ref={spectrumCanvasRef}
+                  ref={modalSpectrumCanvasRef}
                   width={400}
                   height={300}
                   className="w-full bg-black border border-gray-700 rounded"
