@@ -7,6 +7,7 @@ import Image from 'next/image';
 import projectsConfig from '@/content/projects'
 import Star from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import { FeaturedProjectsGrid } from './FeaturedProjectsGrid';
 
 const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, stars, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
@@ -135,6 +136,12 @@ export const ProjectsBlock = () => {
           <span className="terminal-header-text">PROJECTS</span>
         </div>
         <div className="px-4 pt-4 pb-4">
+          {/* Featured Projects Grid */}
+          <FeaturedProjectsGrid />
+          
+          {/* Separator before projects table */}
+          <div className="my-6 border-t border-box-outline"></div>
+          
           <div className="hidden md:block overflow-x-auto">
             <table className="data-table w-full font-mono text-xs">
               <thead>
