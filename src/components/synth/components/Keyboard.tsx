@@ -254,21 +254,22 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
   // Create a stable mapping for black key positions to prevent flickering
   const stableBlackKeyPositions = React.useMemo(() => {
     const positions: Record<string, number> = {}
-    allNotes.forEach((note, index) => {
-      if (BLACK_KEYS.some(bk => note.includes(bk))) {
-        const noteName = note.replace(/\d+$/, '')
-        const blackKeyPosition = BLACK_KEY_POSITIONS[noteName as keyof typeof BLACK_KEY_POSITIONS]
+    const octaves = [currentOctave, currentOctave + 1]
+    
+    for (const octave of octaves) {
+      for (const blackKey of BLACK_KEYS) {
+        const note = `${blackKey}${octave}`
+        const blackKeyPosition = BLACK_KEY_POSITIONS[blackKey as keyof typeof BLACK_KEY_POSITIONS]
         if (typeof blackKeyPosition === 'number') {
-          const octave = parseInt(note.replace(/^\D+/, ''))
           const octaveStartIndex = (octave - currentOctave) * WHITE_KEYS.length
           const whiteKeyIndex = octaveStartIndex + blackKeyPosition
-          // Position black key at 75% between white keys for proper alignment
-          positions[note] = ((whiteKeyIndex + 0.75) / renderedWhiteKeys.length) * 100
+          // Position black key properly between white keys
+          positions[note] = ((whiteKeyIndex + 1) / renderedWhiteKeys.length) * 100
         }
       }
-    })
+    }
     return positions
-  }, [currentOctave, renderedWhiteKeys.length, allNotes])
+  }, [currentOctave, renderedWhiteKeys.length])
   
   // Update mouse down handler to enable continuous movement
   const handleMouseDown = (note: string) => {

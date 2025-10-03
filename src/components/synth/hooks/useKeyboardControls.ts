@@ -48,18 +48,18 @@ export function useKeyboardControls({ onNoteOn, onNoteOff, currentOctave = 4, on
         return
       }
 
-      // Handle octave control keys (Z/X)
-      if (key === 'z' && onOctaveUp) {
-        event.preventDefault()
-        setActiveOctaveKeys(prev => new Set(prev).add(key))
-        onOctaveUp()
-        return
-      }
-      
-      if (key === 'x' && onOctaveDown) {
+      // Handle octave control keys (Z/X) - FLIPPED
+      if (key === 'z' && onOctaveDown) {
         event.preventDefault()
         setActiveOctaveKeys(prev => new Set(prev).add(key))
         onOctaveDown()
+        return
+      }
+      
+      if (key === 'x' && onOctaveUp) {
+        event.preventDefault()
+        setActiveOctaveKeys(prev => new Set(prev).add(key))
+        onOctaveUp()
         return
       }
 
