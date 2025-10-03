@@ -78,6 +78,9 @@ Polyphony/stealing:
 - Computer keys (two octaves):
   - White: `a s d f g h j k l ;` → C4–E5
   - Black: `w e t y u o p` → C#4–D#5
+- Octave control:
+  - `Z`: Decrease octave (shift keyboard range down)
+  - `X`: Increase octave (shift keyboard range up)
 - Hook: `useKeyboardControls` de‑bounces repeats, prevents modifiers, and releases stuck notes on `window.blur`.
 - Mouse/touch input on the on‑screen keyboard mirrors the same note on/off calls.
 
