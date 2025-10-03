@@ -7,6 +7,7 @@ interface KeyboardProps {
   onNoteOn: (note: string) => void
   onNoteOff: (note: string) => void
   onMouseActiveKeysChange?: (activeKeys: Set<string>) => void
+  currentOctave?: number
 }
 
 const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -21,28 +22,48 @@ const BLACK_KEY_POSITIONS = {
   'A#': 5     // After A (position 5)
 }
 
-const KEY_MAPPING: Record<string, string> = {
+// Base key mappings without octave (will be calculated dynamically)
+const BASE_KEY_MAPPING: Record<string, string> = {
   // White keys: a s d f g h j k l ; 
-  'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4',
-  'k': 'C5', 'l': 'D5', ';': 'E5',
+  'a': 'C', 's': 'D', 'd': 'E', 'f': 'F', 'g': 'G', 'h': 'A', 'j': 'B',
+  'k': 'C', 'l': 'D', ';': 'E',
   
   // Black keys: w e t y u o p
-  'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4',
-  'o': 'C#5', 'p': 'D#5'
+  'w': 'C#', 'e': 'D#', 't': 'F#', 'y': 'G#', 'u': 'A#',
+  'o': 'C#', 'p': 'D#'
 }
 
-const REVERSE_MAPPING: Record<string, string> = Object.entries(KEY_MAPPING).reduce((acc, [key, note]) => {
-  acc[note] = key
-  return acc
-}, {} as Record<string, string>)
-
-export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysChange }: KeyboardProps) {
+export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysChange, currentOctave = 4 }: KeyboardProps) {
   const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
   const [isMouseDown, setIsMouseDown] = useState(false)
   const [isTouchActive, setIsTouchActive] = useState(false)
   const [currentMouseKey, setCurrentMouseKey] = useState<string | null>(null)
   const keyboardRef = useRef<HTMLDivElement>(null)
-  const octaves = [4, 5] // Two octaves
+  
+  // Calculate dynamic key mappings based on current octave
+  const KEY_MAPPING: Record<string, string> = React.useMemo(() => {
+    const mapping: Record<string, string> = {}
+    
+    Object.entries(BASE_KEY_MAPPING).forEach(([key, note]) => {
+      // Determine octave based on key position
+      let octave = currentOctave
+      if (key === 'k' || key === 'l' || key === ';' || key === 'o' || key === 'p') {
+        octave = currentOctave + 1 // Second octave
+      }
+      mapping[key] = `${note}${octave}`
+    })
+    
+    return mapping
+  }, [currentOctave])
+  
+  const REVERSE_MAPPING: Record<string, string> = React.useMemo(() => {
+    return Object.entries(KEY_MAPPING).reduce((acc, [key, note]) => {
+      acc[note] = key
+      return acc
+    }, {} as Record<string, string>)
+  }, [KEY_MAPPING])
+  
+  const octaves = [currentOctave, currentOctave + 1] // Dynamic octaves
   const allNotes: string[] = []
 
   // Generate notes for all octaves (both white and black keys)
@@ -248,7 +269,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
   return (
     <div 
       ref={keyboardRef}
-      className="relative h-24"
+      className="relative h-24 flex"
       onMouseMove={handleMouseMove}
       onTouchMove={handleTouchMove}
       onMouseLeave={() => {
@@ -263,79 +284,49 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
         }
       }}
     >
-      {/* White keys using CSS Grid for consistent sizing */}
-      <div className="grid h-full relative" style={{ gridTemplateColumns: `repeat(${renderedWhiteKeys.length}, 1fr)` }}>
-        {renderedWhiteKeys.map((note, index) => {
-          const keyLabel = getKeyLabel(note)
-          const isActive = isKeyActive(note)
+      {/* Octave Buttons */}
+      <div className="flex flex-col gap-2 h-full justify-center items-center pr-2">
+        {/* Up Button */}
+        <button
+          className="octave-button octave-button-up relative group w-8 h-8 flex items-center justify-center"
+          aria-label="Octave up (Z key)"
+        >
+          <div className="led-glow" />
+          <span className="relative z-10 text-white font-bold text-sm leading-none">▲</span>
+        </button>
 
-          return (
-            <div
-              key={note}
-              className={`
-                key-white relative border-r border-gray-600 last:border-r-0
-                ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
-                transition-all duration-100 cursor-pointer select-none
-                flex flex-col justify-between items-center py-1
-              `}
-              data-active={isActive}
-              data-note={note}
-              onMouseDown={() => handleMouseDown(note)}
-              onMouseUp={() => handleMouseUp(note)}
-              onMouseLeave={() => {
-                if (isActive) handleMouseUp(note)
-              }}
-              onTouchStart={(e) => handleTouchStart(e, note)}
-              onTouchEnd={(e) => handleTouchEnd(e, note)}
-            >
-              <div className="hidden md:block text-xs font-mono text-gray-500 font-medium">{note}</div>
-              <div className="hidden md:block text-xs font-mono text-gray-700 font-medium">{keyLabel.toUpperCase()}</div>
-              <div className="md:hidden text-xs font-mono text-gray-500 font-medium mt-auto">{note}</div>
-            </div>
-          )
-        })}
+        {/* Down Button */}
+        <button
+          className="octave-button octave-button-down relative group w-8 h-8 flex items-center justify-center"
+          aria-label="Octave down (X key)"
+        >
+          <div className="led-glow" />
+          <span className="relative z-10 text-white font-bold text-sm leading-none">▼</span>
+        </button>
 
-        {/* Black keys overlay */}
-        <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none">
-          {allNotes.map((note) => {
-            const isBlackKey = BLACK_KEYS.some(bk => note.includes(bk))
+        {/* Current Octave Display */}
+        <div className="text-[9px] font-mono text-gray-500 font-bold uppercase tracking-wider whitespace-nowrap">
+          OCT {currentOctave}
+        </div>
+      </div>
+
+      {/* Keyboard Keys */}
+      <div className="flex-1 relative">
+        {/* White keys using CSS Grid for consistent sizing */}
+        <div className="grid h-full relative" style={{ gridTemplateColumns: `repeat(${renderedWhiteKeys.length}, 1fr)` }}>
+          {renderedWhiteKeys.map((note, index) => {
             const keyLabel = getKeyLabel(note)
             const isActive = isKeyActive(note)
 
-            if (!isBlackKey) return null
-
-            // Find the position of this black key relative to white keys
-            const noteName = note.replace(/\d+$/, '') // Remove octave
-            const blackKeyPosition = BLACK_KEY_POSITIONS[noteName as keyof typeof BLACK_KEY_POSITIONS]
-            
-            if (typeof blackKeyPosition !== 'number') {
-              return null
-            }
-            
-            // Calculate which white key this black key follows
-            const octave = parseInt(note.replace(/^\D+/, ''))
-            const octaveStartIndex = (octave - 4) * WHITE_KEYS.length
-            const whiteKeyIndex = octaveStartIndex + blackKeyPosition
-            
-            // Find the actual rendered white key at this position
-            const targetWhiteKey = renderedWhiteKeys[whiteKeyIndex]
-            
-            if (!targetWhiteKey) return null
-            
-            // Position black key at 75% between white keys for proper alignment
-            const position = ((whiteKeyIndex + 1) / renderedWhiteKeys.length) * 100
-            
             return (
               <div
                 key={note}
                 className={`
-                  key-black absolute w-7 h-16 rounded-b-sm
-                  ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
+                  key-white relative border-r border-gray-600 last:border-r-0
+                  ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
                   transition-all duration-100 cursor-pointer select-none
-                  pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
-                  z-20
+                  flex flex-col justify-between items-center py-1
                 `}
-                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                 data-active={isActive}
                 data-note={note}
                 onMouseDown={() => handleMouseDown(note)}
@@ -346,10 +337,69 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
                 onTouchStart={(e) => handleTouchStart(e, note)}
                 onTouchEnd={(e) => handleTouchEnd(e, note)}
               >
-                <div className="text-xs font-mono text-white font-medium hidden md:block">{keyLabel.toUpperCase()}</div>
+                <div className="hidden md:block text-xs font-mono text-gray-500 font-medium">{note}</div>
+                <div className="hidden md:block text-xs font-mono text-gray-700 font-medium">{keyLabel.toUpperCase()}</div>
+                <div className="md:hidden text-xs font-mono text-gray-500 font-medium mt-auto">{note}</div>
               </div>
             )
           })}
+
+          {/* Black keys overlay */}
+          <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none">
+            {allNotes.map((note) => {
+              const isBlackKey = BLACK_KEYS.some(bk => note.includes(bk))
+              const keyLabel = getKeyLabel(note)
+              const isActive = isKeyActive(note)
+
+              if (!isBlackKey) return null
+
+              // Find the position of this black key relative to white keys
+              const noteName = note.replace(/\d+$/, '') // Remove octave
+              const blackKeyPosition = BLACK_KEY_POSITIONS[noteName as keyof typeof BLACK_KEY_POSITIONS]
+              
+              if (typeof blackKeyPosition !== 'number') {
+                return null
+              }
+              
+              // Calculate which white key this black key follows
+              const octave = parseInt(note.replace(/^\D+/, ''))
+              const octaveStartIndex = (octave - currentOctave) * WHITE_KEYS.length
+              const whiteKeyIndex = octaveStartIndex + blackKeyPosition
+              
+              // Find the actual rendered white key at this position
+              const targetWhiteKey = renderedWhiteKeys[whiteKeyIndex]
+              
+              if (!targetWhiteKey) return null
+              
+              // Position black key at 75% between white keys for proper alignment
+              const position = ((whiteKeyIndex + 1) / renderedWhiteKeys.length) * 100
+              
+              return (
+                <div
+                  key={note}
+                  className={`
+                    key-black absolute w-7 h-16 rounded-b-sm
+                    ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
+                    transition-all duration-100 cursor-pointer select-none
+                    pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
+                    z-20
+                  `}
+                  style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                  data-active={isActive}
+                  data-note={note}
+                  onMouseDown={() => handleMouseDown(note)}
+                  onMouseUp={() => handleMouseUp(note)}
+                  onMouseLeave={() => {
+                    if (isActive) handleMouseUp(note)
+                  }}
+                  onTouchStart={(e) => handleTouchStart(e, note)}
+                  onTouchEnd={(e) => handleTouchEnd(e, note)}
+                >
+                  <div className="text-xs font-mono text-white font-medium hidden md:block">{keyLabel.toUpperCase()}</div>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </div>
     </div>

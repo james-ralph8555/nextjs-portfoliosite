@@ -1,29 +1,65 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 interface KeyboardControlsProps {
   onNoteOn: (note: string) => void
   onNoteOff: (note: string) => void
+  currentOctave?: number
+  onOctaveUp?: () => void
+  onOctaveDown?: () => void
 }
 
-const KEY_MAPPING: Record<string, string> = {
+// Base key mappings without octave (will be calculated dynamically)
+const BASE_KEY_MAPPING: Record<string, string> = {
   // White keys: a s d f g h j k l ; 
-  'a': 'C4', 's': 'D4', 'd': 'E4', 'f': 'F4', 'g': 'G4', 'h': 'A4', 'j': 'B4',
-  'k': 'C5', 'l': 'D5', ';': 'E5',
+  'a': 'C', 's': 'D', 'd': 'E', 'f': 'F', 'g': 'G', 'h': 'A', 'j': 'B',
+  'k': 'C', 'l': 'D', ';': 'E',
   
   // Black keys: w e t y u o p
-  'w': 'C#4', 'e': 'D#4', 't': 'F#4', 'y': 'G#4', 'u': 'A#4',
-  'o': 'C#5', 'p': 'D#5'
+  'w': 'C#', 'e': 'D#', 't': 'F#', 'y': 'G#', 'u': 'A#',
+  'o': 'C#', 'p': 'D#'
 }
 
-export function useKeyboardControls({ onNoteOn, onNoteOff }: KeyboardControlsProps) {
+export function useKeyboardControls({ onNoteOn, onNoteOff, currentOctave = 4, onOctaveUp, onOctaveDown }: KeyboardControlsProps) {
   const [activeKeys, setActiveKeys] = useState<Record<string, string>>({})
+  const [activeOctaveKeys, setActiveOctaveKeys] = useState<Set<string>>(new Set())
+
+  // Calculate dynamic key mappings based on current octave
+  const KEY_MAPPING = React.useMemo(() => {
+    const mapping: Record<string, string> = {}
+    
+    Object.entries(BASE_KEY_MAPPING).forEach(([key, note]) => {
+      // Determine octave based on key position
+      let octave = currentOctave
+      if (key === 'k' || key === 'l' || key === ';' || key === 'o' || key === 'p') {
+        octave = currentOctave + 1 // Second octave
+      }
+      mapping[key] = `${note}${octave}`
+    })
+    
+    return mapping
+  }, [currentOctave])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase()
       
       // Skip if key is already active or modifier key
-      if (activeKeys[key] || event.ctrlKey || event.altKey || event.metaKey) {
+      if (activeKeys[key] || activeOctaveKeys.has(key) || event.ctrlKey || event.altKey || event.metaKey) {
+        return
+      }
+
+      // Handle octave control keys (Z/X)
+      if (key === 'z' && onOctaveUp) {
+        event.preventDefault()
+        setActiveOctaveKeys(prev => new Set(prev).add(key))
+        onOctaveUp()
+        return
+      }
+      
+      if (key === 'x' && onOctaveDown) {
+        event.preventDefault()
+        setActiveOctaveKeys(prev => new Set(prev).add(key))
+        onOctaveDown()
         return
       }
 
@@ -38,6 +74,17 @@ export function useKeyboardControls({ onNoteOn, onNoteOff }: KeyboardControlsPro
     const handleKeyUp = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase()
       const note = activeKeys[key]
+
+      // Handle octave control keys (Z/X)
+      if ((key === 'z' || key === 'x') && activeOctaveKeys.has(key)) {
+        event.preventDefault()
+        setActiveOctaveKeys(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(key)
+          return newSet
+        })
+        return
+      }
 
       if (note) {
         event.preventDefault()
@@ -72,7 +119,7 @@ export function useKeyboardControls({ onNoteOn, onNoteOff }: KeyboardControlsPro
         onNoteOff(note)
       })
     }
-  }, [activeKeys, onNoteOn, onNoteOff])
+  }, [activeKeys, activeOctaveKeys, onNoteOn, onNoteOff, onOctaveUp, onOctaveDown, KEY_MAPPING])
 
   return {
     activeKeys,

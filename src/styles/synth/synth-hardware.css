@@ -224,3 +224,154 @@
     inset 0 -3px 8px rgba(0,0,0,.55),
     0 6px 12px rgba(0,0,0,.5);
 }
+
+/* 9) Octave Buttons - Plastic/Rubber Hardware Buttons */
+.octave-button {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--t-quick) var(--ease-hw), 
+              box-shadow var(--t-quick) var(--ease-hw),
+              background-color var(--t-quick) var(--ease-hw);
+  border-radius: 8px;
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.25),     /* top highlight */
+    inset 0 -3px 6px rgba(0,0,0,.35),          /* inner depth */
+    0 4px 12px rgba(0,0,0,.4),                 /* drop shadow */
+    0 1px 2px rgba(0,0,0,.5);                 /* hard shadow */
+}
+
+/* Plastic surface texture with subtle gradients */
+.octave-button::before {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120% 40% at 50% 20%, rgba(255,255,255,.35), transparent 50%),
+    radial-gradient(80% 60% at 50% 80%, rgba(0,0,0,.15), transparent 60%),
+    linear-gradient(135deg, rgba(255,255,255,.12) 0%, transparent 40%, rgba(0,0,0,.08) 100%);
+  border-radius: inherit;
+  mix-blend-mode: screen;
+}
+
+/* Rubber-like tactile edge highlight */
+.octave-button::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  pointer-events: none;
+  background: linear-gradient(180deg, 
+    rgba(255,255,255,.2) 0%, 
+    rgba(255,255,255,.05) 25%, 
+    transparent 50%);
+  border-radius: calc(8px - 2px);
+  opacity: .8;
+  transition: opacity var(--t-quick) var(--ease-hw);
+}
+
+/* Press state - realistic button depression */
+.octave-button:active {
+  transform: translateY(2px) scale(0.98);
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.15),
+    inset 0 -2px 4px rgba(0,0,0,.45),
+    0 2px 6px rgba(0,0,0,.4),
+    0 1px 1px rgba(0,0,0,.5);
+}
+
+.octave-button:active::after {
+  opacity: .4;
+}
+
+/* Enhanced hover state with glow */
+.octave-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,.35),
+    inset 0 -3px 6px rgba(0,0,0,.35),
+    0 6px 16px rgba(0,0,0,.45),
+    0 2px 4px rgba(0,0,0,.3),
+    0 0 8px currentColor;  /* colored glow */
+}
+
+/* Specific button color variants */
+.octave-button-up {
+  background: linear-gradient(145deg, #0891b2, #0e7490);
+  border-color: #0e7490;
+  color: #06b6d4;
+}
+
+.octave-button-up:hover {
+  background: linear-gradient(145deg, #06b6d4, #0891b2);
+  border-color: #06b6d4;
+  color: #22d3ee;
+}
+
+.octave-button-up:active {
+  background: linear-gradient(145deg, #0e7490, #155e75);
+  border-color: #155e75;
+}
+
+.octave-button-down {
+  background: linear-gradient(145deg, #d97706, #b45309);
+  border-color: #b45309;
+  color: #f59e0b;
+}
+
+.octave-button-down:hover {
+  background: linear-gradient(145deg, #f59e0b, #d97706);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.octave-button-down:active {
+  background: linear-gradient(145deg, #b45309, #92400e);
+  border-color: #92400e;
+}
+
+/* LED light effects for octave buttons */
+.octave-button .led-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: 10px;
+  opacity: 0;
+  transition: opacity var(--t-quick) var(--ease-hw);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.octave-button:hover .led-glow {
+  opacity: 0.6;
+  animation: led-pulse 1.5s ease-in-out infinite;
+}
+
+.octave-button-up .led-glow {
+  background: radial-gradient(circle, #22d3ee, transparent 70%);
+  box-shadow: 0 0 20px #06b6d4, 0 0 40px #06b6d4;
+}
+
+.octave-button-down .led-glow {
+  background: radial-gradient(circle, #fbbf24, transparent 70%);
+  box-shadow: 0 0 20px #f59e0b, 0 0 40px #f59e0b;
+}
+
+@keyframes led-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Focus state for accessibility */
+.octave-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .octave-button {
+    transition: none;
+  }
+  .octave-button:hover .led-glow {
+    animation: none;
+  }
+}

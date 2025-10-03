@@ -23,6 +23,7 @@ import { useKeyboardControls } from './hooks/useKeyboardControls'
 export function HybridSynth() {
   const [isInitialized, setIsInitialized] = useState(false)
   const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
+  const [currentOctave, setCurrentOctave] = useState(4)
   const audioContextRef = useRef<AudioContext | null>(null)
   
   const {
@@ -44,11 +45,6 @@ export function HybridSynth() {
     isPlaying,
     analyser
   } = useSynthEngine(audioContextRef.current)
-
-  const { activeKeys } = useKeyboardControls({
-    onNoteOn: playNote,
-    onNoteOff: releaseNote
-  })
 
   // Initialize audio context on first user interaction
   const initAudio = async () => {
@@ -74,6 +70,22 @@ export function HybridSynth() {
   const handlePanicClick = () => {
     panic()
   }
+
+  const handleOctaveUp = () => {
+    setCurrentOctave(prev => Math.min(prev + 1, 7))
+  }
+
+  const handleOctaveDown = () => {
+    setCurrentOctave(prev => Math.max(prev - 1, 1))
+  }
+
+  const { activeKeys } = useKeyboardControls({
+    onNoteOn: playNote,
+    onNoteOff: releaseNote,
+    currentOctave,
+    onOctaveUp: handleOctaveUp,
+    onOctaveDown: handleOctaveDown
+  })
 
   const handleMouseActiveKeysChange = (activeKeys: Set<string>) => {
     setMouseActiveKeys(activeKeys)
@@ -107,6 +119,7 @@ export function HybridSynth() {
           onNoteOn={playNote}
           onNoteOff={releaseNote}
           onMouseActiveKeysChange={handleMouseActiveKeysChange}
+          currentOctave={currentOctave}
         />
       </div>
 
