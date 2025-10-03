@@ -2,10 +2,19 @@ const projectsConfig = {
   title: "Projects",
   items: [
     {
+      title: "PageSonic",
+      summary:
+        "Local first, in-browser PDF viewer + audiobook reader",
+      image: "/assets/pagesonic.webp",
+      url: "https://page-sonic.com",
+      github: "james-ralph8555/pagesonic",
+      githubUrl: "https://github.com/james-ralph8555/pagesonic",
+    },
+    {
       title: "Web Audio Synthesizer",
       summary:
         "Browser synth with ADSR envelopes, filters, fx, unison detune, keyboard input, and live scopes.",
-      image: null,
+      image: "/assets/web_audio_synth.webp",
       url: "/synth",
       github: "james-ralph8555/nextjs-portfoliosite",
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
@@ -15,14 +24,14 @@ const projectsConfig = {
       summary:
         "Fast, relevant, filterable search for the Nix packages collection. Blends keyword matching with semantic (vector) search to find the right package quickly.",
       image: null,
-      url: "https://fdnix.com",
+      url: "https://github.com/james-ralph8555/fdnix",
       github: "james-ralph8555/fdnix",
     },
     {
       title: "HomeBench",
       summary:
         "A privacy-by-design in-browser SQL workbench powered by DuckDB-WASM. Analyze your data locally without sending it to a server.",
-      image: null,
+      image: "/assets/homebench.webp",
       url: "https://homebench.casa",
       github: "james-ralph8555/homebench",
     },

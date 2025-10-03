@@ -126,6 +126,19 @@ export const ProjectsBlock = () => {
     fetchStars();
   }, []);
 
+  // Featured projects to exclude from the main table
+  const featuredProjectTitles = [
+    'PageSonic',
+    'Real-Time Black Hole Simulator',
+    'HomeBench', 
+    'Web Audio Synthesizer'
+  ];
+
+  // Filter out featured projects from the table display
+  const tableProjects = projectsConfig.items.filter(project => 
+    !featuredProjectTitles.includes(project.title)
+  );
+
   const totalProjects = projectsConfig.items.length;
   const activeProjects = projectsConfig.items.filter(project => project.github).length;
 
@@ -153,7 +166,7 @@ export const ProjectsBlock = () => {
                 </tr>
               </thead>
               <tbody>
-                {projectsConfig.items.map((project, index) => (
+                {tableProjects.map((project, index) => (
                   <ProjectItemDesktop 
                     key={index}
                     index={index}
@@ -170,7 +183,7 @@ export const ProjectsBlock = () => {
             </table>
           </div>
           <div className="md:hidden">
-            {projectsConfig.items.map((project, index) => (
+            {tableProjects.map((project, index) => (
               <ProjectItem 
                 key={index}
                 index={index}

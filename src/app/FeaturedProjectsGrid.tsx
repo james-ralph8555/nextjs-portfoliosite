@@ -73,11 +73,12 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
 }
 
 export const FeaturedProjectsGrid = () => {
-  // Featured projects as specified by the user
+  // Featured projects from main config
   const featuredProjectTitles = [
+    'PageSonic',
     'Real-Time Black Hole Simulator',
     'HomeBench', 
-    'Web-Audio Synthesizer'
+    'Web Audio Synthesizer'
   ]
 
   const featuredProjects = projectsConfig.items.filter(project => 
