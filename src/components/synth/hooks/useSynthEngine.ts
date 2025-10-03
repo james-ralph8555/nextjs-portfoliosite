@@ -318,15 +318,25 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   }, [audioState.lfo.waveform, audioState.lfo.rate, audioState.lfo.depth])
 
   const noteToFrequency = (note: string): number => {
-    const noteFrequencies: Record<string, number> = {
-      'C4': 261.63, 'C#4': 277.18, 'D4': 293.66, 'D#4': 311.13,
-      'E4': 329.63, 'F4': 349.23, 'F#4': 369.99, 'G4': 392.00,
-      'G#4': 415.30, 'A4': 440.00, 'A#4': 466.16, 'B4': 493.88,
-      'C5': 523.25, 'C#5': 554.37, 'D5': 587.33, 'D#5': 622.25,
-      'E5': 659.25, 'F5': 698.46, 'F#5': 739.99, 'G5': 783.99,
-      'G#5': 830.61, 'A5': 880.00, 'A#5': 932.33, 'B5': 987.77
+    // Base frequencies for octave 4 (the reference octave)
+    const baseFrequencies: Record<string, number> = {
+      'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13,
+      'E': 329.63, 'F': 349.23, 'F#': 369.99, 'G': 392.00,
+      'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
     }
-    return noteFrequencies[note] || 440
+    
+    // Parse the note name and octave
+    const match = note.match(/^([A-G]#?)(\d+)$/)
+    if (!match) return 440 // Default to A4 if note format is invalid
+    
+    const noteName = match[1]
+    const octave = parseInt(match[2], 10)
+    const baseFrequency = baseFrequencies[noteName]
+    
+    if (!baseFrequency) return 440 // Default to A4 if note not found
+    
+    // Calculate frequency using the formula: f = f0 * 2^(octave - 4)
+    return baseFrequency * Math.pow(2, octave - 4)
   }
 
   // Utility: create a waveshaper curve for drive

@@ -120,6 +120,8 @@ export function HybridSynth() {
           onNoteOff={releaseNote}
           onMouseActiveKeysChange={handleMouseActiveKeysChange}
           currentOctave={currentOctave}
+          onOctaveUp={handleOctaveUp}
+          onOctaveDown={handleOctaveDown}
         />
       </div>
 

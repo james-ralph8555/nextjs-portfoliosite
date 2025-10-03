@@ -8,6 +8,8 @@ interface KeyboardProps {
   onNoteOff: (note: string) => void
   onMouseActiveKeysChange?: (activeKeys: Set<string>) => void
   currentOctave?: number
+  onOctaveUp?: () => void
+  onOctaveDown?: () => void
 }
 
 const WHITE_KEYS = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -33,7 +35,7 @@ const BASE_KEY_MAPPING: Record<string, string> = {
   'o': 'C#', 'p': 'D#'
 }
 
-export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysChange, currentOctave = 4 }: KeyboardProps) {
+export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysChange, currentOctave = 4, onOctaveUp, onOctaveDown }: KeyboardProps) {
   const [mouseActiveKeys, setMouseActiveKeys] = useState<Set<string>>(new Set())
   const [isMouseDown, setIsMouseDown] = useState(false)
   const [isTouchActive, setIsTouchActive] = useState(false)
@@ -249,6 +251,25 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
   // Get the actual white keys that will be rendered (filtered by key mapping)
   const renderedWhiteKeys = allNotes.filter(note => !BLACK_KEYS.some(bk => note.includes(bk)))
   
+  // Create a stable mapping for black key positions to prevent flickering
+  const stableBlackKeyPositions = React.useMemo(() => {
+    const positions: Record<string, number> = {}
+    allNotes.forEach((note, index) => {
+      if (BLACK_KEYS.some(bk => note.includes(bk))) {
+        const noteName = note.replace(/\d+$/, '')
+        const blackKeyPosition = BLACK_KEY_POSITIONS[noteName as keyof typeof BLACK_KEY_POSITIONS]
+        if (typeof blackKeyPosition === 'number') {
+          const octave = parseInt(note.replace(/^\D+/, ''))
+          const octaveStartIndex = (octave - currentOctave) * WHITE_KEYS.length
+          const whiteKeyIndex = octaveStartIndex + blackKeyPosition
+          // Position black key at 75% between white keys for proper alignment
+          positions[note] = ((whiteKeyIndex + 0.75) / renderedWhiteKeys.length) * 100
+        }
+      }
+    })
+    return positions
+  }, [currentOctave, renderedWhiteKeys.length, allNotes])
+  
   // Update mouse down handler to enable continuous movement
   const handleMouseDown = (note: string) => {
     setIsMouseDown(true)
@@ -290,6 +311,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
         <button
           className="octave-button octave-button-up relative group w-8 h-8 flex items-center justify-center"
           aria-label="Octave up (Z key)"
+          onClick={onOctaveUp}
         >
           <div className="led-glow" />
           <span className="relative z-10 text-white font-bold text-sm leading-none">▲</span>
@@ -299,6 +321,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
         <button
           className="octave-button octave-button-down relative group w-8 h-8 flex items-center justify-center"
           aria-label="Octave down (X key)"
+          onClick={onOctaveDown}
         >
           <div className="led-glow" />
           <span className="relative z-10 text-white font-bold text-sm leading-none">▼</span>
@@ -353,26 +376,11 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
 
               if (!isBlackKey) return null
 
-              // Find the position of this black key relative to white keys
-              const noteName = note.replace(/\d+$/, '') // Remove octave
-              const blackKeyPosition = BLACK_KEY_POSITIONS[noteName as keyof typeof BLACK_KEY_POSITIONS]
-              
-              if (typeof blackKeyPosition !== 'number') {
+              // Use the stable position mapping to prevent flickering
+              const position = stableBlackKeyPositions[note]
+              if (typeof position !== 'number') {
                 return null
               }
-              
-              // Calculate which white key this black key follows
-              const octave = parseInt(note.replace(/^\D+/, ''))
-              const octaveStartIndex = (octave - currentOctave) * WHITE_KEYS.length
-              const whiteKeyIndex = octaveStartIndex + blackKeyPosition
-              
-              // Find the actual rendered white key at this position
-              const targetWhiteKey = renderedWhiteKeys[whiteKeyIndex]
-              
-              if (!targetWhiteKey) return null
-              
-              // Position black key at 75% between white keys for proper alignment
-              const position = ((whiteKeyIndex + 1) / renderedWhiteKeys.length) * 100
               
               return (
                 <div
