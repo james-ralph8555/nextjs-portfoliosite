@@ -125,16 +125,11 @@ export async function getPostById(id: string) {
   const parser = await getParser();
   const html = await parser.process(content);
 
-  // Convert date to string if it's a Date object
-  const dateStr = data.date instanceof Date 
-    ? data.date.toISOString().slice(0, 10)
-    : data.date;
-
   return {
     ...data,
     title: data.title,
     id: realId,
-    date: dateStr,
+    date: `${data.date?.toISOString().slice(0, 10)}`,
     coverImage: data.coverImage || null,
     html: html.value.toString(),
   };
