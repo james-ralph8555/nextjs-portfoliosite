@@ -6,13 +6,8 @@ import { getAllPosts } from "@/lib/api";
 import Image from 'next/image';
 const colors = require('tailwindcss/colors');
 
-const postImages = {
-  '2021-12-31-grafana-server-monitoring': '/grafana-post/1_Y9zMs-69y5VhPg7OwNWdGg.webp',
-  '2021-12-20-tbats-time-series-forecasting': '/tbats-post/header.webp'
-};
-
-const BlogItem = ({ id, date, title }) => {
-  const image = postImages[id];
+const BlogItem = ({ id, date, title, coverImage }) => {
+  const image = coverImage;
   return(
     
   <li key={id} className="mb-3">
@@ -63,7 +58,7 @@ export default async function Page() {
                 {posts.map((post) => {
                   const { id, date, title } = post;
                   return (
-                    <BlogItem key={id} id={id} date={date} title={title}/>
+                    <BlogItem key={id} id={id} date={date} title={title} coverImage={post.coverImage}/>
                   );
                 })}
               </ol>

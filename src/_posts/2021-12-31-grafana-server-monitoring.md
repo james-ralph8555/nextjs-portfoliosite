@@ -1,7 +1,7 @@
 ---
 title: Setting up Grafana with InfluxDB for Server Monitoring
 date: 2021-12-31
-coverImage: "/assets/grafana-monitoring-post/setup-influxdb.webp"
+coverImage: "/assets/grafana-post/1_Y9zMs-69y5VhPg7OwNWdGg.webp"
 ---
 
 Grafana is an exceptional tool for status monitoring and alerting, with flexibility and extensibility that is hard to find in other tools. This guide will cover every step of the process, from installation to a usable dashboard. The DIY setup of Grafana is a plus in my mind, since once you set it up, you will understand every metric you have shown. You can have a basic setup with a few key metrics and alerts, or you can tinker it to your heart’s content. Fair warning: this setup will take a few hours, but you do not need to do every example in the examples section to have a working dashboard.

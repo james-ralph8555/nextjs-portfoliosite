@@ -1,7 +1,7 @@
 ---
 title: 'Reproducible Dev Without Docker: Nix on macOS and Linux'
 date: 2025-10-04
-coverImage: "/assets/docker-nix-post/upscayl/docker_whale_2_upscayl_4x_digital-art-4x.webp"
+coverImage: "/assets/docker-nix-post/thumb.webp"
 ---
 
 ![Docker vs Nix](/assets/docker-nix-post/upscayl/docker_whale_2_upscayl_4x_digital-art-4x.webp)
@@ -9,9 +9,9 @@ coverImage: "/assets/docker-nix-post/upscayl/docker_whale_2_upscayl_4x_digital-a
 
 ## TL;DR
 
-Docker popularized reproducible development with container images, but it often brings heavy images, non‑deterministic builds, and awkward “kitchen‑sink” tool stacks. Nix treats packages as immutable values under unique hashed paths, so multiple versions can coexist and all dependencies are explicitly declared. For day‑to‑day development, Nix dev shells configure your environment by setting environment variables rather than launching an isolated kernel, avoiding virtualization overhead and making composition simpler.
+Docker popularized reproducible development with container images, but it often brings heavy images, non‑deterministic builds, and awkward “kitchen‑sink” tool stacks. Nix treats packages as immutable values under unique hashed paths, so multiple versions can coexist and all dependencies are explicitly declared. For day‑to‑day development, Nix dev shells replace launching an isolated kernel, avoiding virtualization overhead and making composition simpler.
 
-Nix runs on macOS and Linux and integrates with the huge nixpkgs collection. You can share fully declarative dev environments via `shell.nix` or flakes, pin nixpkgs for reproducibility, and auto‑activate shells with `direnv`. Docker is still excellent for deployment and isolation; for local development on non‑NixOS, Nix provides a cleaner, native alternative.
+Nix runs on macOS and Linux and integrates with the huge nixpkgs collection. You can share fully declarative dev environments via `shell.nix` or flakes. For day‑to‑day dev, prefer tracking `nixpkgs-unstable` and update on your schedule; pin nixpkgs only for CI or strict reproducibility. Auto‑activate shells with `direnv`. Docker is still excellent for deployment and isolation; for local development on non‑NixOS, Nix provides a cleaner, native alternative.
 
 ---
 
@@ -21,7 +21,7 @@ Nix runs on macOS and Linux and integrates with the huge nixpkgs collection. You
 - Non‑determinism: `apt-get` without pinning, mutable OS state, drifting versions.
 - Awkward composition: multi‑tool images become hard to maintain and reason about.
 
-For dev, you often just want a predictable toolchain, fast startup, and the ability to mix versions without global conflicts. That’s Nix’s sweet spot.
+For dev, you often just want a predictable toolchain, fast startup, and the ability to mix versions without global conflicts. 
 
 ## How Nix models environments
 
@@ -35,18 +35,55 @@ For dev, you often just want a predictable toolchain, fast startup, and the abil
 
 ## The nixpkgs ecosystem and flakes
 
-- nixpkgs: A massive repository of packages for macOS and Linux.
 - Flakes: A modern, reproducible interface for pinning inputs and sharing outputs (dev shells, packages, apps).
 
 You can use either classic `shell.nix` or flakes. Both work on macOS and Linux.
 
-## Option A: Classic `shell.nix` with pinned nixpkgs
+## Recommended: Track `nixpkgs-unstable` for dev shells
+
+For day‑to‑day development, prefer `nixpkgs-unstable` so you get recent compilers and tools without chasing patches. With flakes, you still get a precise lock in `flake.lock`, and you can intentionally update with `nix flake update` when you’re ready. Reserve hard pinning to a specific nixpkgs commit for CI or long‑lived reproducibility guarantees.
+
+```nix
+# flake.nix (recommended for local dev)
+{
+  description = "Dev shell tracking nixpkgs-unstable (locked per repo)";
+
+  # Track the unstable branch; the exact commit is recorded in flake.lock
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+  outputs = { self, nixpkgs }:
+    let
+      forAllSystems = f: nixpkgs.lib.genAttrs [
+        "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux"
+      ] (system: f (import nixpkgs { inherit system; }));
+    in {
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          packages = [ pkgs.nodejs_20 pkgs.git pkgs.direnv ];
+          shellHook = ''
+            export NODE_OPTIONS=--max_old_space_size=4096
+            echo "Dev shell ready for ${pkgs.stdenv.hostPlatform.system}"
+          '';
+        };
+      });
+    };
+}
+```
+
+Update to the latest tools when you choose:
+
+```bash
+nix flake update
+```
+
+## Option A: Classic `shell.nix` (pin only when needed)
 
 ```nix
 # shell.nix
 let
-  # Pin nixpkgs to a specific commit for reproducibility
-  pkgs = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/<rev>.tar.gz") {};
+  # For fast local iteration, import your channel's nixpkgs (e.g., nixpkgs-unstable).
+  # For strict reproducibility, replace with a specific commit tarball via fetchTarball.
+  pkgs = import <nixpkgs> {};
 in
 pkgs.mkShell {
   packages = [
@@ -63,16 +100,16 @@ pkgs.mkShell {
 }
 ```
 
-Replace `<rev>` with a specific nixpkgs commit SHA for deterministic builds.
+If you need bit‑for‑bit determinism (e.g., CI), pin nixpkgs by using a specific commit tarball (replace `<nixpkgs>` with `fetchTarball .../<rev>.tar.gz`).
 
-## Option B: Flakes with `mkShell`
+## Option B: Flakes with `mkShell` (pinned commit for CI)
 
 ```nix
 # flake.nix
 {
   description = "Example dev shell (Node 20)";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/<rev>"; # pin here
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/<rev>"; # hard pin for CI/repro
 
   outputs = { self, nixpkgs }:
     let
@@ -135,6 +172,6 @@ For local development on macOS and Linux, Nix is typically leaner and more maint
 
 ## Summary
 
-- Docker remains excellent for deployment; use it where it shines.
 - Nix dev shells give native, reproducible environments without container overhead.
-- Pin nixpkgs, declare all tools via `mkShell`, and add `direnv` for ergonomics.
+- Prefer `nixpkgs-unstable` for local dev; pin nixpkgs only for CI or strict reproducibility.
+- Declare all tools via `mkShell`, and add `direnv` for ergonomics.
