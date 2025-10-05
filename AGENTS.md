@@ -30,3 +30,6 @@
 - Secrets: Configure via Amplify environment variables. Only expose public values with `NEXT_PUBLIC_`.
 - Images: `images.unoptimized` is enabled for static hosting—optimize sources (WebP where possible).
 - Avoid committing large binaries to `public/`; use optimized assets.
+## Agent Guidelines
+- NEVER run development servers (`npm run dev`) - only the user should start/stop dev servers
+- Focus on code changes, build processes, and static analysis

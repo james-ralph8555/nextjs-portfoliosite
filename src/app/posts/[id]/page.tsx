@@ -33,7 +33,7 @@ export default async function Post(
 
   return (
     <div className="bg-bg-main font-mono leading-relaxed antialiased selection:bg-primary-green selection:text-bg-main">
-      <div className="mx-auto min-h-screen max-w-screen-xl px-4 py-6 md:px-8 md:py-12 lg:px-12 lg:py-6">
+      <div className="mx-auto min-h-screen max-w-screen-xl px-0 py-6 md:px-8 md:py-12 lg:px-12 lg:py-6">
         <div className="mb-4">
           <div className="fused-terminal-layout max-w-xs !m-0">
             <div className="fused-panel-top w-full">
@@ -50,12 +50,12 @@ export default async function Post(
         </div>
         <main className="w-full lg:border lg:border-box-outline">
           <div className="bg-box-bg p-6 lg:p-0 space-y-0">
-            <header className="p-4 border-b border-box-outline">
+            <header className="px-0 py-4 md:px-4 border-b border-box-outline">
               <h1 className="text-2xl font-bold tracking-tight text-box-title-bg font-mono uppercase mb-2">{title}</h1>
               <p className="text-xs text-table-text font-mono uppercase tracking-wide">{date}</p>
             </header>
             <div 
-              className="prose max-w-none p-4" 
+              className="prose prose-lg max-w-none px-0 py-4 md:px-4" 
               dangerouslySetInnerHTML={{ __html: html }} 
             />
           </div>
