@@ -4,7 +4,7 @@ const projectsConfig = {
     {
       title: "PageSonic",
       summary:
-        "Local first, in-browser PDF viewer + audiobook reader",
+        "Local first, in-browser PDF viewer + neuralTTS audiobook creator",
       image: "/assets/pagesonic.webp",
       url: "https://page-sonic.com",
       github: "james-ralph8555/pagesonic",

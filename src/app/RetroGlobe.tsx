@@ -322,7 +322,7 @@ export const RetroGlobe = () => {
             </button>
           </div>
           <div className="boombox-controls labeled">
-            <span className="control-label">LINE <span className="value-box"><span className={lineWidth > 0 ? 'glowing-digit' : ''}>{lineWidth}</span></span></span>
+            <span className="control-label">SCAN<span className="value-box"><span className={lineWidth > 0 ? 'glowing-digit' : ''}>{lineWidth}</span></span></span>
             <div className="control-buttons-row">
               <button 
                 className={`boombox-button ${flashingButton === 'line-minus' ? 'flashing-red' : ''}`}
@@ -339,7 +339,7 @@ export const RetroGlobe = () => {
             </div>
           </div>
           <div className="boombox-controls equalizer-controls">
-            <div className="vertical-speed-label">SPEED</div>
+            <div className="vertical-speed-label">SPIN</div>
             <div className="equalizer-container">
               {['X', 'Y', 'Z'].map((axis, axisIndex) => {
                 const currentSpeed = axis === 'X' ? xRotationSpeed : axis === 'Y' ? rotationSpeed : zRotationSpeed
@@ -369,7 +369,7 @@ export const RetroGlobe = () => {
             </div>
           </div>
           <div className="boombox-controls labeled">
-            <span className="control-label">WOBBLE <span className="value-box"><span className={wobbleSpeed === 5 ? 'red-glowing-digit' : 'glowing-digit'}>{wobbleSpeed}</span></span></span>
+            <span className="control-label">OSC<span className="value-box"><span className={wobbleSpeed === 5 ? 'red-glowing-digit' : 'glowing-digit'}>{wobbleSpeed}</span></span></span>
             <div className="control-buttons-row">
               <button 
                 className={`boombox-button ${flashingButton === 'wobble-minus' ? 'flashing-red' : ''}`}

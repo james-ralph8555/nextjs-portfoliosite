@@ -15,14 +15,6 @@ const UserProfile = () => {
       <div className="terminal-header">
         <span className="terminal-header-text">PROFILE</span>
       </div>
-      <div className="font-mono text-table-text p-4">
-        <div className="mb-2">
-          <span className="text-box-title-bg">NAME:</span> JAMES RALPH
-        </div>
-        <div className="mb-2">
-          <span className="text-box-title-bg">ROLE:</span> DATA SCIENTIST
-        </div>
-      </div>
     </div>
   );
 };
