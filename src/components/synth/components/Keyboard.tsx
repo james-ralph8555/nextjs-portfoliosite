@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 
 interface KeyboardProps {
   activeKeys: Record<string, string>
@@ -202,7 +202,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
   }
 
   // Global mouse up handler
-  const handleGlobalMouseUp = () => {
+  const handleGlobalMouseUp = useCallback(() => {
     if (isMouseDown && currentMouseKey) {
       setMouseActiveKeys(prev => {
         const newSet = new Set(prev)
@@ -213,10 +213,10 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
     }
     setIsMouseDown(false)
     setCurrentMouseKey(null)
-  }
+  }, [isMouseDown, currentMouseKey, onNoteOff])
 
   // Global touch end handler
-  const handleGlobalTouchEnd = () => {
+  const handleGlobalTouchEnd = useCallback(() => {
     if (isTouchActive && currentMouseKey) {
       setMouseActiveKeys(prev => {
         const newSet = new Set(prev)
@@ -227,7 +227,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
     }
     setIsTouchActive(false)
     setCurrentMouseKey(null)
-  }
+  }, [isTouchActive, currentMouseKey, onNoteOff])
 
   // Notify parent of mouseActiveKeys changes
   useEffect(() => {
@@ -245,7 +245,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
       document.removeEventListener('mouseup', handleGlobalMouseUp)
       document.removeEventListener('touchend', handleGlobalTouchEnd)
     }
-  }, [isMouseDown, isTouchActive, currentMouseKey])
+  }, [isMouseDown, isTouchActive, currentMouseKey, handleGlobalMouseUp, handleGlobalTouchEnd])
 
   // Hardware-inspired keyboard layout
   // Get the actual white keys that will be rendered (filtered by key mapping)

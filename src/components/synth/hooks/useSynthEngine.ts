@@ -229,7 +229,8 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       stopArpeggiator()
       
       // Clean up all voices
-      voicesRef.current.forEach(voice => {
+      const voices = voicesRef.current
+      voices.forEach(voice => {
         voice.oscillators1.forEach(osc => {
           try { osc.stop() } catch {}
           try { osc.disconnect() } catch {}
@@ -247,9 +248,10 @@ export function useSynthEngine(audioContext: AudioContext | null) {
         voice.osc1GainNode.disconnect()
         voice.osc2GainNode.disconnect()
       })
-      voicesRef.current.clear()
+      voices.clear()
 
       // Clean up master nodes
+      const chorus = chorusRef.current
       masterGainRef.current?.disconnect()
       filterRef.current?.disconnect()
       fxBusRef.current?.disconnect()
@@ -258,7 +260,7 @@ export function useSynthEngine(audioContext: AudioContext | null) {
       delayRef.current?.disconnect()
       delayFeedbackRef.current?.disconnect()
       delayGainRef.current?.disconnect()
-      chorusRef.current?.disconnect()
+      chorus?.disconnect()
       chorusGainRef.current?.disconnect()
       lfoRef.current?.disconnect()
       lfoGainRef.current?.disconnect()
@@ -271,51 +273,45 @@ export function useSynthEngine(audioContext: AudioContext | null) {
     if (masterGainRef.current) {
       masterGainRef.current.gain.value = audioState.gain
     }
-  }, [audioState.gain])
-
-  useEffect(() => {
     if (filterRef.current) {
       filterRef.current.type = audioState.filter.type
       filterRef.current.frequency.value = audioState.filter.cutoff
       filterRef.current.Q.value = audioState.filter.resonance
     }
-  }, [audioState.filter.type, audioState.filter.cutoff, audioState.filter.resonance])
-
-  useEffect(() => {
     if (delayRef.current && delayFeedbackRef.current) {
       delayRef.current.delayTime.value = audioState.delay.time
       delayFeedbackRef.current.gain.value = audioState.delay.feedback
     }
-  }, [audioState.delay.time, audioState.delay.feedback])
-
-  useEffect(() => {
     if (delayGainRef.current) {
       delayGainRef.current.gain.value = audioState.delay.mix
     }
-  }, [audioState.delay.mix])
-
-  useEffect(() => {
     if (chorusGainRef.current) {
       chorusGainRef.current.gain.value = audioState.chorus.mix
     }
-  }, [audioState.chorus.mix])
-
-  // Update FX drive when chorus.drive changes (FX bus control)
-  useEffect(() => {
     if (fxPreDriveGainRef.current && fxWaveshaperRef.current) {
       const drive = Math.max(0, Math.min(1, audioState.chorus.drive || 0))
       fxPreDriveGainRef.current.gain.value = 1 + drive * 4
       fxWaveshaperRef.current.curve = createDriveCurve(drive)
     }
-  }, [audioState.chorus.drive])
-
-  useEffect(() => {
     if (lfoRef.current && lfoGainRef.current) {
       lfoRef.current.type = audioState.lfo.waveform
       lfoRef.current.frequency.value = audioState.lfo.rate
       lfoGainRef.current.gain.value = audioState.lfo.depth
     }
-  }, [audioState.lfo.waveform, audioState.lfo.rate, audioState.lfo.depth])
+  }, [
+    audioState.gain,
+    audioState.filter.type,
+    audioState.filter.cutoff,
+    audioState.filter.resonance,
+    audioState.delay.time,
+    audioState.delay.feedback,
+    audioState.delay.mix,
+    audioState.chorus.mix,
+    audioState.chorus.drive,
+    audioState.lfo.waveform,
+    audioState.lfo.rate,
+    audioState.lfo.depth
+  ])
 
   const noteToFrequency = (note: string): number => {
     // Base frequencies for octave 4 (the reference octave)

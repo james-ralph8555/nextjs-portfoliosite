@@ -97,7 +97,7 @@ export function Scopes({ audioContext, analyser }: ScopesProps) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [analyser, activeTab])
+  }, [analyser, activeTab, FRAME_TIME])
 
   const handleCanvasClick = () => {
     setIsModalOpen(true)

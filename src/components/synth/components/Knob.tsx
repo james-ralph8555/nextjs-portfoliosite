@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { formatPercentage, formatFrequency, formatInteger, formatDecimal } from '@/lib/synth-utils'
 
 interface KnobProps {
@@ -66,7 +66,7 @@ export function Knob({
     e.preventDefault()
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isDragging) return
 
     const deltaY = startYRef.current - e.clientY
@@ -75,9 +75,9 @@ export function Knob({
     const newValue = Math.max(min, Math.min(max, startValueRef.current + valueChange))
     
     onChange(Math.round(newValue / step) * step)
-  }
+  }, [isDragging, max, min, onChange, step])
 
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = useCallback((e: TouchEvent) => {
     if (!isDragging) return
     // Prevent the page from scrolling while adjusting the knob
     e.preventDefault()
@@ -88,7 +88,7 @@ export function Knob({
     const newValue = Math.max(min, Math.min(max, startValueRef.current + valueChange))
     
     onChange(Math.round(newValue / step) * step)
-  }
+  }, [isDragging, max, min, onChange, step])
 
   const handleMouseUp = () => {
     setIsDragging(false)
@@ -140,7 +140,7 @@ export function Knob({
       document.removeEventListener('touchmove', handleTouchMove)
       document.removeEventListener('touchend', handleMouseUp)
     }
-  }, [isDragging])
+  }, [isDragging, handleMouseMove, handleTouchMove])
 
   useEffect(() => {
     // Check if knob SVG is available

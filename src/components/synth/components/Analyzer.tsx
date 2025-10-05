@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState, useCallback } from 'react'
 
 interface AnalyzerProps {
   audioContext: AudioContext | null
@@ -32,7 +32,7 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
     }
   }, [audioContext])
 
-  const draw = () => {
+  const draw = useCallback(() => {
     if (!canvasRef.current || !analyserRef.current || !dataArrayRef.current) return
 
     const canvas = canvasRef.current
@@ -74,14 +74,13 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
         x += sliceWidth
       }
 
-      ctx.stroke()
-
+      ctx.lineTo(canvas.width, canvas.height / 2)
+      
       // Add glow effect
       ctx.shadowColor = '#5AFD81'
       ctx.shadowBlur = 10
       ctx.stroke()
       ctx.shadowBlur = 0
-
     } else {
       // Get frequency data
       analyser.getByteFrequencyData(dataArray)
@@ -132,7 +131,7 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
     ctx.setLineDash([])
 
     animationRef.current = requestAnimationFrame(draw)
-  }
+  }, [mode])
 
   useEffect(() => {
     if (audioContext && analyserRef.current) {
@@ -144,7 +143,7 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [audioContext, mode])
+  }, [audioContext, mode, draw])
 
   const connectAudioSource = (source: AudioNode) => {
     if (analyserRef.current) {
@@ -153,38 +152,27 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
   }
 
   return (
-    <div className="synth-visualizer">
-      {/* Mode Selector */}
-      <div className="flex justify-center space-x-1 mb-2">
+    <div className="synth-section">
+      <div className="synth-section-title">ANALYZER</div>
+      <div className="flex gap-2 mb-2">
         <button
-          className={`synth-button-small ${
-            mode === 'waveform' 
-              ? 'bg-cyan-600 text-cyan-100 border-cyan-500' 
-              : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
-          }`}
           onClick={() => setMode('waveform')}
+          className={`px-2 py-1 text-xs ${mode === 'waveform' ? 'bg-green-500 text-black' : 'bg-gray-700 text-gray-300'}`}
         >
           WAVE
         </button>
         <button
-          className={`synth-button-small ${
-            mode === 'spectrum' 
-              ? 'bg-cyan-600 text-cyan-100 border-cyan-500' 
-              : 'bg-gray-700 text-gray-400 border-gray-600 hover:bg-gray-600'
-          }`}
           onClick={() => setMode('spectrum')}
+          className={`px-2 py-1 text-xs ${mode === 'spectrum' ? 'bg-green-500 text-black' : 'bg-gray-700 text-gray-300'}`}
         >
           SPEC
         </button>
       </div>
-
-      {/* Canvas */}
       <canvas
         ref={canvasRef}
-        width="600"
-        height="120"
-        className="w-full h-[80px] max-w-full"
-        style={{ imageRendering: 'crisp-edges' }}
+        width={300}
+        height={120}
+        className="w-full h-[120px] bg-black border border-gray-700"
       />
     </div>
   )

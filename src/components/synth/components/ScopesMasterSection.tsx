@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { Knob } from './Knob'
 import { LED } from './LED'
 import { formatLevel } from '@/lib/synth-utils'
@@ -203,7 +204,7 @@ export function ScopesMasterSection({
         cancelAnimationFrame(modalSpectrumAnimationRef.current)
       }
     }
-  }, [analyser, isModalOpen]) // Add isModalOpen to re-run when modal opens/closes
+  }, [analyser, isModalOpen, FRAME_TIME]) // Add isModalOpen to re-run when modal opens/closes
 
   const handleCanvasClick = () => {
     setIsModalOpen(true)
@@ -346,9 +347,11 @@ export function ScopesMasterSection({
 
           {/* Korgi Logo */}
           <div className="flex justify-end mt-auto mb-1">
-            <img 
+            <Image 
               src="/assets/korgi-original.webp"
               alt="Korgi Logo"
+              width={120}
+              height={40}
               className="w-[80%] md:w-auto h-auto max-h-16 md:max-h-10 lg:max-h-12 object-contain"
             />
           </div>
