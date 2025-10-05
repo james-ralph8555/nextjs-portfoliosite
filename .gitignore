@@ -2,8 +2,12 @@
 
 # dependencies
 /node_modules
+/image-to-depth-css/node_modules
 /.pnp
 .pnp.js
+
+# image-to-depth-css build output
+/image-to-depth-css/dist/
 
 # testing
 /coverage

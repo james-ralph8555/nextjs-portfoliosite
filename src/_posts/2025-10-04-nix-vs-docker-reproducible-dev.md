@@ -4,7 +4,7 @@ date: 2025-10-04
 coverImage: "/assets/docker-nix-post/thumb.webp"
 ---
 
-![Docker vs Nix](/assets/docker-nix-post/upscayl/docker_whale_2_upscayl_4x_digital-art-4x.webp)
+![Docker vs Nix](/assets/docker-nix-post/upscayl2/docker_whale_2_upscayl_2x_upscayl-standard-4x.webp)
 *Docker made reproducible dev popular. Nix makes it native.*
 
 ## TL;DR
@@ -30,7 +30,7 @@ For dev, you often just want a predictable toolchain, fast startup, and the abil
 - Coexistence: Multiple versions of the same tool can exist side‑by‑side without conflicts.
 - Dev shells: Environments are composed by exporting environment variables (e.g., `PATH`) rather than running a containerized OS.
 
-![Composing native toolchains](/assets/docker-nix-post/upscayl/functional_factory_1_upscayl_4x_digital-art-4x.webp)
+![Composing native toolchains](/assets/docker-nix-post/upscayl2/functional_factory_1_upscayl_2x_upscayl-standard-4x.webp)
 *Compose precise toolchains without container overhead*
 
 ## The nixpkgs ecosystem and flakes
