@@ -13,23 +13,19 @@ const postImages = {
 const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
   const postId = `B${(totalPosts - index).toString().padStart(2, '0')}`;
   
-  const handleRowClick = () => {
-    window.location.href = `/posts/${id}`;
-  };
-  
   return(
-    <tr className="border-b border-box-outline transition-colors cursor-pointer" onClick={handleRowClick}>
+    <tr className="border-b border-box-outline transition-colors">
       <td className="font-mono text-xs">{postId}</td>
       <td className="font-mono text-xs">{date}</td>
       <td className="font-mono text-xs">
-        <div className="text-box-title-bg transition-colors">
+        <a href={`/posts/${id}`} className="text-box-title-bg transition-colors inline-block">
           {title}
-        </div>
+        </a>
       </td>
       <td className="font-mono text-xs text-center">
-        <span className="transition-colors">
+        <a href={`/posts/${id}`} className="transition-colors inline-block">
           [VIEW]
-        </span>
+        </a>
       </td>
     </tr>
   )
@@ -86,18 +82,18 @@ export const BlogLinkBlock = ({ posts }) => {
                     <BlogItemDesktop key={id} id={id} date={date} title={title} index={index} totalPosts={recentPosts.length}/>
                   );
                 })}
-                <tr className="border-b border-box-outline transition-colors cursor-pointer" onClick={() => window.location.href = '/blog'}>
+                <tr className="border-b border-box-outline transition-colors">
                   <td className="font-mono text-xs">B##</td>
                   <td className="font-mono text-xs">ALL</td>
                   <td className="font-mono text-xs">
-                    <div className="text-box-title-bg transition-colors">
+                    <a href="/blog" className="text-box-title-bg transition-colors inline-block">
                       VIEW_ALL_POSTS
-                    </div>
+                    </a>
                   </td>
                   <td className="font-mono text-xs text-center">
-                    <span className="transition-colors">
+                    <a href="/blog" className="transition-colors inline-block">
                       [BROWSE]
-                    </span>
+                    </a>
                   </td>
                 </tr>
               </tbody>
