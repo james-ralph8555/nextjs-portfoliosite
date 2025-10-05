@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parallax Demo - mixed</title>
+    <link rel="stylesheet" href="parallax.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+        
+        .demo-container {
+            max-width: 2048px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .controls button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 3px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .controls button:hover {
+            background: #0056b3;
+        }
+        
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .layer-info {
+            margin: 5px 0;
+            padding: 5px;
+            background: #f8f9fa;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Parallax Demo - mixed</h1>
+        
+        <div class="controls">
+            <button onclick="toggleScrolling()">Toggle Scrolling</button>
+            <button onclick="resetView()">Reset View</button>
+            <button onclick="toggleLayerVisibility()">Toggle Layers</button>
+        </div>
+        
+        <div class="parallax-container" id="parallaxContainer">
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_0_region_4" 
+                     data-speed="1"
+                     title="region layer - Speed: 1.00">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_1_region_2" 
+                     data-speed="0.85"
+                     title="region layer - Speed: 0.85">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_2_region_3" 
+                     data-speed="0.7000000000000001"
+                     title="region layer - Speed: 0.70">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_3_region_6" 
+                     data-speed="0.55"
+                     title="region layer - Speed: 0.55">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_4_region_1" 
+                     data-speed="0.4"
+                     title="region layer - Speed: 0.40">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_5_region_5" 
+                     data-speed="0.24999999999999997"
+                     title="region layer - Speed: 0.25">
+                </div>
+            
+                <div class="parallax-layer" 
+                     data-layer="layer_6_region_0" 
+                     data-speed="0.1"
+                     title="region layer - Speed: 0.10">
+                </div>
+            
+        </div>
+        
+        <div class="info">
+            <h3>Layer Information</h3>
+            <p>Original Image: 2048x1524px</p>
+            <p>Total Layers: 7</p>
+            <div id="layerDetails">
+                
+                    <div class="layer-info">
+                        <strong>layer_0_region_4</strong>: 
+                        Type: region, 
+                        Z-Index: 0, 
+                        Speed: 1.00,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_1_region_2</strong>: 
+                        Type: region, 
+                        Z-Index: 1, 
+                        Speed: 0.85,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_2_region_3</strong>: 
+                        Type: region, 
+                        Z-Index: 2, 
+                        Speed: 0.70,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_3_region_6</strong>: 
+                        Type: region, 
+                        Z-Index: 3, 
+                        Speed: 0.55,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_4_region_1</strong>: 
+                        Type: region, 
+                        Z-Index: 4, 
+                        Speed: 0.40,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_5_region_5</strong>: 
+                        Type: region, 
+                        Z-Index: 5, 
+                        Speed: 0.25,
+                        Format: png
+                    </div>
+                
+                    <div class="layer-info">
+                        <strong>layer_6_region_0</strong>: 
+                        Type: region, 
+                        Z-Index: 6, 
+                        Speed: 0.10,
+                        Format: png
+                    </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isScrolling = false;
+        let layersVisible = true;
+        
+        function toggleScrolling() {
+            const container = document.getElementById('parallaxContainer');
+            isScrolling = !isScrolling;
+            
+            if (isScrolling) {
+                container.classList.add('scrolling');
+            } else {
+                container.classList.remove('scrolling');
+            }
+        }
+        
+        function resetView() {
+            const container = document.getElementById('parallaxContainer');
+            container.classList.remove('scrolling');
+            isScrolling = false;
+            
+            // Reset layer transforms
+            const layers = container.querySelectorAll('.parallax-layer');
+            layers.forEach(layer => {
+                layer.style.transform = '';
+            });
+        }
+        
+        function toggleLayerVisibility() {
+            const container = document.getElementById('parallaxContainer');
+            layersVisible = !layersVisible;
+            
+            const layers = container.querySelectorAll('.parallax-layer');
+            layers.forEach(layer => {
+                layer.style.opacity = layersVisible ? '1' : '0.3';
+            });
+        }
+        
+        // Mouse parallax effect
+        document.addEventListener('mousemove', (e) => {
+            if (isScrolling) return;
+            
+            const container = document.getElementById('parallaxContainer');
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            const mouseX = e.clientX - centerX;
+            const mouseY = e.clientY - centerY;
+            
+            const layers = container.querySelectorAll('.parallax-layer');
+            layers.forEach(layer => {
+                const speed = parseFloat(layer.dataset.speed);
+                const moveX = mouseX * speed * 0.02;
+                const moveY = mouseY * speed * 0.02;
+                
+                const currentTransform = window.getComputedStyle(layer).transform;
+                layer.style.transform = `${currentTransform} translate(${moveX}px, ${moveY}px)`;
+            });
+        });
+    </script>
+</body>
+</html>
