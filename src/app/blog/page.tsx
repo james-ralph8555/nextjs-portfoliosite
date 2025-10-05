@@ -48,7 +48,7 @@ export default async function Page() {
             </div>
           </div>
         </div>
-        <main className="pt-8 lg:w-1/2 lg:py-8">
+        <main className="pt-8 w-full lg:py-8">
           <div className="bg-box-bg p-0 space-y-0 lg:border lg:border-box-outline lg:mt-2">
             <section id="blog" className="mb-16 scroll-mt-16 md:mb-24 lg:mb-0 lg:scroll-mt-24">
               <div className="terminal-header">
