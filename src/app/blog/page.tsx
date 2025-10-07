@@ -17,7 +17,7 @@ const BlogItem = ({ id, date, title, coverImage }) => {
               <div className="font-medium leading-tight group/link">
                 <a href={`/posts/${id}`} className="block font-medium group/link font-mono">
                   <span className="absolute -inset-x-4 -inset-y-2.5 md:-inset-x-6 md:-inset-y-4 block"/>
-                  <div className="text-table-text text-xs mb-1">{date}</div>
+                  <div className="text-table-text text-xs mb-1 group-hover:text-box-title-bg transition-colors duration-200">{date}</div>
                   <h3 className="text-box-title-bg hover:text-primary-green transition-colors text-sm">{title}</h3>
                 </a>
               </div>

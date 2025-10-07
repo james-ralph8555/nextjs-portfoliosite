@@ -43,13 +43,13 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
         {/* Project Content */}
         <div className="p-4">
           <div className="flex justify-between items-start mb-3">
-            <h3 className="text-box-title-bg font-mono text-sm font-bold flex-1 mr-2">
+            <h3 className="text-box-title-bg font-mono text-sm font-bold flex-1 mr-2 group-hover:text-primary-green transition-colors duration-200">
               {title}
             </h3>
             {github && (
               <button
                 onClick={handleGitHubClick}
-                className="text-table-text transition-colors duration-200 hover:text-primary-green flex-shrink-0"
+                className="text-table-text transition-colors duration-200 group-hover:text-primary-green hover:text-primary-green flex-shrink-0"
                 title="View on GitHub"
               >
                 <GitHubIcon style={{ fontSize: '16px' }} />
@@ -57,12 +57,12 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
             )}
           </div>
           
-          <p className="text-table-text font-mono text-xs leading-relaxed line-clamp-3">
+          <p className="text-table-text font-mono text-xs leading-relaxed line-clamp-3 group-hover:text-box-title-bg transition-colors duration-200">
             {summary}
           </p>
           
           <div className="mt-3 pt-3 border-t border-box-outline">
-            <div className="text-box-title-bg font-mono text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <div className="text-box-title-bg font-mono text-xs opacity-0 group-hover:opacity-100 transition-all duration-200">
               [CLICK TO VIEW PROJECT]
             </div>
           </div>
