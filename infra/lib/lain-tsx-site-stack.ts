@@ -3,6 +3,7 @@ import {
   Duration,
   Fn,
   RemovalPolicy,
+  Size,
   Stack,
   StackProps,
 } from 'aws-cdk-lib'
@@ -156,6 +157,7 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
       cacheControl: [CacheControl.fromString('public, max-age=0, must-revalidate')],
       prune: true,
       memoryLimit: 2048,
+      ephemeralStorageSize: Size.gibibytes(8),
     })
 
     new CfnOutput(this, 'LainTsxBucketName', { value: bucket.bucketName })

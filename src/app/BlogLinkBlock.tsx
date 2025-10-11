@@ -14,7 +14,7 @@ const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
   const postId = `B${(totalPosts - index).toString().padStart(2, '0')}`;
   
   return(
-    <tr className="border-b border-box-outline transition-colors">
+    <tr className="group border-b border-box-outline transition-colors">
       <td className="font-mono text-xs">{postId}</td>
       <td className="font-mono text-xs">{date}</td>
       <td className="font-mono text-xs">
@@ -23,7 +23,7 @@ const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
         </a>
       </td>
       <td className="font-mono text-xs text-center">
-        <a href={`/posts/${id}`} className="transition-colors inline-block">
+        <a href={`/posts/${id}`} className="transition-colors inline-block group-hover:text-primary-green">
           [VIEW]
         </a>
       </td>
@@ -35,7 +35,7 @@ const BlogItem = ({ id, date, title, index, totalPosts }) => {
   const postId = `B${(totalPosts - index).toString().padStart(2, '0')}`;
   
   return(
-    <div className="mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg block md:hidden">
+    <div className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg block md:hidden">
       <div className="flex justify-between items-start mb-2">
         <div className="font-mono text-xs text-table-text hover-text">{postId}</div>
         <div className="font-mono text-xs text-table-text hover-text">{date}</div>
@@ -46,7 +46,7 @@ const BlogItem = ({ id, date, title, index, totalPosts }) => {
         </a>
       </div>
       <div className="text-center">
-        <a href={`/posts/${id}`} className="text-table-text hover-text transition-colors font-mono text-xs">
+        <a href={`/posts/${id}`} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
           [VIEW]
         </a>
       </div>
@@ -82,7 +82,7 @@ export const BlogLinkBlock = ({ posts }) => {
                     <BlogItemDesktop key={id} id={id} date={date} title={title} index={index} totalPosts={recentPosts.length}/>
                   );
                 })}
-                <tr className="border-b border-box-outline transition-colors">
+                <tr className="group border-b border-box-outline transition-colors">
                   <td className="font-mono text-xs">B##</td>
                   <td className="font-mono text-xs">ALL</td>
                   <td className="font-mono text-xs">
@@ -91,7 +91,7 @@ export const BlogLinkBlock = ({ posts }) => {
                     </a>
                   </td>
                   <td className="font-mono text-xs text-center">
-                    <a href="/blog" className="transition-colors inline-block">
+                    <a href="/blog" className="transition-colors inline-block group-hover:text-primary-green">
                       [BROWSE]
                     </a>
                   </td>
@@ -106,7 +106,7 @@ export const BlogLinkBlock = ({ posts }) => {
                 <BlogItem key={id} id={id} date={date} title={title} index={index} totalPosts={recentPosts.length}/>
               );
             })}
-            <div className="mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg">
+            <div className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg">
               <div className="flex justify-between items-start mb-2">
                 <div className="font-mono text-xs text-table-text hover-text">B##</div>
                 <div className="font-mono text-xs text-table-text hover-text">ALL</div>
@@ -117,7 +117,7 @@ export const BlogLinkBlock = ({ posts }) => {
                 </a>
               </div>
               <div className="text-center">
-                <a href="/blog" className="text-table-text hover-text transition-colors font-mono text-xs">
+                <a href="/blog" className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
                   [BROWSE]
                 </a>
               </div>
