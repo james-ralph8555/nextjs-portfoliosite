@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { getPostById, getAllPosts } from "@/lib/api";
-import Link from "next/link";
+// Using plain anchors to target static .html paths
+import { hrefHtml } from "@/lib/links";
 
 // Set the title of the page to be the post title, note that we no longer use
 // e.g. next/head in app dir
@@ -14,8 +15,10 @@ import Link from "next/link";
    const {
      id
    } = params;
+   // Be tolerant of ".html" suffix in dev when accessed directly
+   const cleanId = id.replace(/\.html$/, "");
 
-   const { title } = await getPostById(id);
+   const { title } = await getPostById(cleanId);
    return {
      title,
    };
@@ -29,7 +32,8 @@ export default async function Post(
 ) {
   const params = await props.params;
   const { id } = params;
-  const { html, title, date } = await getPostById(id);
+  const cleanId = id.replace(/\.html$/, "");
+  const { html, title, date } = await getPostById(cleanId);
 
   return (
     <div className="bg-bg-main font-mono leading-relaxed antialiased selection:bg-primary-green selection:text-bg-main">
@@ -41,9 +45,9 @@ export default async function Post(
                 <span className="terminal-header-text">NAVIGATION</span>
               </div>
               <div className="font-mono text-table-text p-4">
-                <Link href="/blog" className="inline-flex items-baseline font-medium leading-tight text-table-text hover:text-highlight-text">
+                <a href={hrefHtml('/blog')} className="inline-flex items-baseline font-medium leading-tight text-table-text hover:text-highlight-text">
                   &larr; All Posts
-                </Link>
+                </a>
               </div>
             </div>
           </div>

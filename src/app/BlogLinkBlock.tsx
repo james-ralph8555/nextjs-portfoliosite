@@ -4,6 +4,7 @@
 import React from 'react'
 const colors = require('tailwindcss/colors');
 import Image from 'next/image';
+import { hrefHtml } from '@/lib/links';
 
 const postImages = {
   '2021-12-31-grafana-server-monitoring': '/grafana-post/1_Y9zMs-69y5VhPg7OwNWdGg.webp',
@@ -18,12 +19,12 @@ const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
       <td className="font-mono text-xs">{postId}</td>
       <td className="font-mono text-xs">{date}</td>
       <td className="font-mono text-xs">
-        <a href={`/posts/${id}`} className="text-box-title-bg transition-colors inline-block">
+        <a href={hrefHtml(`/posts/${id}`)} className="text-box-title-bg transition-colors inline-block">
           {title}
         </a>
       </td>
       <td className="font-mono text-xs text-center">
-        <a href={`/posts/${id}`} className="transition-colors inline-block group-hover:text-primary-green">
+        <a href={hrefHtml(`/posts/${id}`)} className="transition-colors inline-block group-hover:text-primary-green">
           [VIEW]
         </a>
       </td>
@@ -41,12 +42,12 @@ const BlogItem = ({ id, date, title, index, totalPosts }) => {
         <div className="font-mono text-xs text-table-text hover-text">{date}</div>
       </div>
       <div className="mb-2">
-        <a href={`/posts/${id}`} className="text-box-title-bg transition-colors font-mono text-sm">
+        <a href={hrefHtml(`/posts/${id}`)} className="text-box-title-bg transition-colors font-mono text-sm">
           {title}
         </a>
       </div>
       <div className="text-center">
-        <a href={`/posts/${id}`} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
+        <a href={hrefHtml(`/posts/${id}`)} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
           [VIEW]
         </a>
       </div>
@@ -86,12 +87,12 @@ export const BlogLinkBlock = ({ posts }) => {
                   <td className="font-mono text-xs">B##</td>
                   <td className="font-mono text-xs">ALL</td>
                   <td className="font-mono text-xs">
-                    <a href="/blog" className="text-box-title-bg transition-colors inline-block">
+                    <a href={hrefHtml('/blog')} className="text-box-title-bg transition-colors inline-block">
                       VIEW_ALL_POSTS
                     </a>
                   </td>
                   <td className="font-mono text-xs text-center">
-                    <a href="/blog" className="transition-colors inline-block group-hover:text-primary-green">
+                    <a href={hrefHtml('/blog')} className="transition-colors inline-block group-hover:text-primary-green">
                       [BROWSE]
                     </a>
                   </td>
@@ -112,12 +113,12 @@ export const BlogLinkBlock = ({ posts }) => {
                 <div className="font-mono text-xs text-table-text hover-text">ALL</div>
               </div>
               <div className="mb-2">
-                <a href="/blog" className="text-box-title-bg transition-colors font-mono text-sm">
+                <a href={hrefHtml('/blog')} className="text-box-title-bg transition-colors font-mono text-sm">
                   VIEW_ALL_POSTS
                 </a>
               </div>
               <div className="text-center">
-                <a href="/blog" className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
+                <a href={hrefHtml('/blog')} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
                   [BROWSE]
                 </a>
               </div>

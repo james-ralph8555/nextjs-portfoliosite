@@ -1,7 +1,8 @@
 // @ts-nocheck
 
 // app/page.tsx
-import Link from "next/link";
+// Use anchor tags with .html targets for static export
+import { hrefHtml } from "@/lib/links";
 import { getAllPosts } from "@/lib/api";
 import Image from 'next/image';
 const colors = require('tailwindcss/colors');
@@ -15,7 +16,7 @@ const BlogItem = ({ id, date, title, coverImage }) => {
           <div className="flex items-center justify-between p-3">
             <div className="flex-1">
               <div className="font-medium leading-tight group/link">
-                <a href={`/posts/${id}`} className="block font-medium group/link font-mono">
+                <a href={hrefHtml(`/posts/${id}`)} className="block font-medium group/link font-mono">
                   <span className="absolute -inset-x-4 -inset-y-2.5 md:-inset-x-6 md:-inset-y-4 block"/>
                   <div className="text-table-text text-xs mb-1 group-hover:text-box-title-bg transition-colors duration-200">{date}</div>
                   <h3 className="text-box-title-bg hover:text-primary-green transition-colors text-sm">{title}</h3>
@@ -41,9 +42,9 @@ export default async function Page() {
                 <span className="terminal-header-text">NAVIGATION</span>
               </div>
               <div className="font-mono text-table-text p-4">
-                <Link href="/" className="inline-flex items-baseline font-medium leading-tight text-table-text hover:text-highlight-text">
+                <a href={hrefHtml('/')} className="inline-flex items-baseline font-medium leading-tight text-table-text hover:text-highlight-text">
                   &larr; Back to home
-                </Link>
+                </a>
               </div>
             </div>
           </div>

@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
     "build": "next build",
     "postbuild": "node scripts/prune-laintsx-out.js",
     "serve": "npx serve@latest out -l 3000",
+    "preview": "rm -rf .next out && npm run build && npm run serve",
     "lint": "next lint"
   },
   "dependencies": {
