@@ -2,14 +2,11 @@
 'use client'
 
 import React from 'react'
-const colors = require('tailwindcss/colors');
-import Image from 'next/image';
 import projectsConfig from '@/content/projects'
-import Star from '@mui/icons-material/Star';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { FeaturedProjectsGrid } from './FeaturedProjectsGrid';
 
-const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, stars, index }) => {
+const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
   
   const handleProjectClick = (e) => {
@@ -17,7 +14,7 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, sta
     window.open(url, '_blank');
   };
 
-  const handleStarsClick = (e) => {
+  const handleGithubClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (github) {
@@ -37,11 +34,10 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, sta
         {github ? (
           <div 
             className="flex items-center justify-center gap-1 transition-colors cursor-pointer group-hover:text-primary-green"
-            onClick={handleStarsClick}
+            onClick={handleGithubClick}
+            title="View on GitHub"
           >
             <GitHubIcon style={{ fontSize: '14px' }} />
-            <Star style={{ fontSize: '14px' }} />
-            <span>{stars !== undefined ? stars : 0}</span>
           </div>
         ) : (
           <span>N/A</span>
@@ -54,7 +50,7 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, sta
   );
 };
 
-const ProjectItem = ({ title, summary, image, url, github, githubUrl, stars, index }) => {
+const ProjectItem = ({ title, summary, image, url, github, githubUrl, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
   const status = github ? 'ACTIVE' : 'ARCHIVED';
   const statusColor = status === 'ACTIVE' ? 'text-terminal-green' : 'text-terminal-orange';
@@ -64,7 +60,7 @@ const ProjectItem = ({ title, summary, image, url, github, githubUrl, stars, ind
     window.open(url, '_blank');
   };
 
-  const handleStarsClick = (e) => {
+  const handleGithubClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     if (github) {
@@ -84,11 +80,10 @@ const ProjectItem = ({ title, summary, image, url, github, githubUrl, stars, ind
           {github && (
             <div 
               className="flex items-center gap-1 text-table-text transition-colors text-xs group-hover:text-primary-green hover:text-primary-green focus:text-primary-green active:text-primary-green"
-              onClick={handleStarsClick}
+              onClick={handleGithubClick}
+              title="View on GitHub"
             >
               <GitHubIcon style={{ fontSize: '12px' }} />
-              <Star style={{ fontSize: '12px' }} />
-              <span>{stars !== undefined ? stars : 0}</span>
             </div>
           )}
           <a 
@@ -107,24 +102,6 @@ const ProjectItem = ({ title, summary, image, url, github, githubUrl, stars, ind
 };
 
 export const ProjectsBlock = () => {
-  const [starCounts, setStarCounts] = React.useState({});
-
-  React.useEffect(() => {
-    const fetchStars = async () => {
-      try {
-        const response = await fetch('/api/github-stars');
-        if (!response.ok) return;
-        const data = await response.json();
-        if (data && data.stars) {
-          setStarCounts(data.stars);
-        }
-      } catch (error) {
-        console.error('Failed to fetch GitHub stars:', error);
-      }
-    };
-
-    fetchStars();
-  }, []);
 
   // Featured projects to exclude from the main table
   const featuredProjectTitles = [
@@ -176,7 +153,6 @@ export const ProjectsBlock = () => {
                     url={project.url}
                     github={project.github}
                     githubUrl={project.githubUrl}
-                    stars={project.github ? starCounts[project.github] : undefined}
                   />
                 ))}
               </tbody>
@@ -193,7 +169,6 @@ export const ProjectsBlock = () => {
                 url={project.url}
                 github={project.github}
                 githubUrl={project.githubUrl}
-                stars={project.github ? starCounts[project.github] : undefined}
               />
             ))}
           </div>
