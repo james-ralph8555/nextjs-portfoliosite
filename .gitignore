@@ -42,3 +42,7 @@ next-env.d.ts
 
 # fonts
 public/fonts/
+
+# CDK
+infra/cdk.out/
+infra/node_modules/

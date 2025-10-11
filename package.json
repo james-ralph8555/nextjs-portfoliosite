@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "postbuild": "node scripts/prune-laintsx-out.js",
+    "serve": "npx serve@latest out -l 3000",
     "lint": "next lint"
   },
   "dependencies": {
