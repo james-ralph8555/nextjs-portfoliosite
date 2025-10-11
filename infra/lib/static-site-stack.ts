@@ -40,11 +40,20 @@ export class NextjsPortfoliositeSiteStack extends Stack {
     // Resolve deployment source path for the site assets
     // - default: repo root `out/` (static export)
     // - override: `-c distPath=/abs/path` when invoking CDK
+    // Use repo-root resolution based on process.cwd() (infra) so it works in ts-node and compiled runs
     const contextDist = this.node.tryGetContext('distPath') as string | undefined
-    const distPath = contextDist ?? path.resolve(__dirname, '../../out')
+    const defaultDist = path.resolve(process.cwd(), '../out')
+    const distPath = contextDist ?? defaultDist
 
-    if (!existsSync(distPath)) {
-      throw new Error(`Static export not found at: ${distPath}. Run 'npm run build' from repo root or pass '-c distPath=/abs/path'.`)
+    const hasDist = existsSync(distPath)
+    if (!hasDist) {
+      // Do not fail app synthesis when only deploying other stacks.
+      // We will simply skip the BucketDeployment if assets are missing.
+      // When you intend to deploy this stack, build first or pass '-c distPath=/abs/path'.
+      // eslint-disable-next-line no-console
+      console.warn(
+        `Static export not found at: ${distPath}. Skipping asset deployment for NextjsPortfoliositeSiteStack. Build with 'npm run build' or pass '-c distPath=/abs/path' when deploying this stack.`,
+      )
     }
 
     const siteBucket = new Bucket(this, 'SiteBucket', {
@@ -125,21 +134,23 @@ export class NextjsPortfoliositeSiteStack extends Stack {
       errorResponses,
     })
 
-    new BucketDeployment(this, 'DeployWithInvalidation', {
-      sources: [Source.asset(distPath)],
-      destinationBucket: siteBucket,
-      distribution,
-      distributionPaths: ['/*'],
-      cacheControl: [
-        CacheControl.fromString('public, max-age=0, must-revalidate'),
-      ],
-      prune: true,
-      // Large model assets can make uploads slow; increase
-      // Lambda memory to speed up uploads.
-      memoryLimit: 2048,
-      // Increase ephemeral storage to handle large deployments
-      ephemeralStorageSize: Size.mebibytes(2048),
-    })
+    if (hasDist) {
+      new BucketDeployment(this, 'DeployWithInvalidation', {
+        sources: [Source.asset(distPath)],
+        destinationBucket: siteBucket,
+        distribution,
+        distributionPaths: ['/*'],
+        cacheControl: [
+          CacheControl.fromString('public, max-age=0, must-revalidate'),
+        ],
+        prune: true,
+        // Large model assets can make uploads slow; increase
+        // Lambda memory to speed up uploads.
+        memoryLimit: 2048,
+        // Increase ephemeral storage to handle large deployments
+        ephemeralStorageSize: Size.mebibytes(2048),
+      })
+    }
 
     new CfnOutput(this, 'BucketName', {
       value: siteBucket.bucketName,

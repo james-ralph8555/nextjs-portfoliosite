@@ -16,7 +16,8 @@
   src: url('/assets/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  /* Do not block rendering or elevate priority */
+  font-display: optional;
 }
 
 @font-face {
@@ -24,7 +25,7 @@
   src: url('/assets/fonts/berkeley/BerkeleyMono-Oblique.woff2') format('woff2');
   font-weight: 400;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -32,7 +33,7 @@
   src: url('/assets/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
   font-weight: 700;
   font-style: normal;
-  font-display: swap;
+  font-display: optional;
 }
 
 @font-face {
@@ -40,27 +41,10 @@
   src: url('/assets/fonts/berkeley/BerkeleyMono-Bold-Oblique.woff2') format('woff2');
   font-weight: 700;
   font-style: italic;
-  font-display: swap;
+  font-display: optional;
 }
 
-/* Mobile Safari font loading optimization */
-@media screen and (max-width: 768px) {
-  @font-face {
-    font-family: 'Berkeley Mono';
-    src: url('/assets/fonts/berkeley/BerkeleyMono-Regular.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: block; /* Force immediate loading on mobile */
-  }
-  
-  @font-face {
-    font-family: 'Berkeley Mono';
-    src: url('/assets/fonts/berkeley/BerkeleyMono-Bold.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: block;
-  }
-}
+/* Remove mobile override that forced blocking loads */
 
 /* Base body styles */
 body {

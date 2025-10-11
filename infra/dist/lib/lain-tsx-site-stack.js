@@ -50,7 +50,27 @@ class NextjsPortfoliositeLainTsxSiteStack extends aws_cdk_lib_1.Stack {
     constructor(scope, id, props = {}) {
         super(scope, id, props);
         // Domain and certificate wiring
-        const domainName = this.node.tryGetContext('lainDomain') ?? 'lainTSX.james-ralph.com';
+        // Accept a single domain or a comma/space-separated list via `-c lainDomain="a.example.com,b.example.com"`
+        const rawDomainInput = this.node.tryGetContext('lainDomain');
+        const sanitize = (d) => d
+            .trim()
+            .toLowerCase()
+            // strip protocol if mistakenly provided
+            .replace(/^https?:\/\//, '')
+            // drop any path/query after the hostname
+            .replace(/\/.*$/, '')
+            // drop trailing dot
+            .replace(/\.$/, '');
+        const domains = (rawDomainInput ? rawDomainInput.split(/[\s,]+/) : ['laintsx.james-ralph.com'])
+            .map(sanitize)
+            .filter(Boolean);
+        // Basic validation to catch obvious CloudFront alias mistakes early
+        const aliasPattern = /^(\*\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/;
+        for (const a of domains) {
+            if (!aliasPattern.test(a)) {
+                throw new Error(`Invalid CloudFront alias: "${a}". Provide bare domain(s) without protocol or paths, e.g. "app.example.com".`);
+            }
+        }
         const certificateArn = this.node.tryGetContext('certificateArn') ||
             process.env.CERTIFICATE_ARN ||
             // Import from the certificate stack export (must exist in the same account)
@@ -59,10 +79,17 @@ class NextjsPortfoliositeLainTsxSiteStack extends aws_cdk_lib_1.Stack {
         // Resolve deployment source path for the LainTSX assets
         // default: repo root `public/lainTSX/dist`
         // override: `-c lainDistPath=/abs/path` when invoking CDK
+        // Note: use repo-root resolution so it works under ts-node (infra/lib) and compiled runs (infra/dist/lib)
         const contextDist = this.node.tryGetContext('lainDistPath');
-        const distPath = contextDist ?? path_1.default.resolve(__dirname, '../../public/lainTSX/dist');
-        if (!(0, fs_1.existsSync)(distPath)) {
-            throw new Error(`LainTSX static assets not found at: ${distPath}. Build or provide '-c lainDistPath=/abs/path'.`);
+        const defaultDist = path_1.default.resolve(process.cwd(), '../public/lainTSX/dist');
+        const distPath = contextDist ?? defaultDist;
+        const hasDist = (0, fs_1.existsSync)(distPath);
+        if (!hasDist) {
+            // Do not fail app synthesis when only deploying other stacks.
+            // We will simply skip the BucketDeployment if assets are missing.
+            // When you intend to deploy this stack, build first or pass '-c lainDistPath=/abs/path'.
+            // eslint-disable-next-line no-console
+            console.warn(`LainTSX static assets not found at: ${distPath}. Skipping asset deployment for NextjsPortfoliositeLainTsxSiteStack. Build or provide '-c lainDistPath=/abs/path'.`);
         }
         const bucket = new aws_s3_1.Bucket(this, 'LainTsxBucket', {
             blockPublicAccess: aws_s3_1.BlockPublicAccess.BLOCK_ALL,
@@ -114,18 +141,21 @@ class NextjsPortfoliositeLainTsxSiteStack extends aws_cdk_lib_1.Stack {
             defaultRootObject: 'index.html',
             comment: 'LainTSX static site distribution',
             errorResponses,
-            domainNames: [domainName],
+            domainNames: domains,
             certificate,
         });
-        new aws_s3_deployment_1.BucketDeployment(this, 'LainTsxDeploy', {
-            sources: [aws_s3_deployment_1.Source.asset(distPath)],
-            destinationBucket: bucket,
-            distribution,
-            distributionPaths: ['/*'],
-            cacheControl: [aws_s3_deployment_1.CacheControl.fromString('public, max-age=0, must-revalidate')],
-            prune: true,
-            memoryLimit: 2048,
-        });
+        if (hasDist) {
+            new aws_s3_deployment_1.BucketDeployment(this, 'LainTsxDeploy', {
+                sources: [aws_s3_deployment_1.Source.asset(distPath)],
+                destinationBucket: bucket,
+                distribution,
+                distributionPaths: ['/*'],
+                cacheControl: [aws_s3_deployment_1.CacheControl.fromString('public, max-age=0, must-revalidate')],
+                prune: true,
+                memoryLimit: 2048,
+                ephemeralStorageSize: aws_cdk_lib_1.Size.gibibytes(8),
+            });
+        }
         new aws_cdk_lib_1.CfnOutput(this, 'LainTsxBucketName', { value: bucket.bucketName });
         new aws_cdk_lib_1.CfnOutput(this, 'LainTsxDistributionId', { value: distribution.distributionId });
         new aws_cdk_lib_1.CfnOutput(this, 'LainTsxCloudFrontDomainName', { value: distribution.domainName });

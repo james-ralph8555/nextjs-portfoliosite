@@ -80,12 +80,19 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
     // Resolve deployment source path for the LainTSX assets
     // default: repo root `public/lainTSX/dist`
     // override: `-c lainDistPath=/abs/path` when invoking CDK
+    // Note: use repo-root resolution so it works under ts-node (infra/lib) and compiled runs (infra/dist/lib)
     const contextDist = this.node.tryGetContext('lainDistPath') as string | undefined
-    const distPath = contextDist ?? path.resolve(__dirname, '../../public/lainTSX/dist')
+    const defaultDist = path.resolve(process.cwd(), '../public/lainTSX/dist')
+    const distPath = contextDist ?? defaultDist
 
-    if (!existsSync(distPath)) {
-      throw new Error(
-        `LainTSX static assets not found at: ${distPath}. Build or provide '-c lainDistPath=/abs/path'.`,
+    const hasDist = existsSync(distPath)
+    if (!hasDist) {
+      // Do not fail app synthesis when only deploying other stacks.
+      // We will simply skip the BucketDeployment if assets are missing.
+      // When you intend to deploy this stack, build first or pass '-c lainDistPath=/abs/path'.
+      // eslint-disable-next-line no-console
+      console.warn(
+        `LainTSX static assets not found at: ${distPath}. Skipping asset deployment for NextjsPortfoliositeLainTsxSiteStack. Build or provide '-c lainDistPath=/abs/path'.`,
       )
     }
 
@@ -149,16 +156,21 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
       certificate,
     })
 
-    new BucketDeployment(this, 'LainTsxDeploy', {
-      sources: [Source.asset(distPath)],
-      destinationBucket: bucket,
-      distribution,
-      distributionPaths: ['/*'],
-      cacheControl: [CacheControl.fromString('public, max-age=0, must-revalidate')],
-      prune: true,
-      memoryLimit: 2048,
-      ephemeralStorageSize: Size.gibibytes(8),
-    })
+    if (hasDist) {
+      const forcedDeployVersion = (this.node.tryGetContext('lainDeployVersion') as string | undefined)?.toString()
+      new BucketDeployment(this, 'LainTsxDeploy', {
+        sources: [Source.asset(distPath)],
+        destinationBucket: bucket,
+        distribution,
+        distributionPaths: ['/*'],
+        cacheControl: [CacheControl.fromString('public, max-age=0, must-revalidate')],
+        // Change user metadata to force a redeploy when needed without changing assets
+        metadata: forcedDeployVersion ? { 'x-cdk-deploy-version': forcedDeployVersion } : undefined,
+        prune: true,
+        memoryLimit: 2048,
+        ephemeralStorageSize: Size.gibibytes(8),
+      })
+    }
 
     new CfnOutput(this, 'LainTsxBucketName', { value: bucket.bucketName })
     new CfnOutput(this, 'LainTsxDistributionId', { value: distribution.distributionId })
