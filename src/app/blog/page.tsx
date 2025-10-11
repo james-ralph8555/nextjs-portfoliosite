@@ -10,23 +10,28 @@ const colors = require('tailwindcss/colors');
 const BlogItem = ({ id, date, title, coverImage }) => {
   const image = coverImage;
   return(
-    
-  <li key={id} className="mb-3">
-        <div className="group list-item-card">
-          <div className="flex items-center justify-between p-3">
-            <div className="flex-1">
-              <div className="font-medium leading-tight group/link">
-                <a href={hrefHtml(`/posts/${id}`)} className="block font-medium group/link font-mono">
-                  <span className="absolute -inset-x-4 -inset-y-2.5 md:-inset-x-6 md:-inset-y-4 block"/>
-                  <div className="text-table-text text-xs mb-1 group-hover:text-box-title-bg transition-colors duration-200">{date}</div>
-                  <h3 className="text-box-title-bg hover:text-primary-green transition-colors text-sm">{title}</h3>
-                </a>
-              </div>
+    <li key={id} className="mb-3">
+      <a href={hrefHtml(`/posts/${id}`)} className="group list-item-card block cursor-pointer">
+        <div className="flex items-center justify-between p-3">
+          <div className="flex-1">
+            <div className="font-medium leading-tight font-mono">
+              <div className="text-table-text text-xs mb-1 group-hover:text-box-title-bg transition-colors duration-200">{date}</div>
+              <h3 className="text-box-title-bg group-hover:text-primary-green transition-colors text-sm">{title}</h3>
             </div>
-            {image && <Image alt={title} width={100} height={50} className="border border-box-outline transition group-hover:border-highlight-text ml-4 flex-shrink-0" src={image} style={{color:colors.transparent}}/>}
           </div>
+          {image && (
+            <Image
+              alt={title}
+              width={100}
+              height={50}
+              className="border border-box-outline transition group-hover:border-highlight-text ml-4 flex-shrink-0"
+              src={image}
+              style={{ color: colors.transparent }}
+            />
+          )}
         </div>
-  </li>
+      </a>
+    </li>
   )
 }
 export default async function Page() {

@@ -5,10 +5,12 @@ import React from 'react'
 import Image from 'next/image'
 import GitHubIcon from '@mui/icons-material/GitHub'
 import projectsConfig from '@/content/projects'
+import { hrefHtml } from '@/lib/links'
 
 const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) => {
   const handleProjectClick = () => {
-    window.open(url, '_blank')
+    const targetUrl = hrefHtml(url)
+    window.open(targetUrl, '_blank')
   }
 
   const handleGitHubClick = (e) => {

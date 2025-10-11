@@ -5,13 +5,15 @@ import React from 'react'
 import projectsConfig from '@/content/projects'
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { FeaturedProjectsGrid } from './FeaturedProjectsGrid';
+import { hrefHtml } from '@/lib/links';
 
 const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, index }) => {
   const projectId = `P${(projectsConfig.items.length - index).toString().padStart(2, '0')}`;
   
   const handleProjectClick = (e) => {
     e.preventDefault();
-    window.open(url, '_blank');
+    const targetUrl = hrefHtml(url);
+    window.open(targetUrl, '_blank');
   };
 
   const handleGithubClick = (e) => {
@@ -44,7 +46,13 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, ind
         )}
       </td>
       <td className="font-mono text-xs text-center">
-        <span className="transition-colors group-hover:text-primary-green">[ACCESS]</span>
+        <a
+          href={hrefHtml(url)}
+          className="transition-colors group-hover:text-primary-green"
+          onClick={(e) => { e.preventDefault(); const t = hrefHtml(url); window.open(t, '_blank'); }}
+        >
+          [ACCESS]
+        </a>
       </td>
     </tr>
   );
@@ -57,7 +65,8 @@ const ProjectItem = ({ title, summary, image, url, github, githubUrl, index }) =
   
   const handleProjectClick = (e) => {
     e.preventDefault();
-    window.open(url, '_blank');
+    const targetUrl = hrefHtml(url);
+    window.open(targetUrl, '_blank');
   };
 
   const handleGithubClick = (e) => {
@@ -87,9 +96,9 @@ const ProjectItem = ({ title, summary, image, url, github, githubUrl, index }) =
             </div>
           )}
           <a 
-            href={url} 
+            href={hrefHtml(url)} 
             className="text-table-text transition-colors text-xs group-hover:text-primary-green"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); const t = hrefHtml(url); window.open(t, '_blank'); }}
           >
             [VIEW]
           </a>

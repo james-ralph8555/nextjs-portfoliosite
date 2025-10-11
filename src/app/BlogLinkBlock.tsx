@@ -13,11 +13,24 @@ const postImages = {
 
 const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
   const postId = `B${(totalPosts - index).toString().padStart(2, '0')}`;
+  const handleRowClick = (e) => {
+    e.preventDefault();
+    const targetUrl = hrefHtml(`/posts/${id}`);
+    window.location.assign(targetUrl);
+  };
   
   return(
-    <tr className="group border-b border-box-outline transition-colors">
-      <td className="font-mono text-xs">{postId}</td>
-      <td className="font-mono text-xs">{date}</td>
+    <tr className="group border-b border-box-outline transition-colors cursor-pointer" onClick={handleRowClick}>
+      <td className="font-mono text-xs">
+        <a href={hrefHtml(`/posts/${id}`)} className="block w-full h-full">
+          {postId}
+        </a>
+      </td>
+      <td className="font-mono text-xs">
+        <a href={hrefHtml(`/posts/${id}`)} className="block w-full h-full">
+          {date}
+        </a>
+      </td>
       <td className="font-mono text-xs">
         <a href={hrefHtml(`/posts/${id}`)} className="text-box-title-bg transition-colors inline-block">
           {title}
@@ -34,20 +47,28 @@ const BlogItemDesktop = ({ id, date, title, index, totalPosts }) => {
 
 const BlogItem = ({ id, date, title, index, totalPosts }) => {
   const postId = `B${(totalPosts - index).toString().padStart(2, '0')}`;
+  const handleCardClick = (e) => {
+    e.preventDefault();
+    const targetUrl = hrefHtml(`/posts/${id}`);
+    window.location.assign(targetUrl);
+  };
   
   return(
-    <div className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg block md:hidden">
+    <div 
+      className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg block md:hidden cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="flex justify-between items-start mb-2">
         <div className="font-mono text-xs text-table-text hover-text">{postId}</div>
         <div className="font-mono text-xs text-table-text hover-text">{date}</div>
       </div>
       <div className="mb-2">
-        <a href={hrefHtml(`/posts/${id}`)} className="text-box-title-bg transition-colors font-mono text-sm">
+        <a href={hrefHtml(`/posts/${id}`)} className="text-box-title-bg transition-colors font-mono text-sm" onClick={(e) => e.stopPropagation()}>
           {title}
         </a>
       </div>
       <div className="text-center">
-        <a href={hrefHtml(`/posts/${id}`)} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
+        <a href={hrefHtml(`/posts/${id}`)} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green" onClick={(e) => e.stopPropagation()}>
           [VIEW]
         </a>
       </div>
@@ -83,9 +104,16 @@ export const BlogLinkBlock = ({ posts }) => {
                     <BlogItemDesktop key={id} id={id} date={date} title={title} index={index} totalPosts={recentPosts.length}/>
                   );
                 })}
-                <tr className="group border-b border-box-outline transition-colors">
-                  <td className="font-mono text-xs">B##</td>
-                  <td className="font-mono text-xs">ALL</td>
+                <tr 
+                  className="group border-b border-box-outline transition-colors cursor-pointer"
+                  onClick={(e) => { e.preventDefault(); window.location.assign(hrefHtml('/blog')); }}
+                >
+                  <td className="font-mono text-xs">
+                    <a href={hrefHtml('/blog')} className="block w-full h-full">B##</a>
+                  </td>
+                  <td className="font-mono text-xs">
+                    <a href={hrefHtml('/blog')} className="block w-full h-full">ALL</a>
+                  </td>
                   <td className="font-mono text-xs">
                     <a href={hrefHtml('/blog')} className="text-box-title-bg transition-colors inline-block">
                       VIEW_ALL_POSTS
@@ -107,18 +135,21 @@ export const BlogLinkBlock = ({ posts }) => {
                 <BlogItem key={id} id={id} date={date} title={title} index={index} totalPosts={recentPosts.length}/>
               );
             })}
-            <div className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg">
+            <div 
+              className="group mobile-card mb-3 p-3 border border-box-outline bg-box-bg transition-all hover:bg-highlight-bg hover:border-box-title-bg cursor-pointer"
+              onClick={(e) => { e.preventDefault(); window.location.assign(hrefHtml('/blog')); }}
+            >
               <div className="flex justify-between items-start mb-2">
                 <div className="font-mono text-xs text-table-text hover-text">B##</div>
                 <div className="font-mono text-xs text-table-text hover-text">ALL</div>
               </div>
               <div className="mb-2">
-                <a href={hrefHtml('/blog')} className="text-box-title-bg transition-colors font-mono text-sm">
+                <a href={hrefHtml('/blog')} className="text-box-title-bg transition-colors font-mono text-sm" onClick={(e) => e.stopPropagation()}>
                   VIEW_ALL_POSTS
                 </a>
               </div>
               <div className="text-center">
-                <a href={hrefHtml('/blog')} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green">
+                <a href={hrefHtml('/blog')} className="text-table-text transition-colors font-mono text-xs group-hover:text-primary-green" onClick={(e) => e.stopPropagation()}>
                   [BROWSE]
                 </a>
               </div>
