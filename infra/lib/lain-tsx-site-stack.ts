@@ -39,7 +39,31 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
     super(scope, id, props)
 
     // Domain and certificate wiring
-    const domainName = (this.node.tryGetContext('lainDomain') as string) ?? 'lainTSX.james-ralph.com'
+    // Accept a single domain or a comma/space-separated list via `-c lainDomain="a.example.com,b.example.com"`
+    const rawDomainInput = this.node.tryGetContext('lainDomain') as string | undefined
+    const sanitize = (d: string) =>
+      d
+        .trim()
+        .toLowerCase()
+        // strip protocol if mistakenly provided
+        .replace(/^https?:\/\//, '')
+        // drop any path/query after the hostname
+        .replace(/\/.*$/, '')
+        // drop trailing dot
+        .replace(/\.$/, '')
+    const domains = (rawDomainInput ? rawDomainInput.split(/[\s,]+/) : ['laintsx.james-ralph.com'])
+      .map(sanitize)
+      .filter(Boolean)
+
+    // Basic validation to catch obvious CloudFront alias mistakes early
+    const aliasPattern = /^(\*\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*$/
+    for (const a of domains) {
+      if (!aliasPattern.test(a)) {
+        throw new Error(
+          `Invalid CloudFront alias: "${a}". Provide bare domain(s) without protocol or paths, e.g. "app.example.com".`,
+        )
+      }
+    }
     const certificateArn =
       (this.node.tryGetContext('certificateArn') as string | undefined) ||
       process.env.CERTIFICATE_ARN ||
@@ -120,7 +144,7 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
       defaultRootObject: 'index.html',
       comment: 'LainTSX static site distribution',
       errorResponses,
-      domainNames: [domainName],
+      domainNames: domains,
       certificate,
     })
 
@@ -139,4 +163,3 @@ export class NextjsPortfoliositeLainTsxSiteStack extends Stack {
     new CfnOutput(this, 'LainTsxCloudFrontDomainName', { value: distribution.domainName })
   }
 }
-

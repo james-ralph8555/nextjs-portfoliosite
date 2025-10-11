@@ -62,7 +62,7 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
           </p>
           
           <div className="mt-3 pt-3 border-t border-box-outline">
-            <div className="text-box-title-bg font-mono text-xs opacity-0 group-hover:opacity-100 transition-all duration-200">
+            <div className="font-mono text-xs opacity-0 group-hover:opacity-100 transition-all duration-200 group-hover:text-primary-green">
               [CLICK TO VIEW PROJECT]
             </div>
           </div>

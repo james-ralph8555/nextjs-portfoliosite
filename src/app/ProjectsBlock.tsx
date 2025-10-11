@@ -44,7 +44,7 @@ const ProjectItemDesktop = ({ title, summary, image, url, github, githubUrl, ind
         )}
       </td>
       <td className="font-mono text-xs text-center">
-        <span className="transition-colors">[ACCESS]</span>
+        <span className="transition-colors group-hover:text-primary-green">[ACCESS]</span>
       </td>
     </tr>
   );

@@ -15,7 +15,7 @@ const projectsConfig = {
       summary:
         "Browser synth with ADSR envelopes, filters, fx, unison detune, keyboard input, and live scopes.",
       image: "/assets/web_audio_synth.webp",
-      url: "/synth",
+      url: "/synth.html",
       github: "james-ralph8555/nextjs-portfoliosite",
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
     },
