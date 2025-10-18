@@ -33,3 +33,22 @@
 ## Agent Guidelines
 - NEVER run development servers (`npm run dev`) - only the user should start/stop dev servers
 - Focus on code changes, build processes, and static analysis
+## MCP Server Activation
+
+When you need to use Chrome DevTools functionality, activate the MCP server by using the `task` tool with the `general` subagent:
+
+```
+Use the task tool with subagent_type="general" to activate Chrome DevTools MCP tools
+```
+
+The general agent has access to MCP tools and can:
+- Take screenshots
+- Navigate pages
+- Interact with web elements
+- Analyze performance
+- Debug browser issues
+
+Example activation:
+```
+task(description="Use Chrome DevTools", prompt="Take a screenshot of the current page", subagent_type="general")
+```

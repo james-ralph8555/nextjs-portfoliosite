@@ -59,7 +59,7 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
   - Shape: `{ "paragraphs": ["..."] }`
 - Experience (`src/content/experience.json`)
   - Items contain: `start`, `end`, `company`, `company_link`, `title`, `body[]`
-- Projects (`src/content/projects.json`)
+- Projects (`src/content/projects.ts`)
   - Items contain: `title`, `summary`, `image`, `url`, `github`
 
 ## Blog

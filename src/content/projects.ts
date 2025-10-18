@@ -13,7 +13,7 @@ const projectsConfig = {
     {
       title: "Web Audio Synthesizer",
       summary:
-        "Browser synth with ADSR envelopes, filters, fx, unison detune, keyboard input, and live scopes.",
+        "Browser synth with ADSR envelopes, filters, fx, unison, keyboard input, and live scopes.",
       image: "/assets/web_audio_synth.webp",
       url: "/synth.html",
       github: "james-ralph8555/nextjs-portfoliosite",
@@ -30,7 +30,7 @@ const projectsConfig = {
     {
       title: "HomeBench",
       summary:
-        "A privacy-by-design in-browser SQL workbench powered by DuckDB-WASM. Analyze your data locally without sending it to a server.",
+        "Privacy-first, in-browser SQL workbench powered by DuckDB-WASM.",
       image: "/assets/homebench.webp",
       url: "https://homebench.casa",
       github: "james-ralph8555/homebench",
@@ -38,7 +38,7 @@ const projectsConfig = {
     {
       title: "Real-Time Black Hole Simulator",
       summary:
-        "A real-time black hole simulator built with Rust, WebAssembly & WebGPU. Explore gravitational lensing effects interactively in your browser.",
+        "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
       image: "/assets/black-hole-laboratory.webp",
       url: "https://gravitylens.space",
       github: "james-ralph8555/black-hole-laboratory",

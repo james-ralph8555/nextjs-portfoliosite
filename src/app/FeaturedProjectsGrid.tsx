@@ -25,9 +25,9 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
       className="group cursor-pointer transition-all duration-300 hover:scale-[1.02]"
       onClick={handleProjectClick}
     >
-      <div className="border border-box-outline bg-box-bg h-full transition-all duration-300 hover:bg-highlight-bg hover:border-box-title-bg">
+      <div className="border border-box-outline bg-box-bg h-full flex flex-col transition-all duration-300 hover:bg-highlight-bg hover:border-box-title-bg">
         {/* Project Image */}
-        <div className="relative h-48 w-full overflow-hidden border-b border-box-outline">
+        <div className="relative aspect-square w-full overflow-hidden border-b border-box-outline">
           {image ? (
             <Image
               src={image}
@@ -43,7 +43,7 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
         </div>
         
         {/* Project Content */}
-        <div className="p-4">
+        <div className="p-4 flex flex-col">
           <div className="flex justify-between items-start mb-3">
             <h3 className="text-box-title-bg font-mono text-sm font-bold flex-1 mr-2 group-hover:text-primary-green transition-colors duration-200">
               {title}
@@ -59,7 +59,7 @@ const FeaturedProjectCard = ({ title, summary, image, url, github, githubUrl }) 
             )}
           </div>
           
-          <p className="text-table-text font-mono text-xs leading-relaxed line-clamp-3 group-hover:text-box-title-bg transition-colors duration-200">
+          <p className="text-table-text font-mono text-xs leading-relaxed line-clamp-3 group-hover:text-box-title-bg transition-colors duration-200 flex-grow">
             {summary}
           </p>
           
