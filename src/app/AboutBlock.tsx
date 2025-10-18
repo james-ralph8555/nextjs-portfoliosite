@@ -15,18 +15,6 @@ export const AboutBlock = () => {
               {paragraph}
             </p>
           ))}
-          <div className="mt-6 pt-4 border-t border-box-outline">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono">
-              <div>
-                <span className="text-box-title-bg">EXPERIENCE:</span>
-                <span className="text-table-text ml-2 whitespace-nowrap">7+ YEARS</span>
-              </div>
-              <div>
-                <span className="text-box-title-bg">FOCUS:</span>
-                <span className="text-table-text ml-2">ML/AI</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </section>
