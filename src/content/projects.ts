@@ -20,9 +20,17 @@ const projectsConfig = {
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
     },
     {
+      title: "JAX RL Demo",
+      summary:
+        "A reinforcement learning implementation of Proximal Policy Optimization (PPO) for CartPole using JAX, with MLflow experiment tracking.",
+      image: null,
+      url: "https://github.com/james-ralph8555/jax-rl-demo",
+      github: "james-ralph8555/jax-rl-demo",
+    },
+    {
       title: "fdnix",
       summary:
-        "Fast, relevant, filterable search for the Nix packages collection. Blends keyword matching with semantic (vector) search to find the right package quickly.",
+        "Fast, relevant, filterable search and dependency graph viewer site for the Nix packages collection. ",
       image: null,
       url: "https://github.com/james-ralph8555/fdnix",
       github: "james-ralph8555/fdnix",
