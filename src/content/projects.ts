@@ -2,6 +2,14 @@ const projectsConfig = {
   title: "Projects",
   items: [
     {
+      title: "HomeBench",
+      summary:
+        "Privacy-first, in-browser SQL workbench powered by DuckDB-WASM.",
+      image: "/assets/homebench.webp",
+      url: "https://homebench.casa",
+      github: "james-ralph8555/homebench",
+    },
+    {
       title: "PageSonic",
       summary:
         "Local first, in-browser PDF viewer + neuralTTS audiobook creator",
@@ -20,6 +28,22 @@ const projectsConfig = {
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
     },
     {
+      title: "Real-Time Black Hole Simulator",
+      summary:
+        "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
+      image: "/assets/black-hole-laboratory.webp",
+      url: "https://gravitylens.space",
+      github: "james-ralph8555/black-hole-laboratory",
+    },
+    {
+      title: "portfolio-strategies",
+      summary:
+        "A modern web application for implementing and backtesting quantitative trading strategies.",
+      image: null,
+      url: "https://github.com/james-ralph8555/portfolio-strategies",
+      github: "james-ralph8555/portfolio-strategies",
+    },
+    {
       title: "JAX RL Demo",
       summary:
         "A reinforcement learning implementation of Proximal Policy Optimization (PPO) for CartPole using JAX, with MLflow experiment tracking.",
@@ -36,22 +60,6 @@ const projectsConfig = {
       github: "james-ralph8555/fdnix",
     },
     {
-      title: "HomeBench",
-      summary:
-        "Privacy-first, in-browser SQL workbench powered by DuckDB-WASM.",
-      image: "/assets/homebench.webp",
-      url: "https://homebench.casa",
-      github: "james-ralph8555/homebench",
-    },
-    {
-      title: "Real-Time Black Hole Simulator",
-      summary:
-        "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
-      image: "/assets/black-hole-laboratory.webp",
-      url: "https://gravitylens.space",
-      github: "james-ralph8555/black-hole-laboratory",
-    },
-    {
       title: "Options Visualizer",
       summary:
         "Tool to visualize changes in the Black–Scholes model with respect to other variables. 2D or 3D data output. Can also be used to get current Greeks for a given option. European style options.",
@@ -62,7 +70,7 @@ const projectsConfig = {
     {
       title: "Personal Portfolio Website",
       summary:
-        "A static portfolio website built with Next.js 15, featuring interactive project cards with GitHub stars, a markdown-powered blog system, and optimized for AWS Amplify hosting",
+        "A static portfolio website built with Next.js 15, featuring interactive project cards with GitHub stars, a markdown-powered blog system, and optimized for AWS CloudFront Deployment",
       image: "/assets/portfolio-thumb.webp",
       url: "https://james-ralph.com",
       github: "james-ralph8555/nextjs-portfoliosite",
