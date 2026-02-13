@@ -1,7 +1,7 @@
 ---
 title: "Abundant Cognition Needs Weight"
 date: 2026-02-13
-coverImage: "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_5.png"
+coverImage: "/assets/abundant-cognition-needs-weight-post/optimized/ai_img_chatgpt_5.webp"
 ---
 
 ## 1. When Thinking Becomes Cheap
