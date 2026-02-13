@@ -338,62 +338,27 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
       <div className="flex-1 relative">
         {/* White keys using CSS Grid for consistent sizing */}
         <div className="grid h-full relative" style={{ gridTemplateColumns: `repeat(${renderedWhiteKeys.length}, 1fr)` }}>
-          {renderedWhiteKeys.map((note, index) => {
-            const keyLabel = getKeyLabel(note)
-            const isActive = isKeyActive(note)
+          {WHITE_KEYS.flatMap((whiteKey) => {
+            return octaves.map((octave, octaveIndex) => {
+              const note = `${whiteKey}${octave}`
+              // Only render if this key is in the mapping
+              if (!REVERSE_MAPPING[note]) return null
 
-            return (
-              <div
-                key={note}
-                className={`
-                  key-white relative border-r border-gray-600 last:border-r-0
-                  ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
-                  transition-all duration-100 cursor-pointer select-none
-                  flex flex-col justify-between items-center py-1
-                `}
-                data-active={isActive}
-                data-note={note}
-                onMouseDown={() => handleMouseDown(note)}
-                onMouseUp={() => handleMouseUp(note)}
-                onMouseLeave={() => {
-                  if (isActive) handleMouseUp(note)
-                }}
-                onTouchStart={(e) => handleTouchStart(e, note)}
-                onTouchEnd={(e) => handleTouchEnd(e, note)}
-              >
-                <div className="hidden md:block text-xs font-mono text-gray-500 font-medium">{note}</div>
-                <div className="hidden md:block text-xs font-mono text-gray-700 font-medium">{keyLabel.toUpperCase()}</div>
-                <div className="md:hidden text-xs font-mono text-gray-500 font-medium mt-auto">{note}</div>
-              </div>
-            )
-          })}
-
-          {/* Black keys overlay */}
-          <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none">
-            {allNotes.map((note) => {
-              const isBlackKey = BLACK_KEYS.some(bk => note.includes(bk))
               const keyLabel = getKeyLabel(note)
               const isActive = isKeyActive(note)
 
-              if (!isBlackKey) return null
+              // Use stable key that doesn't change when octave changes
+              const stableKey = `${whiteKey}-${octaveIndex}`
 
-              // Use the stable position mapping to prevent flickering
-              const position = stableBlackKeyPositions[note]
-              if (typeof position !== 'number') {
-                return null
-              }
-              
               return (
                 <div
-                  key={note}
+                  key={stableKey}
                   className={`
-                    key-black absolute w-7 h-16 rounded-b-sm
-                    ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
-                    transition-all duration-100 cursor-pointer select-none
-                    pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
-                    z-20
+                    key-white relative border-r border-gray-600 last:border-r-0
+                    ${isActive ? 'bg-cyan-300' : 'bg-white hover:bg-gray-100'}
+                    transition-colors duration-100 cursor-pointer select-none
+                    flex flex-col justify-between items-center py-1
                   `}
-                  style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                   data-active={isActive}
                   data-note={note}
                   onMouseDown={() => handleMouseDown(note)}
@@ -404,10 +369,58 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
                   onTouchStart={(e) => handleTouchStart(e, note)}
                   onTouchEnd={(e) => handleTouchEnd(e, note)}
                 >
-                  <div className="text-xs font-mono text-white font-medium hidden md:block">{keyLabel.toUpperCase()}</div>
+                  <div className="hidden md:block text-xs font-mono text-gray-500 font-medium">{note}</div>
+                  <div className="hidden md:block text-xs font-mono text-gray-700 font-medium">{keyLabel.toUpperCase()}</div>
+                  <div className="md:hidden text-xs font-mono text-gray-500 font-medium mt-auto">{note}</div>
                 </div>
               )
-            })}
+            })
+          }).filter(Boolean)}
+
+          {/* Black keys overlay */}
+          <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none">
+            {BLACK_KEYS.flatMap((blackKey) => {
+              return octaves.map((octave, octaveIndex) => {
+                const note = `${blackKey}${octave}`
+                const keyLabel = getKeyLabel(note)
+                const isActive = isKeyActive(note)
+
+                // Use the stable position mapping to prevent flickering
+                const position = stableBlackKeyPositions[note]
+                if (typeof position !== 'number') {
+                  return null
+                }
+
+                // Use stable key that doesn't change when octave changes
+                // The black key positions stay the same, only their note labels change
+                const stableKey = `${blackKey}-${octaveIndex}`
+
+                return (
+                  <div
+                    key={stableKey}
+                    className={`
+                      key-black absolute w-7 h-16 rounded-b-sm
+                      ${isActive ? 'bg-cyan-600' : 'bg-gray-900 hover:bg-gray-800'}
+                      transition-colors duration-100 cursor-pointer select-none
+                      pointer-events-auto flex flex-col justify-between items-center py-1 flex-col-reverse
+                      z-20
+                    `}
+                    style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                    data-active={isActive}
+                    data-note={note}
+                    onMouseDown={() => handleMouseDown(note)}
+                    onMouseUp={() => handleMouseUp(note)}
+                    onMouseLeave={() => {
+                      if (isActive) handleMouseUp(note)
+                    }}
+                    onTouchStart={(e) => handleTouchStart(e, note)}
+                    onTouchEnd={(e) => handleTouchEnd(e, note)}
+                  >
+                    <div className="text-xs font-mono text-white font-medium hidden md:block">{keyLabel.toUpperCase()}</div>
+                  </div>
+                )
+              })
+            }).filter(Boolean)}
           </div>
         </div>
       </div>
