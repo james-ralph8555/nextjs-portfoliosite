@@ -9,7 +9,6 @@
     "synth": "cdk synth",
     "deploy": "cdk deploy",
     "deploy:portfolio": "npm run deploy -- NextjsPortfoliositeSiteStack",
-    "deploy:lain": "npm run deploy -- NextjsPortfoliositeLainTsxSiteStack -c lainDomain=laintsx.james-ralph.com -c lainDeployVersion=$(date +%s) -c lainDistPath=\"$PWD/../public/lainTSX/dist\"",
     "destroy": "cdk destroy"
   },
   "devDependencies": {

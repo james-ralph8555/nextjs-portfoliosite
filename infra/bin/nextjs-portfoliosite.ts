@@ -3,7 +3,6 @@ import 'source-map-support/register'
 import { App, Environment } from 'aws-cdk-lib'
 import { NextjsPortfoliositeCertificateStack } from '../lib/certificate-stack'
 import { NextjsPortfoliositeSiteStack } from '../lib/static-site-stack'
-import { NextjsPortfoliositeLainTsxSiteStack } from '../lib/lain-tsx-site-stack'
 
 const app = new App()
 
@@ -26,9 +25,5 @@ const siteEnv: Environment = {
 }
 
 new NextjsPortfoliositeSiteStack(app, 'NextjsPortfoliositeSiteStack', {
-  env: siteEnv,
-})
-
-new NextjsPortfoliositeLainTsxSiteStack(app, 'NextjsPortfoliositeLainTsxSiteStack', {
   env: siteEnv,
 })

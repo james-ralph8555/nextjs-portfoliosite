@@ -16,7 +16,7 @@ export class NextjsPortfoliositeCertificateStack extends Stack {
 
     this.certificate = new acm.Certificate(this, 'SiteCertificate', {
       domainName,
-      // Include wildcard for all subdomains (covers e.g. lainTSX.james-ralph.com)
+      // Include wildcard for all subdomains.
       subjectAlternativeNames: [
         `www.${domainName}`,
         `*.${domainName}`,

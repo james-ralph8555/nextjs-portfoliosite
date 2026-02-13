@@ -90,19 +90,12 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
 - Stacks:
   - `NextjsPortfoliositeCertificateStack`: ACM cert for `james-ralph.com` with SANs `www` and wildcard `*.james-ralph.com` (DNS validation; manual records).
   - `NextjsPortfoliositeSiteStack`: S3+CloudFront for the main static export (`out/`).
-  - `NextjsPortfoliositeLainTsxSiteStack`: S3+CloudFront for `public/lainTSX/dist` served at `lainTSX.james-ralph.com`.
 
 Quick start:
 - Cert (must be in `us-east-1` for CloudFront):
   - `cd infra && npm run build`
   - `CERTIFICATE_REGION=us-east-1 npm run cdk -- deploy NextjsPortfoliositeCertificateStack`
   - Manually create the DNS validation CNAMEs in your DNS provider, then continue once issued.
-- LainTSX static site:
-  - Ensure `public/lainTSX/dist` exists (or pass `-c lainDistPath=/abs/path`).
-  - Deploy with existing cert ARN:
-    - `CERTIFICATE_ARN=<acm-arn> npm run cdk -- deploy NextjsPortfoliositeLainTsxSiteStack`
-    - Or rely on cross-stack import of `NextjsPortfoliositeCertificateArn` if both stacks are in the same account/region.
-  - Create a DNS CNAME: `lainTSX.james-ralph.com` → the output `LainTsxCloudFrontDomainName`.
 
 ## Configuration & Security
 - Env vars via Amplify; expose only public values with `NEXT_PUBLIC_`

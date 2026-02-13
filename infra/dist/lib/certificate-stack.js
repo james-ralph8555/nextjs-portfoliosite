@@ -42,7 +42,7 @@ class NextjsPortfoliositeCertificateStack extends aws_cdk_lib_1.Stack {
         const { domainName } = props;
         this.certificate = new acm.Certificate(this, 'SiteCertificate', {
             domainName,
-            // Include wildcard for all subdomains (covers e.g. lainTSX.james-ralph.com)
+            // Include wildcard for all subdomains.
             subjectAlternativeNames: [
                 `www.${domainName}`,
                 `*.${domainName}`,
