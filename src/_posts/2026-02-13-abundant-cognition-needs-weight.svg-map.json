@@ -1,35 +1,35 @@
 {
   "version": 1,
   "postId": "2026-02-13-abundant-cognition-needs-weight",
-  "generatedAt": "2026-02-13T12:46:19Z",
+  "generatedAt": "2026-02-13T14:50:47Z",
   "style": "gold-fill-transparent",
   "images": [
     {
-      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_1.png",
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_diver_1_alt.png",
       "status": "ok",
-      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.svg",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_diver_1_alt.svg",
       "layers": [
         {
           "kind": "bg",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.bg.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_diver_1_alt.bg.svg",
           "opacity": 1,
           "blend": "normal"
         },
         {
           "kind": "tone",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.tone.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_diver_1_alt.tone.svg",
           "opacity": 0.88,
           "blend": "normal"
         },
         {
           "kind": "highlight",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.highlight.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_diver_1_alt.highlight.svg",
           "opacity": 0.72,
           "blend": "normal"
         },
         {
           "kind": "line",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.line.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_diver_1_alt.line.svg",
           "opacity": 0.62,
           "blend": "normal"
         }
@@ -149,75 +149,39 @@
       }
     },
     {
-      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_5.png",
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_loom.png",
       "status": "ok",
-      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.svg",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_loom.svg",
       "layers": [
         {
           "kind": "bg",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.bg.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_loom.bg.svg",
           "opacity": 1,
           "blend": "normal"
         },
         {
           "kind": "tone",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.tone.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_loom.tone.svg",
           "opacity": 0.88,
           "blend": "normal"
         },
         {
           "kind": "highlight",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.highlight.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_loom.highlight.svg",
           "opacity": 0.72,
           "blend": "normal"
         },
         {
           "kind": "line",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.line.svg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_loom.line.svg",
           "opacity": 0.62,
           "blend": "normal"
         }
       ],
       "palette": {
-        "dark": "#010000",
-        "mid": "#5f3f0f",
-        "bright": "#e4af2d"
-      }
-    },
-    {
-      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_texture_wave.png",
-      "status": "ok",
-      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.svg",
-      "layers": [
-        {
-          "kind": "bg",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.bg.svg",
-          "opacity": 1,
-          "blend": "normal"
-        },
-        {
-          "kind": "tone",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.tone.svg",
-          "opacity": 0.88,
-          "blend": "normal"
-        },
-        {
-          "kind": "highlight",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.highlight.svg",
-          "opacity": 0.72,
-          "blend": "normal"
-        },
-        {
-          "kind": "line",
-          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.line.svg",
-          "opacity": 0.62,
-          "blend": "normal"
-        }
-      ],
-      "palette": {
-        "dark": "#010000",
-        "mid": "#5f3f10",
-        "bright": "#dba72e"
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
       }
     },
     {
@@ -246,6 +210,42 @@
         {
           "kind": "line",
           "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_lens.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_lens.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_lens.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_lens.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_lens.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_lens.line.svg",
           "opacity": 0.62,
           "blend": "normal"
         }

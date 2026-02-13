@@ -6,7 +6,7 @@ coverImage: "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_5.png"
 
 ## 1. When Thinking Becomes Cheap
 
-![Opening: When Thinking Becomes Cheap](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_1.png)
+![Opening: When Thinking Becomes Cheap](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_diver_1_alt.png)
 
 We have entered a different cognitive environment.
 
@@ -84,6 +84,7 @@ Collaboration requires discernment.
 
 ---
 
+
 ## 3. Gas vs. Gravity
 
 ![Gas vs. Gravity](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_3.png)
@@ -158,7 +159,7 @@ In an environment saturated with plausible language, discernment becomes the vis
 
 ## 5. Friction Migrates
 
-![Friction Migrates](/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_5.png)
+![Friction Migrates](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_loom.png)
 
 Friction does not disappear when a task becomes easier.
 
@@ -190,8 +191,6 @@ The more fluent the system becomes, the more deliberate the human must be.
 
 Friction migrates from the hands to the mind.
 
-![Texture Wave](/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_texture_wave.png)
-
 ---
 
 ## 6. Choosing Gravity
@@ -219,5 +218,7 @@ The bottleneck is conviction.
 Gravity must be chosen. Not once, as a philosophical stance, but repeatedly—in each decision to stop refining, to ship one version instead of exploring three more, to treat a thought as sufficient and move forward.
 The tools will continue to improve. They will generate faster, expand more fluently, iterate more smoothly.
 The question remains the same: what deserves to become dense?
+
+![Lens](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_lens.png)
 
 ---
