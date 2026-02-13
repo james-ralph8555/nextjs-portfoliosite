@@ -47,3 +47,7 @@ public/fonts/
 # CDK
 infra/cdk.out/
 infra/node_modules/
+
+# python cache
+__pycache__/
+*.py[cod]

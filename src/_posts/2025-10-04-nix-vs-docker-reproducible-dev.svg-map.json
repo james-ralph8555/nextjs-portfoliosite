@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "postId": "2025-10-04-nix-vs-docker-reproducible-dev",
+  "generatedAt": "2026-02-13T12:49:01Z",
+  "style": "gold-fill-transparent",
+  "images": [
+    {
+      "src": "/assets/docker-nix-post/upscayl2/docker_whale_2_upscayl_2x_upscayl-standard-4x.webp",
+      "status": "ok",
+      "svgSrc": "/assets/docker-nix-post/upscayl2/svg/docker_whale_2_upscayl_2x_upscayl-standard-4x.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/docker-nix-post/upscayl2/svg/docker_whale_2_upscayl_2x_upscayl-standard-4x.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/docker-nix-post/upscayl2/svg/docker_whale_2_upscayl_2x_upscayl-standard-4x.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/docker-nix-post/upscayl2/svg/docker_whale_2_upscayl_2x_upscayl-standard-4x.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/docker-nix-post/upscayl2/svg/docker_whale_2_upscayl_2x_upscayl-standard-4x.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/docker-nix-post/upscayl2/functional_factory_1_upscayl_2x_upscayl-standard-4x.webp",
+      "status": "ok",
+      "svgSrc": "/assets/docker-nix-post/upscayl2/svg/functional_factory_1_upscayl_2x_upscayl-standard-4x.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/docker-nix-post/upscayl2/svg/functional_factory_1_upscayl_2x_upscayl-standard-4x.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/docker-nix-post/upscayl2/svg/functional_factory_1_upscayl_2x_upscayl-standard-4x.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/docker-nix-post/upscayl2/svg/functional_factory_1_upscayl_2x_upscayl-standard-4x.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/docker-nix-post/upscayl2/svg/functional_factory_1_upscayl_2x_upscayl-standard-4x.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    }
+  ]
+}
