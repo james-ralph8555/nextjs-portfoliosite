@@ -255,10 +255,13 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
   const stableBlackKeyPositions = React.useMemo(() => {
     const positions: Record<string, number> = {}
     const octaves = [currentOctave, currentOctave + 1]
-    
+
     for (const octave of octaves) {
       for (const blackKey of BLACK_KEYS) {
         const note = `${blackKey}${octave}`
+        // Only calculate position if this black key is actually mapped (exists in REVERSE_MAPPING)
+        if (!REVERSE_MAPPING[note]) continue
+
         const blackKeyPosition = BLACK_KEY_POSITIONS[blackKey as keyof typeof BLACK_KEY_POSITIONS]
         if (typeof blackKeyPosition === 'number') {
           const octaveStartIndex = (octave - currentOctave) * WHITE_KEYS.length
@@ -269,7 +272,7 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
       }
     }
     return positions
-  }, [currentOctave, renderedWhiteKeys.length])
+  }, [currentOctave, renderedWhiteKeys.length, REVERSE_MAPPING])
   
   // Update mouse down handler to enable continuous movement
   const handleMouseDown = (note: string) => {
@@ -382,6 +385,9 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
             {BLACK_KEYS.flatMap((blackKey) => {
               return octaves.map((octave, octaveIndex) => {
                 const note = `${blackKey}${octave}`
+                // Only render if this key has a mapping (is playable)
+                if (!REVERSE_MAPPING[note]) return null
+
                 const keyLabel = getKeyLabel(note)
                 const isActive = isKeyActive(note)
 
