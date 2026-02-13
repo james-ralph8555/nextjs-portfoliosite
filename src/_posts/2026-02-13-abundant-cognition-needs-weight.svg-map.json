@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "postId": "2026-02-13-abundant-cognition-needs-weight",
+  "generatedAt": "2026-02-13T12:46:19Z",
+  "style": "gold-fill-transparent",
+  "images": [
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_1.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_1.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_2.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_2.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_2.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_2.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_2.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_2.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_3.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_3.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_3.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_3.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_3.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_3.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_4.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_4.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_4.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_4.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_4.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_4.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_5.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_5.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#010000",
+        "mid": "#5f3f0f",
+        "bright": "#e4af2d"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_chatgpt_texture_wave.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_chatgpt_texture_wave.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#010000",
+        "mid": "#5f3f10",
+        "bright": "#dba72e"
+      }
+    },
+    {
+      "src": "/assets/abundant-cognition-needs-weight-post/ai_img_gemini_6.png",
+      "status": "ok",
+      "svgSrc": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/abundant-cognition-needs-weight-post/svg/ai_img_gemini_6.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    }
+  ]
+}
