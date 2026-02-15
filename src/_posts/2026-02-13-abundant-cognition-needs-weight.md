@@ -8,9 +8,7 @@ coverImage: "/assets/abundant-cognition-needs-weight-post/optimized/ai_img_chatg
 
 ![Opening: When Thinking Becomes Cheap](/assets/abundant-cognition-needs-weight-post/ai_img_gemini_diver_1_alt.png)
 
-We have entered a different cognitive environment.
-
-The defining change is not that machines can write code, translate documents, or summarize meetings. It is that articulation itself has become inexpensive.
+We have entered a different cognitive environment. The defining change is not machine intelligence. It is the collapse of articulation as a constraint.
 
 Historically, expression acted as a filter. To clarify an idea required time, effort, and revision. The cost of formulation naturally constrained how many ideas could fully materialize. Most thoughts remained internal or unfinished.
 
