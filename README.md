@@ -51,6 +51,8 @@ The globe is a pure CSS 3D wireframe sphere rendered via nested divs and transfo
 - Serve: `npm run serve` → serves the static export from `out/`
 - Lint: `npm run lint`
 - Optional: `nix develop` for a preconfigured Node 20 dev shell
+- SVG utility (one-time): `uv tool install --editable /home/james/projects/svg-layer-tool`
+- Generate layered blog SVGs: `npm run svg:post -- --post src/_posts/<post>.md`
 
 ## Content Editing
 All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown).

@@ -3,13 +3,29 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 from manifest import build_manifest, write_manifest
-from paths import extract_markdown_image_sources, is_local_asset_src, post_id_from_path, read_post_markdown
-from pipeline import PipelineConfig, preflight_required_tools, process_image, resolve_svgo_command
+from paths import (
+    extract_markdown_image_sources,
+    is_local_asset_src,
+    layer_svg_src_from_src,
+    post_id_from_path,
+    public_path_from_src,
+    read_post_markdown,
+    svg_src_from_src,
+)
+
+_LAYER_STYLE: dict[str, dict[str, float | str]] = {
+    "bg": {"opacity": 1.0, "blend": "normal"},
+    "tone": {"opacity": 0.88, "blend": "normal"},
+    "highlight": {"opacity": 0.72, "blend": "normal"},
+    "line": {"opacity": 0.62, "blend": "normal"},
+}
 
 
 def parse_args() -> argparse.Namespace:
@@ -43,10 +59,18 @@ def print_report(records: list[dict[str, Any]]) -> None:
     print(f"processed={len(records)} ok={len(ok)} failed={len(failed)}")
     print(f"svg_bytes_before={before} svg_bytes_after={after}")
 
-    coverages = [r.get("maskBlackCoverage") for r in ok if isinstance(r.get("maskBlackCoverage"), (int, float))]
+    coverages: list[float] = []
+    for rec in ok:
+        coverage = rec.get("maskCoverage")
+        if not isinstance(coverage, dict):
+            continue
+        line_coverage = coverage.get("line")
+        if isinstance(line_coverage, (int, float)):
+            coverages.append(float(line_coverage))
+
     if coverages:
-        avg = sum(float(v) for v in coverages) / len(coverages)
-        print(f"mask_black_coverage_avg={avg:.4f}")
+        avg = sum(coverages) / len(coverages)
+        print(f"mask_line_coverage_avg={avg:.4f}")
 
     if failed:
         print("failed_images:")
@@ -54,14 +78,127 @@ def print_report(records: list[dict[str, Any]]) -> None:
             print(f"- {row.get('src')}: {row.get('error', 'unknown error')}")
 
 
+def resolve_svg_layer_tool_command() -> list[str] | None:
+    tool = shutil.which("svg-layer-tool")
+    if tool:
+        return [tool]
+
+    uv_tool_path = Path.home() / ".local" / "bin" / "svg-layer-tool"
+    if uv_tool_path.exists():
+        return [str(uv_tool_path)]
+
+    return None
+
+
+def parse_json_output(stdout: str) -> dict[str, Any] | None:
+    stripped = stdout.strip()
+    if not stripped:
+        return None
+
+    try:
+        parsed = json.loads(stripped)
+        return parsed if isinstance(parsed, dict) else None
+    except json.JSONDecodeError:
+        pass
+
+    for line in reversed(stripped.splitlines()):
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            parsed = json.loads(line)
+            if isinstance(parsed, dict):
+                return parsed
+        except json.JSONDecodeError:
+            continue
+    return None
+
+
+def invoke_svg_layer_tool(
+    *,
+    tool_command: list[str],
+    input_path: Path,
+    out_dir: Path,
+    base_name: str,
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    command = [
+        *tool_command,
+        "--input",
+        str(input_path),
+        "--out-dir",
+        str(out_dir),
+        "--base-name",
+        base_name,
+        "--color",
+        args.color,
+        "--turdsize",
+        str(args.turdsize),
+        "--alphamax",
+        str(args.alphamax),
+        "--opttolerance",
+        str(args.opttolerance),
+        "--threshold",
+        str(args.threshold),
+        "--mkbitmap-filter",
+        str(args.mkbitmap_filter),
+        "--mkbitmap-scale",
+        str(args.mkbitmap_scale),
+        "--poster-colors",
+        str(args.poster_colors),
+        "--palette-fuzz",
+        str(args.palette_fuzz),
+        "--preview",
+        str(args.preview),
+        "--optimize",
+        str(args.optimize),
+    ]
+
+    completed = subprocess.run(
+        command,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+
+    stdout = completed.stdout.strip()
+    stderr = completed.stderr.strip()
+    parsed = parse_json_output(stdout) or {}
+
+    status = parsed.get("status")
+    if status not in {"ok", "error"}:
+        parsed["status"] = "ok" if completed.returncode == 0 else "error"
+
+    if completed.returncode != 0:
+        parsed["status"] = "error"
+
+    if parsed.get("status") == "error" and not parsed.get("error"):
+        detail = stderr or stdout or f"svg-layer-tool exited with code {completed.returncode}"
+        parsed["error"] = detail
+    elif parsed.get("status") == "ok" and stderr and not parsed.get("warning"):
+        parsed["warning"] = stderr
+
+    return parsed
+
+
+def build_layer_manifest_entries(src: str) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for kind in ("bg", "tone", "highlight", "line"):
+        entries.append({
+            "kind": kind,
+            "src": layer_svg_src_from_src(src, kind),
+            "opacity": float(_LAYER_STYLE[kind]["opacity"]),
+            "blend": str(_LAYER_STYLE[kind]["blend"]),
+        })
+    return entries
+
+
 def main() -> int:
     args = parse_args()
 
-    missing_tools = preflight_required_tools()
-    if args.optimize and resolve_svgo_command() is None:
-        missing_tools = [*missing_tools, "svgo"]
-    if missing_tools:
-        print(f"missing required tools: {', '.join(missing_tools)}", file=sys.stderr)
+    tool_command = resolve_svg_layer_tool_command()
+    if not tool_command:
+        print("missing required tool: svg-layer-tool (install with `uv tool install --editable /home/james/projects/svg-layer-tool`)", file=sys.stderr)
         return 2
 
     post_path = Path(args.post)
@@ -78,24 +215,45 @@ def main() -> int:
     sources = extract_markdown_image_sources(markdown)
     local_asset_sources = [src for src in sources if is_local_asset_src(src)]
 
-    cfg = PipelineConfig(
-        public_root=public_root,
-        color=args.color,
-        turdsize=args.turdsize,
-        alphamax=args.alphamax,
-        opttolerance=args.opttolerance,
-        threshold=args.threshold,
-        mkbitmap_filter=args.mkbitmap_filter,
-        mkbitmap_scale=args.mkbitmap_scale,
-        optimize=bool(args.optimize),
-        preview=bool(args.preview),
-        poster_colors=args.poster_colors,
-        palette_fuzz=args.palette_fuzz,
-    )
-
     records: list[dict[str, Any]] = []
     for src in local_asset_sources:
-        result = process_image(src, cfg)
+        svg_src = svg_src_from_src(src)
+        input_path = public_path_from_src(public_root, src)
+        out_dir = input_path.parent / "svg"
+
+        raw = invoke_svg_layer_tool(
+            tool_command=tool_command,
+            input_path=input_path,
+            out_dir=out_dir,
+            base_name=input_path.stem,
+            args=args,
+        )
+
+        result: dict[str, Any] = {
+            "src": src,
+            "status": "error",
+        }
+
+        if raw.get("status") == "ok":
+            result["status"] = "ok"
+            result["svgSrc"] = svg_src
+            result["layers"] = build_layer_manifest_entries(src)
+            if isinstance(raw.get("palette"), dict):
+                result["palette"] = raw["palette"]
+            if isinstance(raw.get("maskCoverage"), dict):
+                result["maskCoverage"] = raw["maskCoverage"]
+            if isinstance(raw.get("inputBytes"), int):
+                result["inputBytes"] = raw["inputBytes"]
+            if isinstance(raw.get("svgBytesBeforeOptimize"), int):
+                result["svgBytesBeforeOptimize"] = raw["svgBytesBeforeOptimize"]
+            if isinstance(raw.get("svgBytes"), int):
+                result["svgBytes"] = raw["svgBytes"]
+        else:
+            result["error"] = str(raw.get("error", "svg-layer-tool failed"))
+
+        if "warning" in raw:
+            result["warning"] = raw["warning"]
+
         records.append(result)
         if args.verbose:
             print(json.dumps(result, indent=2))
