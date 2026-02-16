@@ -33,6 +33,7 @@
 ## Agent Guidelines
 - NEVER run development servers (`npm run dev`) - only the user should start/stop dev servers
 - Focus on code changes, build processes, and static analysis
+- `npm run svg:post` depends on `svg-layer-tool`; install it with `uv tool install --editable /home/james/projects/svg-layer-tool`
 ## MCP Server Activation
 
 When you need to use Chrome DevTools functionality, activate the MCP server by using the `task` tool with the `general` subagent:
