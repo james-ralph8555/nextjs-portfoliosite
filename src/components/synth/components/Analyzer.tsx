@@ -11,7 +11,7 @@ export function Analyzer({ audioContext }: AnalyzerProps) {
   const animationRef = useRef<number | undefined>(undefined)
   const [mode, setMode] = useState<'waveform' | 'spectrum'>('waveform')
   const analyserRef = useRef<AnalyserNode | null>(null)
-  const dataArrayRef = useRef<Uint8Array | null>(null)
+  const dataArrayRef = useRef<Uint8Array<ArrayBuffer> | null>(null)
 
   useEffect(() => {
     if (!audioContext) return

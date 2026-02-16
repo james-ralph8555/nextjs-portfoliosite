@@ -336,14 +336,14 @@ export function useSynthEngine(audioContext: AudioContext | null) {
   }
 
   // Utility: create a waveshaper curve for drive
-  const createDriveCurve = (amount: number, nSamples = 2048): Float32Array => {
+  const createDriveCurve = (amount: number, nSamples = 2048): Float32Array<ArrayBuffer> => {
     const k = amount * 5 // 0..5
     const curve = new Float32Array(nSamples)
     for (let i = 0; i < nSamples; i++) {
       const x = (i * 2) / nSamples - 1
       curve[i] = (1 + k) * x / (1 + k * Math.abs(x))
     }
-    return curve
+    return curve as Float32Array<ArrayBuffer>
   }
 
   // Utility: key tracking mapping (relative to C4)
