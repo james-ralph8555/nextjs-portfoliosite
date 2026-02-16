@@ -49,7 +49,7 @@ This is a Next.js 15 portfolio website built with:
 **Asset Management**:
 - All static assets stored in private git submodule at `public/assets/`
 - Remote repository: `git@github.com:james-ralph8555/nextjs-portfoliosite-assets.git`
-- Accessed via SSH deploy key during Amplify build process
+- Deployed via CDK infrastructure (see `infra/` directory)
 - Protects licensed fonts (Berkeley Mono) and keeps main repository clean
 - No code changes required - asset URLs remain unchanged
 
@@ -132,9 +132,15 @@ Markdown features supported:
    git commit -m "Update assets submodule"
    ```
 
-### Build Process
-Amplify automatically:
-1. Sets up SSH key from `SSH_PRIVATE_KEY` environment variable
-2. Initializes git submodules during preBuild phase
-3. Makes assets available at original paths (e.g., `/assets/fonts/berkeley/`)
-4. No code changes needed - all existing asset references work unchanged
+### Deployment
+Deployed via AWS CDK infrastructure in the `infra/` directory:
+
+1. Build the site: `npm run build`
+2. Deploy via CDK:
+   ```bash
+   cd infra
+   npm ci
+   npm run deploy:portfolio
+   ```
+
+The CDK stack handles S3 bucket creation, CloudFront distribution, and asset deployment from the `out/` directory.

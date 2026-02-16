@@ -4,11 +4,11 @@
 - `src/_posts/`: Markdown blog posts consumed by `src/lib/api.tsx`.
 - `src/content/`: User-editable JSON content (projects, experience, about).
 - `public/`: Static assets (images, icons).
-- Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`, `amplify.yml`.
+- Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`.
 ## Build, Test, and Development Commands
 - `npm ci` (or `npm install`): Install dependencies. CI uses `npm ci`.
 - `npm run dev`: Start dev server (Turbopack) at `http://localhost:3000`.
-- `npm run build`: Production build (`.next/`). Used by Amplify.
+- `npm run build`: Production build (`.next/` and `out/`). Deployed via CDK.
 - `npm start`: Serve the production build locally.
 - `npm run lint`: Run ESLint with Next.js rules.
 - Optional: `nix develop` for a preconfigured Node 20 dev shell (see `flake.nix`).
@@ -27,7 +27,7 @@
 - Commits: Prefer Conventional Commits (`feat:`, `fix:`, `refactor:`, `perf:`). Keep messages imperative and scoped.
 - PRs: Include a clear summary, linked issues, and screenshots/GIFs for UI changes. Ensure `npm run build` and `npm run lint` pass locally.
 ## Security & Configuration Tips
-- Secrets: Configure via Amplify environment variables. Only expose public values with `NEXT_PUBLIC_`.
+- Secrets: Use AWS Secrets Manager or SSM Parameter Store via CDK. Only expose public values with `NEXT_PUBLIC_`.
 - Images: `images.unoptimized` is enabled for static hosting—optimize sources (WebP where possible).
 - Avoid committing large binaries to `public/`; use optimized assets.
 ## Agent Guidelines

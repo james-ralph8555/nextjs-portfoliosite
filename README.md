@@ -24,7 +24,7 @@ Personal portfolio built with Next.js App Router, TypeScript, and Tailwind CSS. 
 - `src/content/`: User‑editable JSON for About, Experience, Projects
 - `src/lib/api.tsx`: Markdown parsing pipeline and post helpers
 - `public/`: Static assets (images, icons)
-- Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`, `amplify.yml`
+- Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`
 
 ## Spinning Globe
 The globe is a pure CSS 3D wireframe sphere rendered via nested divs and transforms. No WebGL or canvas is used.
@@ -79,11 +79,28 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
   - Linkable headings via `rehype-slug` + autolink
 - Note: Markdown parser creation is memoized for faster builds
 
-## Deployment (AWS Amplify)
-- Config: `amplify.yml`
-- Steps: `npm ci` → `npm run build`
-- Artifact: deploy `out/` directory (for static export)
-- Cache: `.npm/**/*` (adjust other caches as needed)
+## Deployment (AWS CDK)
+Deployed via AWS CDK infrastructure:
+
+**Prerequisites**:
+- AWS CLI configured with appropriate credentials
+- Certificate in ACM (us-east-1) for `james-ralph.com` with SANs `www` and `*.james-ralph.com`
+
+**Deploy steps**:
+```bash
+# Build the site
+npm run build
+
+# Deploy via CDK
+cd infra
+npm ci
+npm run deploy:portfolio
+```
+
+The CDK stack (`infra/lib/static-site-stack.ts`) provisions:
+- S3 bucket for static assets
+- CloudFront distribution with HTTPS redirect
+- Bucket deployment with CloudFront invalidation
 
 ## CDK Infra (Static Sites)
 - Location: `infra/`
@@ -98,7 +115,7 @@ Quick start:
   - Manually create the DNS validation CNAMEs in your DNS provider, then continue once issued.
 
 ## Configuration & Security
-- Env vars via Amplify; expose only public values with `NEXT_PUBLIC_`
+- Secrets via AWS Secrets Manager or SSM Parameter Store
 - Images: `images.unoptimized = true` (optimize sources; prefer WebP)
 - Avoid large binaries in `public/`
 
