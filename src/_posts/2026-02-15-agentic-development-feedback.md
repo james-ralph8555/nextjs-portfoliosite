@@ -1,10 +1,10 @@
 ---
 title: "Agentic Full-Stack Development: Build the Feedback Loop"
 date: 2026-02-15
-coverImage: "/assets/agentic-development-feedback-post/agentic-dev-cover.png"
+coverImage: "/assets/agentic-development-feedback-post/agentic-dev-cover.webp"
 ---
 
-![Agentic Development Feedback Loop](/assets/agentic-development-feedback-post/agentic-dev-intro.png)
+![Agentic Development Feedback Loop](/assets/agentic-development-feedback-post/agentic-dev-intro.webp)
 *Agentic development works when code changes are tied to visible results.*
 
 ## 0. TL;DR
@@ -31,7 +31,7 @@ This works with one agent or multiple agents. You can have one agent implementin
 
 ## 2. Why Feedback Changes Everything
 
-![Feedback Changes Everything - Section 2](/assets/agentic-development-feedback-post/agentic-dev-02.png)
+![Feedback Changes Everything - Section 2](/assets/agentic-development-feedback-post/agentic-dev-02.webp)
 
 Code generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits.
 
@@ -48,7 +48,7 @@ Without feedback, an agent can only produce plausible text. With feedback, it ca
 
 ## 3. The Development Loop You Can Copy
 
-![Development Loop - Section 3](/assets/agentic-development-feedback-post/agentic-dev-03.png)
+![Development Loop - Section 3](/assets/agentic-development-feedback-post/agentic-dev-03.webp)
 
 Use this loop as the default:
 
@@ -72,7 +72,7 @@ When these are true, progress is easy to measure and easy to trust.
 
 ## 4. Treat Evidence Bundles as a Required Deliverable
 
-![Evidence Bundles - Section 4](/assets/agentic-development-feedback-post/agentic-dev-04.png)
+![Evidence Bundles - Section 4](/assets/agentic-development-feedback-post/agentic-dev-04.webp)
 
 An evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought.
 
@@ -92,7 +92,7 @@ You can store this in a markdown file under `/evidence`, as a PR comment templat
 
 ## 5. Make the Application Observable to the Agent
 
-![Observability Control Board - Section 5](/assets/agentic-development-feedback-post/agentic-dev-05.png)
+![Observability Control Board - Section 5](/assets/agentic-development-feedback-post/agentic-dev-05.webp)
 *Generated from the Section 5 prompt.*
 
 Agents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.
@@ -135,7 +135,7 @@ This is often where hidden issues are found fastest.
 
 ## 6. Tool Pillars That Improve Feedback Quality
 
-![Tool Pillars - Section 6](/assets/agentic-development-feedback-post/agentic-dev-06.png)
+![Tool Pillars - Section 6](/assets/agentic-development-feedback-post/agentic-dev-06.webp)
 
 ### 6.1 Browser Verification (Chrome MCP)
 
@@ -195,7 +195,7 @@ This keeps reviews clear and debugging faster.
 
 ## 7. Why Monorepos Help Agentic Work
 
-![Monorepo Workspace Map - Section 7](/assets/agentic-development-feedback-post/agentic-dev-07.png)
+![Monorepo Workspace Map - Section 7](/assets/agentic-development-feedback-post/agentic-dev-07.webp)
 
 Agentic workflows improve when the codebase is visible in one workspace:
 
@@ -218,7 +218,7 @@ When root and package scripts use the same names (`dev`, `test`, `lint`, `typech
 
 ## 8. Guardrails That Keep Verification Cheap
 
-![Verification Guardrails - Section 8](/assets/agentic-development-feedback-post/agentic-dev-08.png)
+![Verification Guardrails - Section 8](/assets/agentic-development-feedback-post/agentic-dev-08.webp)
 
 Use guardrails that reduce friction:
 
@@ -241,7 +241,7 @@ Use least-privilege credentials, keep tool-call logs, and separate read from wri
 
 ## 10. Closing: Start With One Loop
 
-![Start With One Loop - Section 10](/assets/agentic-development-feedback-post/agentic-dev-10.png)
+![Start With One Loop - Section 10](/assets/agentic-development-feedback-post/agentic-dev-10.webp)
 
 The goal is not full autonomy. The goal is reliable competence.
 

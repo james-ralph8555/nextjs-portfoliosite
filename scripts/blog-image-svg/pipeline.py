@@ -74,7 +74,45 @@ def maybe_optimize_svg(svg_path: Path) -> dict[str, Any]:
     if not svgo_cmd:
         raise RuntimeError("svgo not found")
 
-    run_checked([*svgo_cmd, "--multipass", str(svg_path)])
+    # Try with increased Node stack size first
+    env_with_stack = dict(subprocess.os.environ)
+    env_with_stack["NODE_OPTIONS"] = "--max-old-space-size=8192"
+
+    try:
+        subprocess.run(
+            [*svgo_cmd, "--multipass", str(svg_path)],
+            check=True,
+            text=True,
+            capture_output=True,
+            env=env_with_stack,
+        )
+    except subprocess.CalledProcessError:
+        # If stack overflow, try with mergePaths disabled via inline config
+        config_js = f'''export default {{ multipass: true, plugins: [{{ name: "preset-default", params: {{ overrides: {{ mergePaths: false }} }} }}] }};'''
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".mjs", delete=False) as cfg_file:
+            cfg_file.write(config_js)
+            cfg_path = Path(cfg_file.name)
+
+        try:
+            subprocess.run(
+                [*svgo_cmd, "--config", str(cfg_path), str(svg_path)],
+                check=True,
+                text=True,
+                capture_output=True,
+                env=env_with_stack,
+            )
+        except subprocess.CalledProcessError:
+            # Skip optimization for this file, keep unoptimized SVG
+            return {
+                "optimized": False,
+                "bytesBefore": before,
+                "bytesAfter": before,
+                "optimizer": "svgo",
+                "skipped": True,
+                "reason": "SVGO stack overflow, kept unoptimized",
+            }
+        finally:
+            cfg_path.unlink(missing_ok=True)
 
     after = svg_path.stat().st_size
     return {
