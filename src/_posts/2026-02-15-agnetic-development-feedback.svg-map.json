@@ -1,0 +1,332 @@
+{
+  "version": 1,
+  "postId": "2026-02-15-agnetic-development-feedback",
+  "generatedAt": "2026-02-16T05:24:14Z",
+  "style": "gold-fill-transparent",
+  "images": [
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-intro.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-intro.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-intro.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-intro.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-intro.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-intro.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-02.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-02.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-02.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-02.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-02.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-02.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-03.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-03.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-03.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-03.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-03.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-03.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-04.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-04.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-04.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-04.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-04.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-04.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-05.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-05.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-05.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-05.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-05.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-05.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-06.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-06.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-06.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-06.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-06.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-06.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-07.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-07.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-07.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-07.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-07.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-07.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-08.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-08.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-08.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-08.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-08.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-08.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    },
+    {
+      "src": "/assets/agentic-development-feedback-post/agentic-dev-10.png",
+      "status": "ok",
+      "svgSrc": "/assets/agentic-development-feedback-post/svg/agentic-dev-10.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-10.bg.svg",
+          "opacity": 1,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-10.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-10.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/agentic-development-feedback-post/svg/agentic-dev-10.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    }
+  ]
+}
