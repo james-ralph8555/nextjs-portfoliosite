@@ -186,10 +186,11 @@ def trace_intensity_region(
         str(raw_mask),
     ])
 
+    # Keep the original bitmap canvas. `--tight` crops each layer differently,
+    # which causes visible misregistration when layers are stacked in CSS.
     run_checked([
         "potrace",
         "-s",
-        "--tight",
         "--group",
         "-t",
         str(max(2, turdsize)),
@@ -243,10 +244,10 @@ def trace_line_layer(
         "-negate",
         str(mask_trace),
     ])
+    # Keep line layer on its full canvas for consistent registration.
     run_checked([
         "potrace",
         "-s",
-        "--tight",
         "--group",
         "-t",
         str(cfg.turdsize),
