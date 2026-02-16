@@ -528,13 +528,7 @@
     }
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .latitude-ring.equator {
-      box-shadow: 
-          0 0 8px rgba(202,143,49,0.4),
-          0 0 16px rgba(202,143,49,0.2);
-    }
-  }
+
 
   /* Mobile responsive styles */
   @media (max-width: 768px) {
