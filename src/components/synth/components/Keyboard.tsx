@@ -341,8 +341,8 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
       <div className="flex-1 relative">
         {/* White keys using CSS Grid for consistent sizing */}
         <div className="grid h-full relative" style={{ gridTemplateColumns: `repeat(${renderedWhiteKeys.length}, 1fr)` }}>
-          {WHITE_KEYS.flatMap((whiteKey) => {
-            return octaves.map((octave, octaveIndex) => {
+          {octaves.flatMap((octave, octaveIndex) => {
+            return WHITE_KEYS.map((whiteKey) => {
               const note = `${whiteKey}${octave}`
               // Only render if this key is in the mapping
               if (!REVERSE_MAPPING[note]) return null
@@ -382,8 +382,8 @@ export function Keyboard({ activeKeys, onNoteOn, onNoteOff, onMouseActiveKeysCha
 
           {/* Black keys overlay */}
           <div className="absolute top-0 left-0 right-0 h-16 pointer-events-none">
-            {BLACK_KEYS.flatMap((blackKey) => {
-              return octaves.map((octave, octaveIndex) => {
+            {octaves.flatMap((octave, octaveIndex) => {
+              return BLACK_KEYS.map((blackKey) => {
                 const note = `${blackKey}${octave}`
                 // Only render if this key has a mapping (is playable)
                 if (!REVERSE_MAPPING[note]) return null
