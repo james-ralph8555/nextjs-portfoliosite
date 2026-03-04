@@ -33,7 +33,7 @@ type RenderPalette = {
   vignetteOuter: string
 }
 
-export type SpeedLevel = 0 | 1 | 2 | 3 | 5
+export type SpeedLevel = 0 | 1 | 2 | 3 | 4 | 5
 
 export interface GlobeShellConfig {
   radiusScale: number
@@ -80,13 +80,13 @@ export const DEFAULT_SHELLS: readonly GlobeShellConfig[] = [
     alpha: 0.88
   },
   {
-    radiusScale: 0.84,
+    radiusScale: 0.66,
     latitudeCount: 22,
     longitudeCount: 36,
     alpha: 0.52
   },
   {
-    radiusScale: 0.68,
+    radiusScale: 0.33,
     latitudeCount: 18,
     longitudeCount: 30,
     alpha: 0.34

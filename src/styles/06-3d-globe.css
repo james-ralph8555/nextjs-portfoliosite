@@ -24,7 +24,8 @@
   }
 
   .control-bar-grid {
-    @apply p-0 grid grid-cols-6 h-16;
+    @apply p-0 grid h-24;
+    grid-template-columns: minmax(0, 1.74fr) minmax(0, 1.24fr) minmax(0, 1.24fr) minmax(0, 3.28fr);
   }
 
   .boombox-controls {
@@ -33,6 +34,10 @@
 
   .boombox-controls.play-pause {
     @apply justify-center;
+  }
+
+  .boombox-controls.play-pause.play-pause-wide .boombox-button {
+    font-size: 14px;
   }
 
   .boombox-controls.labeled {
@@ -167,45 +172,68 @@
     @apply flex p-0;
   }
 
-  .vertical-speed-label {
-    @apply text-xs uppercase tracking-tighter text-black font-mono bg-box-title-bg border-r border-box-outline flex justify-center items-center;
+  .boombox-controls.equalizer-controls.matrix-controls {
+    @apply min-w-0;
+  }
+
+  .matrix-segmented-label {
+    @apply flex flex-col bg-box-title-bg border-r border-box-outline;
+    min-width: 20px;
+  }
+
+  .matrix-segment {
+    @apply text-black font-mono uppercase flex items-center justify-center;
+    font-size: 9px;
+    letter-spacing: 0.6px;
+  }
+
+  .matrix-segment + .matrix-segment {
+    border-top: 1px solid var(--box-outline);
+  }
+
+  .spin-segment {
+    @apply flex-col;
+    flex: 3;
+    gap: 2px;
+  }
+
+  .osc-segment,
+  .band-segment {
+    flex: 1;
+  }
+
+  .matrix-vertical-text {
     writing-mode: vertical-lr;
     text-orientation: mixed;
-    min-width: 18px;
-    letter-spacing: 1px;
-    padding: 4px 2px;
+    line-height: 1;
   }
 
   .equalizer-container {
     @apply flex flex-col h-full w-full justify-center;
-    gap: 4px;
+    gap: 1px;
+    padding: 2px 4px 2px 2px;
   }
 
   .equalizer-row {
     align-items: center;
-    gap: 1px;
+    gap: 0;
     display: flex;
-  }
-
-  .equalizer-axis-label {
-    @apply text-xs font-mono text-table-text font-bold;
-    font-size: 11px;
-    min-width: 12px;
-    text-align: center;
+    flex: 1;
+    min-height: 0;
   }
 
   .equalizer-levels {
     @apply flex gap-0.5 flex-1;
+    height: 100%;
   }
 
   .equalizer-level {
-    @apply flex-1 font-mono border cursor-pointer transition-all duration-200;
+    @apply flex-1 h-full font-mono border cursor-pointer transition-all duration-200;
     background: linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 50%, #1a1a1a 100%);
     border: 1px solid #333;
     border-radius: 1px;
-    height: 10px;
-    min-height: 10px;
-    max-height: 10px;
+    min-height: 0;
+    max-height: none;
     position: relative;
     contain: layout style;
     outline: none;
@@ -352,23 +380,21 @@
     }
 
     .equalizer-container {
-      gap: 6px;
+      gap: 1px;
+      padding: 2px 2px 2px 1px;
     }
 
     .equalizer-row {
-      gap: 0px;
+      gap: 1px;
     }
 
     .equalizer-level {
-      height: 12px;
-      min-height: 12px;
-      max-height: 12px;
-      margin: 0 0.25px;
+      margin: 0;
     }
 
-    .equalizer-axis-label {
-      font-size: 9px;
-      min-width: 10px;
+    .matrix-segment {
+      font-size: 8px;
+      letter-spacing: 0.4px;
     }
 
     /* iOS Safari 3D fallback */

@@ -10,6 +10,7 @@ import {
 } from '@/lib/retroGlobeCanvas'
 
 type RotationAxis = 'x' | 'y' | 'z'
+type MatrixRow = RotationAxis | 'osc' | 'band'
 
 type RenderSize = {
   width: number
@@ -17,7 +18,7 @@ type RenderSize = {
   dpr: number
 }
 
-const SPEED_LEVELS: SpeedLevel[] = [0, 1, 2, 3, 5]
+const SPEED_LEVELS: SpeedLevel[] = [0, 1, 2, 4, 5]
 const TAU = Math.PI * 2
 
 const normalizeRadians = (value: number) => {
@@ -32,7 +33,7 @@ export const RetroGlobe = () => {
   const [lineDensity, setLineDensity] = useState(1)
   const [rotationSpeed, setRotationSpeed] = useState<SpeedLevel>(1)
   const [wobbleSpeed, setWobbleSpeed] = useState(1)
-  const [bandSpeed, setBandSpeed] = useState(1)
+  const [bandSpeed, setBandSpeed] = useState<SpeedLevel>(2)
   const [xRotationSpeed, setXRotationSpeed] = useState<SpeedLevel>(0)
   const [zRotationSpeed, setZRotationSpeed] = useState<SpeedLevel>(0)
   const [flashingButton, setFlashingButton] = useState<string | null>(null)
@@ -67,7 +68,7 @@ export const RetroGlobe = () => {
     ySpeed: 1 as SpeedLevel,
     zSpeed: 0 as SpeedLevel,
     wobbleSpeed: 1,
-    bandSpeed: 1,
+    bandSpeed: 2,
     isFlashing: false
   })
 
@@ -132,37 +133,29 @@ export const RetroGlobe = () => {
     }
   }, [])
 
-  const incrementWobble = useCallback(() => {
-    if (wobbleSpeed >= 5) {
-      flashButton('wobble-plus')
+  const setMatrixLevel = useCallback((row: MatrixRow, level: SpeedLevel) => {
+    if (row === 'osc') {
+      setWobbleSpeed(level)
       return
     }
-    setWobbleSpeed((prev) => Math.min(5, prev + 1))
-  }, [wobbleSpeed, flashButton])
 
-  const decrementWobble = useCallback(() => {
-    if (wobbleSpeed <= 0) {
-      flashButton('wobble-minus')
+    if (row === 'band') {
+      setBandSpeed(level)
       return
     }
-    setWobbleSpeed((prev) => Math.max(0, prev - 1))
-  }, [wobbleSpeed, flashButton])
 
-  const incrementBand = useCallback(() => {
-    if (bandSpeed >= 5) {
-      flashButton('band-plus')
-      return
-    }
-    setBandSpeed((prev) => Math.min(5, prev + 1))
-  }, [bandSpeed, flashButton])
+    setSpeedLevel(row, level)
+  }, [setSpeedLevel])
 
-  const decrementBand = useCallback(() => {
-    if (bandSpeed <= 0) {
-      flashButton('band-minus')
-      return
-    }
-    setBandSpeed((prev) => Math.max(0, prev - 1))
-  }, [bandSpeed, flashButton])
+  const matrixRows = useMemo(() => {
+    return [
+      { key: 'x' as const, value: xRotationSpeed },
+      { key: 'y' as const, value: rotationSpeed },
+      { key: 'z' as const, value: zRotationSpeed },
+      { key: 'osc' as const, value: wobbleSpeed },
+      { key: 'band' as const, value: bandSpeed }
+    ]
+  }, [xRotationSpeed, rotationSpeed, zRotationSpeed, wobbleSpeed, bandSpeed])
 
   const handlePointerStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true)
@@ -418,7 +411,7 @@ export const RetroGlobe = () => {
 
       <div className="globe-control-bar">
         <div className="control-bar-grid">
-          <div className="boombox-controls play-pause">
+          <div className="boombox-controls play-pause play-pause-wide">
             <button
               className={`boombox-button ${!isPaused ? 'active' : 'inactive'}`}
               onClick={() => setIsPaused(false)}
@@ -479,27 +472,38 @@ export const RetroGlobe = () => {
             </div>
           </div>
 
-          <div className="boombox-controls equalizer-controls">
-            <div className="vertical-speed-label">SPIN</div>
+          <div className="boombox-controls equalizer-controls matrix-controls">
+            <div className="matrix-segmented-label">
+              <div className="matrix-segment spin-segment">
+                <span className="matrix-vertical-text">spin</span>
+              </div>
+              <div className="matrix-segment osc-segment">
+                <span className="matrix-vertical-text">O</span>
+              </div>
+              <div className="matrix-segment band-segment">
+                <span className="matrix-vertical-text">B</span>
+              </div>
+            </div>
             <div className="equalizer-container">
-              {['X', 'Y', 'Z'].map((axis) => {
-                const currentSpeed = axis === 'X' ? xRotationSpeed : axis === 'Y' ? rotationSpeed : zRotationSpeed
+              {matrixRows.map((row) => {
+                const currentSpeed = row.value
 
                 return (
-                  <div key={axis} className="equalizer-row">
+                  <div key={row.key} className="equalizer-row">
                     <div className="equalizer-levels">
                       {SPEED_LEVELS.map((level) => {
                         const isActive = level === currentSpeed
                         const isLitUp = level <= currentSpeed && currentSpeed > 0
                         const isMaxAndActive = level === 5 && isActive
+                        const isSpinRow = row.key === 'x' || row.key === 'y' || row.key === 'z'
+                        const shouldPulseRed = isSpinRow && isMaxAndActive && wobbleSpeed === 5
                         const isActiveNotMax = isActive && level < 5
-                        const shouldPulseRed = isMaxAndActive && wobbleSpeed === 5
 
                         return (
                           <button
                             key={level}
                             className={`equalizer-level ${isActiveNotMax ? 'active' : ''} ${shouldPulseRed ? 'active-red-pulsing' : isMaxAndActive ? 'active-red' : ''} ${isLitUp && !isActive ? 'lit-up' : ''}`}
-                            onClick={() => setSpeedLevel(axis.toLowerCase() as RotationAxis, level)}
+                            onClick={() => setMatrixLevel(row.key, level)}
                             data-level={level}
                           >
                           </button>
@@ -509,52 +513,6 @@ export const RetroGlobe = () => {
                   </div>
                 )
               })}
-            </div>
-          </div>
-
-          <div className="boombox-controls labeled">
-            <span className="control-label">
-              OSC
-              <span className="value-box">
-                <span className={wobbleSpeed === 5 ? 'red-glowing-digit' : 'glowing-digit'}>{wobbleSpeed}</span>
-              </span>
-            </span>
-            <div className="control-buttons-row">
-              <button
-                className={`boombox-button ${flashingButton === 'wobble-minus' ? 'flashing-red' : ''}`}
-                onClick={decrementWobble}
-              >
-                -
-              </button>
-              <button
-                className={`boombox-button ${flashingButton === 'wobble-plus' ? 'flashing-red' : ''}`}
-                onClick={incrementWobble}
-              >
-                +
-              </button>
-            </div>
-          </div>
-
-          <div className="boombox-controls labeled">
-            <span className="control-label">
-              BAND
-              <span className="value-box">
-                <span className={bandSpeed > 0 ? 'glowing-digit' : ''}>{bandSpeed}</span>
-              </span>
-            </span>
-            <div className="control-buttons-row">
-              <button
-                className={`boombox-button ${flashingButton === 'band-minus' ? 'flashing-red' : ''}`}
-                onClick={decrementBand}
-              >
-                -
-              </button>
-              <button
-                className={`boombox-button ${flashingButton === 'band-plus' ? 'flashing-red' : ''}`}
-                onClick={incrementBand}
-              >
-                +
-              </button>
             </div>
           </div>
         </div>
