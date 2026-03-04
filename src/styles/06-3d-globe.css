@@ -1,5 +1,5 @@
 /* === 3D GLOBE STYLES === */
-/* Retro globe 3D wireframe component styles */
+/* Retro globe canvas component styles (canvas-only) */
 
 @tailwind components;
 
@@ -252,7 +252,7 @@
     animation: equalizer-flash 0.5s ease-in-out infinite alternate !important;
   }
 
-  /* Globe wrapper and sphere */
+  /* Globe wrapper and canvas stage */
   .globe-wrapper {
     @apply relative cursor-grab;
     width: 280px;
@@ -309,268 +309,6 @@
     opacity: 0.42;
   }
 
-  .globe-sphere {
-    @apply relative w-full h-full cursor-grab;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    -moz-transform-style: preserve-3d;
-    animation: globe-rotate 28s linear infinite;
-    -webkit-animation: globe-rotate 28s linear infinite;
-    transform-origin: 50% 50% 0px;
-    -webkit-transform-origin: 50% 50% 0px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-    user-select: none;
-    -webkit-user-select: none;
-    contain: layout style;
-    transform: translate3d(0, 0, 0);
-    touch-action: none;
-  }
-
-  .globe-sphere:active {
-    cursor: grabbing;
-  }
-
-  .globe-sphere.dragging {
-    animation: none !important;
-    -webkit-animation: none !important;
-  }
-
-  .globe-sphere.y-rotation-disabled {
-    animation: none !important;
-    -webkit-animation: none !important;
-  }
-
-  .globe-sphere.paused {
-    animation-play-state: paused;
-    -webkit-animation-play-state: paused;
-  }
-
-  /* Globe layers */
-  .tilt-layer {
-    @apply absolute inset-0;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    -moz-transform-style: preserve-3d;
-    animation: globe-wobble 12s ease-in-out infinite;
-    -webkit-animation: globe-wobble 12s ease-in-out infinite;
-    transform-origin: 50% 50% 0px;
-    -webkit-transform-origin: 50% 50% 0px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-  }
-
-  .globe-sphere.paused .tilt-layer {
-    animation-play-state: paused;
-    -webkit-animation-play-state: paused;
-  }
-
-  .x-rotation-layer {
-    @apply absolute inset-0;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    -moz-transform-style: preserve-3d;
-    transform-origin: 50% 50% 0px;
-    -webkit-transform-origin: 50% 50% 0px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-  }
-
-  .globe-sphere.paused .x-rotation-layer {
-    animation-play-state: paused;
-    -webkit-animation-play-state: paused;
-  }
-
-  .x-rotation-layer.active {
-    animation: globe-rotate-x 28s linear infinite;
-    -webkit-animation: globe-rotate-x 28s linear infinite;
-  }
-
-  .z-rotation-layer {
-    @apply absolute inset-0;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    -moz-transform-style: preserve-3d;
-    transform-origin: 50% 50% 0px;
-    -webkit-transform-origin: 50% 50% 0px;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-  }
-
-  .globe-sphere.paused .z-rotation-layer {
-    animation-play-state: paused;
-    -webkit-animation-play-state: paused;
-  }
-
-  .z-rotation-layer.active {
-    animation: globe-rotate-z 28s linear infinite;
-    -webkit-animation: globe-rotate-z 28s linear infinite;
-  }
-
-  .wireframe-sphere {
-    @apply absolute inset-0;
-    transform-style: preserve-3d;
-    -webkit-transform-style: preserve-3d;
-    -moz-transform-style: preserve-3d;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    will-change: transform;
-    contain: layout style;
-  }
-
-  /* Globe wireframe elements */
-  .latitude-ring {
-    @apply absolute left-1/2 top-1/2;
-    border: 3px solid #CA8F31;
-    border-radius: 50%;
-    opacity: 1;
-    transform-origin: 50% 50%;
-    pointer-events: none;
-    -webkit-transform-origin: 50% 50%;
-    -moz-transform-origin: 50% 50%;
-    will-change: transform;
-    -webkit-backface-visibility: visible;
-    backface-visibility: visible;
-    transform: translate3d(-50%, -50%, 1px);
-    -webkit-transform: translate3d(-50%, -50%, 1px);
-    z-index: 10;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    contain: layout style;
-  }
-
-  .latitude-ring.equator {
-    border-width: 4px;
-    opacity: 1;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-  }
-
-  .meridian-line {
-    @apply absolute left-1/2 top-1/2;
-    width: 240px;
-    height: 240px;
-    border: 3px solid #CA8F31;
-    border-radius: 50%;
-    margin: -120px 0 0 -120px;
-    opacity: 1;
-    transform-origin: 50% 50%;
-    pointer-events: none;
-    -webkit-transform-origin: 50% 50%;
-    -moz-transform-origin: 50% 50%;
-    will-change: transform;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    contain: layout style;
-  }
-
-  .meridian-line.prime-meridian {
-    border-width: 4px;
-    opacity: 1;
-  }
-
-  .latitude-ring.globe-flashing-red,
-  .meridian-line.globe-flashing-red {
-    border-color: #FF4444 !important;
-    animation: globe-red-pulse 0.6s ease-in-out infinite alternate !important;
-    box-shadow: 0 0 12px rgba(255,68,68,0.8), 0 0 16px rgba(255,68,68,0.5) !important;
-  }
-
-  /* Globe points and effects */
-  .globe-point {
-    @apply absolute rounded-full;
-    background: #5AFD81;
-    left: 50%;
-    top: 50%;
-    pointer-events: none;
-    will-change: transform, opacity;
-    contain: layout style;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .globe-point {
-      box-shadow: 0 0 4px #5AFD81;
-      animation: point-pulse 3s ease-in-out infinite;
-    }
-  }
-
-  .globe-point.continent {
-    background: #5AFD81;
-    box-shadow: 0 0 6px #5AFD81;
-  }
-
-  .globe-point.ocean {
-    background: #4A90E2;
-    box-shadow: 0 0 3px #4A90E2;
-  }
-
-  /* Continental overlays */
-  .continent {
-    @apply absolute left-1/2 top-1/2;
-    width: 80px;
-    height: 80px;
-    margin: -40px 0 0 -40px;
-    border: 1px solid #CA8F31;
-    background: linear-gradient(135deg, 
-        rgba(90,253,129,0.15) 0%, 
-        rgba(90,253,129,0.08) 50%, 
-        rgba(90,253,129,0.03) 100%);
-    opacity: 0.65;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
-    pointer-events: none;
-  }
-
-  /* Globe shading and effects */
-  .globe-shading {
-    @apply absolute inset-0 rounded-full pointer-events-none;
-    background:
-        /* Back hemisphere darkening */
-        radial-gradient(ellipse 140% 100% at 30% 50%, 
-            rgba(0,0,0,0) 30%, 
-            rgba(0,0,0,0.3) 60%, 
-            rgba(0,0,0,0.6) 85%),
-        /* Front hemisphere highlight */
-        radial-gradient(ellipse 120% 120% at 70% 40%, 
-            rgba(255,255,255,0.08) 0%, 
-            rgba(255,255,255,0.02) 50%, 
-            rgba(255,255,255,0) 70%);
-  }
-
-  .scan-line {
-    @apply absolute h-px opacity-70 pointer-events-none;
-    left: 10%;
-    right: 10%;
-    top: 50%;
-    background: linear-gradient(90deg, 
-        rgba(90,253,129,0) 0%, 
-        rgba(90,253,129,0.8) 20%, 
-        rgba(90,253,129,1) 50%, 
-        rgba(90,253,129,0.8) 80%, 
-        rgba(90,253,129,0) 100%);
-    will-change: transform, opacity;
-    contain: layout style;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .scan-line {
-      box-shadow: 0 0 8px #5AFD81;
-      animation: scan-sweep 6s linear infinite;
-    }
-  }
-
-
-
   /* Mobile responsive styles */
   @media (max-width: 768px) {
     .globe-wrapper {
@@ -581,7 +319,7 @@
       margin-top: 1rem;
       touch-action: none;
     }
-    
+
     .retro-globe-container {
       min-height: 320px;
       max-height: 320px;
@@ -590,24 +328,24 @@
       overflow: hidden;
       justify-content: space-between;
     }
-    
+
     .fused-terminal-layout {
       @apply min-h-0;
     }
-    
+
     .speed-grid-container {
       @apply gap-0.5;
     }
-    
+
     .speed-grid-row {
       @apply gap-0.5;
     }
-    
+
     .speed-grid-cell {
       font-size: 8px;
       min-height: 10px;
     }
-    
+
     .speed-grid-axis {
       font-size: 8px;
       min-width: 6px;
@@ -616,52 +354,33 @@
     .equalizer-container {
       gap: 6px;
     }
-    
+
     .equalizer-row {
       gap: 0px;
     }
-    
+
     .equalizer-level {
       height: 12px;
       min-height: 12px;
       max-height: 12px;
       margin: 0 0.25px;
     }
-    
+
     .equalizer-axis-label {
       font-size: 9px;
       min-width: 10px;
     }
 
-    .meridian-line {
-      width: 200px;
-      height: 200px;
-      margin: -100px 0 0 -100px;
-    }
-    
     /* iOS Safari 3D fallback */
     .globe-wrapper {
       perspective: 1000px;
       -webkit-perspective: 1000px;
     }
-    
-    .globe-sphere,
+
     .globe-canvas-stage,
-    .tilt-layer,
-    .wireframe-sphere,
     .globe-canvas {
       -webkit-transform: translate3d(0,0,0); /* Force GPU layer */
       transform: translate3d(0,0,0);
-    }
-    
-    .latitude-ring,
-    .meridian-line {
-      -webkit-transform: translate3d(0,0,0); /* Force GPU layer */
-      transform: translate3d(0,0,0);
-    }
-    
-    .latitude-ring {
-      border-width: 2px;
     }
   }
 
@@ -676,15 +395,6 @@
     .globe-canvas {
       -webkit-transform: translate3d(0, 0, 0);
       transform: translate3d(0, 0, 0);
-    }
-    
-    .latitude-ring {
-      border-width: 2px; /* Thicker borders for mobile visibility */
-    }
-    
-    .meridian-line {
-      border-width: 2px;
-      opacity: 1;
     }
   }
 }
