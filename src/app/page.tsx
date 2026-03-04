@@ -1,5 +1,6 @@
 // @ts-nocheck
 import React from 'react'
+import Image from 'next/image'
 import { getAllPosts } from '@/lib/api'
 import { SideBar } from './SideBar'
 import { AboutBlock } from './AboutBlock'
@@ -24,6 +25,16 @@ const Sidebar = () => {
     <div className="fused-terminal-layout">
       <UserProfile />
       <RetroGlobe />
+      <div className="w-full border-t border-box-outline bg-bg-main p-2">
+        <Image
+          src="/nerv.gif"
+          alt="NERV animation"
+          width={500}
+          height={369}
+          unoptimized
+          className="w-full h-auto"
+        />
+      </div>
       <SideBar />
     </div>
   );
