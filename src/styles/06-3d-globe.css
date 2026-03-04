@@ -24,7 +24,7 @@
   }
 
   .control-bar-grid {
-    @apply p-0 grid grid-cols-4 h-16;
+    @apply p-0 grid grid-cols-6 h-16;
   }
 
   .boombox-controls {
@@ -266,6 +266,47 @@
     touch-action: none;
     user-select: none;
     -webkit-user-select: none;
+  }
+
+  .globe-canvas-stage {
+    @apply relative w-full h-full cursor-grab;
+    contain: layout style paint;
+    transform: translate3d(0, 0, 0);
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .globe-canvas-stage.dragging {
+    cursor: grabbing;
+  }
+
+  .globe-canvas {
+    @apply absolute inset-0 w-full h-full;
+    display: block;
+    pointer-events: none;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translate3d(0, 0, 0);
+    contain: layout style paint;
+  }
+
+  .globe-canvas-flashing {
+    filter: drop-shadow(0 0 10px rgba(255, 68, 68, 0.45));
+  }
+
+  .globe-canvas-stage::after {
+    content: '';
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    pointer-events: none;
+    background: radial-gradient(circle at 60% 35%,
+        rgba(255, 255, 255, 0.08) 0%,
+        rgba(255, 255, 255, 0.02) 44%,
+        rgba(0, 0, 0, 0.14) 100%);
+    mix-blend-mode: screen;
+    opacity: 0.42;
   }
 
   .globe-sphere {
@@ -605,8 +646,10 @@
     }
     
     .globe-sphere,
+    .globe-canvas-stage,
     .tilt-layer,
-    .wireframe-sphere {
+    .wireframe-sphere,
+    .globe-canvas {
       -webkit-transform: translate3d(0,0,0); /* Force GPU layer */
       transform: translate3d(0,0,0);
     }
@@ -627,6 +670,12 @@
     .globe-wrapper {
       perspective: 1200px;
       -webkit-perspective: 1200px;
+    }
+
+    .globe-canvas-stage,
+    .globe-canvas {
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translate3d(0, 0, 0);
     }
     
     .latitude-ring {

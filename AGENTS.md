@@ -34,6 +34,15 @@
 - NEVER run development servers (`npm run dev`) - only the user should start/stop dev servers
 - Focus on code changes, build processes, and static analysis
 - `npm run svg:post` depends on `svg-layer-tool`; install it with `uv tool install --editable /home/james/projects/svg-layer-tool`
+- Static preview workflow:
+  - Use `npm run build` to regenerate `out/`.
+  - Use `npm run serve` to host `out/` on `http://localhost:3000`.
+  - Use `npm run build && npm run serve` for a full rebuild + preview loop when requested.
+- Running serve in background:
+  - ONLY do this when the user explicitly asks.
+  - Preferred pattern: `npm run serve > /tmp/portfolio-serve.log 2>&1 &`.
+  - Capture the PID (`echo $!`) and include it in your response so it can be stopped later.
+  - Stop with `kill <PID>` when requested.
 ## MCP Server Activation
 
 When you need to use Chrome DevTools functionality, activate the MCP server by using the `task` tool with the `general` subagent:
@@ -53,3 +62,16 @@ Example activation:
 ```
 task(description="Use Chrome DevTools", prompt="Take a screenshot of the current page", subagent_type="general")
 ```
+
+## Chrome MCP Quick Check (What I did)
+
+To verify UI elements on the running site (for example confirming whether two globes are visible), use this sequence:
+
+1. Confirm an open browser target with `mcp__chrome-devtools__list_pages` (expected page: `http://localhost:3000/`).
+2. Inspect accessible/structured content with `mcp__chrome-devtools__take_snapshot`.
+3. If the element may be decorative/canvas-based, capture the visual viewport with `mcp__chrome-devtools__take_screenshot`.
+4. Use the screenshot as the source of truth for purely visual confirmation.
+
+Notes:
+- `take_snapshot` is best for semantic content (headings, links, images with alt text).
+- `take_screenshot` is required for non-semantic visuals (animations, canvases, decorative globes/wireframes).

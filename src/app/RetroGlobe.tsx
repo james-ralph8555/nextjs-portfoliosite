@@ -1,35 +1,86 @@
 // @ts-nocheck
 'use client'
-import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import {
+  type SpeedLevel,
+  bandLevelToAngularVelocity,
+  renderRetroGlobeFrame,
+  speedLevelToAngularVelocity,
+  wobbleLevelToAngularVelocity
+} from '@/lib/retroGlobeCanvas'
+
+type RotationAxis = 'x' | 'y' | 'z'
+
+type RenderSize = {
+  width: number
+  height: number
+  dpr: number
+}
+
+const SPEED_LEVELS: SpeedLevel[] = [0, 1, 2, 3, 5]
+const TAU = Math.PI * 2
+
+const normalizeRadians = (value: number) => {
+  const normalized = value % TAU
+  return normalized < 0 ? normalized + TAU : normalized
+}
 
 export const RetroGlobe = () => {
   const [mounted, setMounted] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [lineWidth, setLineWidth] = useState(3)
-  const [rotationSpeed, setRotationSpeed] = useState(1)
+  const [lineDensity, setLineDensity] = useState(1)
+  const [rotationSpeed, setRotationSpeed] = useState<SpeedLevel>(1)
   const [wobbleSpeed, setWobbleSpeed] = useState(1)
-  const [xRotationSpeed, setXRotationSpeed] = useState(0)
-  const [zRotationSpeed, setZRotationSpeed] = useState(0)
-  const [isMobile, setIsMobile] = useState(false)
+  const [bandSpeed, setBandSpeed] = useState(1)
+  const [xRotationSpeed, setXRotationSpeed] = useState<SpeedLevel>(0)
+  const [zRotationSpeed, setZRotationSpeed] = useState<SpeedLevel>(0)
   const [flashingButton, setFlashingButton] = useState<string | null>(null)
   const [userRotationX, setUserRotationX] = useState(0)
   const [userRotationY, setUserRotationY] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
   const [lastMousePos, setLastMousePos] = useState({ x: 0, y: 0 })
-  const [animationRotation, setAnimationRotation] = useState(0)
-  
-  // Check if all speeds are max and wobble is max for globe flashing effect
+
+  const globeWrapperRef = useRef<HTMLDivElement | null>(null)
+  const canvasRef = useRef<HTMLCanvasElement | null>(null)
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null)
+
+  const runtimeRef = useRef({
+    rotX: 0,
+    rotY: 0,
+    rotZ: 0,
+    wobble: 0,
+    bandPhase: 0,
+    paused: false
+  })
+
+  const renderSizeRef = useRef<RenderSize>({
+    width: 280,
+    height: 280,
+    dpr: 1
+  })
+
+  const controlsRef = useRef({
+    lineWidth: 3,
+    lineDensity: 1,
+    xSpeed: 0 as SpeedLevel,
+    ySpeed: 1 as SpeedLevel,
+    zSpeed: 0 as SpeedLevel,
+    wobbleSpeed: 1,
+    bandSpeed: 1,
+    isFlashing: false
+  })
+
+  const userRotationRef = useRef({ x: 0, y: 0 })
+  const pausedRef = useRef(false)
+  const draggingRef = useRef(false)
+  const frameRef = useRef<number | null>(null)
+  const lastTimestampRef = useRef<number | null>(null)
+
   const isGlobeFlashing = useMemo(() => {
     return wobbleSpeed === 5 && xRotationSpeed === 5 && rotationSpeed === 5 && zRotationSpeed === 5
   }, [wobbleSpeed, xRotationSpeed, rotationSpeed, zRotationSpeed])
 
-  const checkMobile = useCallback(() => {
-    setIsMobile(window.innerWidth <= 768)
-  }, [])
-
-  const R = useMemo(() => isMobile ? 100 : 120, [isMobile])
-
-  // Control functions
   const flashButton = useCallback((buttonId: string) => {
     setFlashingButton(buttonId)
     setTimeout(() => setFlashingButton(null), 200)
@@ -40,7 +91,7 @@ export const RetroGlobe = () => {
       flashButton('line-plus')
       return
     }
-    setLineWidth(prev => Math.min(9, prev + 1))
+    setLineWidth((prev) => Math.min(9, prev + 1))
   }, [lineWidth, flashButton])
 
   const decrementLineWidth = useCallback(() => {
@@ -48,20 +99,35 @@ export const RetroGlobe = () => {
       flashButton('line-minus')
       return
     }
-    setLineWidth(prev => Math.max(0, prev - 1))
+    setLineWidth((prev) => Math.max(0, prev - 1))
   }, [lineWidth, flashButton])
 
-  const setSpeedLevel = useCallback((axis: 'x' | 'y' | 'z', level: number) => {
-    const clampedLevel = Math.max(0, Math.min(5, level))
+  const incrementLineDensity = useCallback(() => {
+    if (lineDensity >= 5) {
+      flashButton('density-plus')
+      return
+    }
+    setLineDensity((prev) => Math.min(5, prev + 1))
+  }, [lineDensity, flashButton])
+
+  const decrementLineDensity = useCallback(() => {
+    if (lineDensity <= 0) {
+      flashButton('density-minus')
+      return
+    }
+    setLineDensity((prev) => Math.max(0, prev - 1))
+  }, [lineDensity, flashButton])
+
+  const setSpeedLevel = useCallback((axis: RotationAxis, level: SpeedLevel) => {
     switch (axis) {
       case 'x':
-        setXRotationSpeed(clampedLevel)
+        setXRotationSpeed(level)
         break
       case 'y':
-        setRotationSpeed(clampedLevel)
+        setRotationSpeed(level)
         break
       case 'z':
-        setZRotationSpeed(clampedLevel)
+        setZRotationSpeed(level)
         break
     }
   }, [])
@@ -71,7 +137,7 @@ export const RetroGlobe = () => {
       flashButton('wobble-plus')
       return
     }
-    setWobbleSpeed(prev => Math.min(5, prev + 1))
+    setWobbleSpeed((prev) => Math.min(5, prev + 1))
   }, [wobbleSpeed, flashButton])
 
   const decrementWobble = useCallback(() => {
@@ -79,40 +145,43 @@ export const RetroGlobe = () => {
       flashButton('wobble-minus')
       return
     }
-    setWobbleSpeed(prev => Math.max(0, prev - 1))
+    setWobbleSpeed((prev) => Math.max(0, prev - 1))
   }, [wobbleSpeed, flashButton])
 
-  // Track animation rotation for manual control
-  useEffect(() => {
-    if (!mounted || isPaused || isDragging) return
-    
-    const interval = setInterval(() => {
-      // Use stepping motion for speed level 0, normal rotation for levels 1-5
-      const effectiveSpeed = rotationSpeed === 0 ? 0.1 : rotationSpeed
-      setAnimationRotation(prev => (prev + (360 / (28 / effectiveSpeed)) / 60) % 360)
-    }, 1000 / 60)
-    
-    return () => clearInterval(interval)
-  }, [mounted, isPaused, isDragging, rotationSpeed])
+  const incrementBand = useCallback(() => {
+    if (bandSpeed >= 5) {
+      flashButton('band-plus')
+      return
+    }
+    setBandSpeed((prev) => Math.min(5, prev + 1))
+  }, [bandSpeed, flashButton])
 
-  // Mouse and touch event handlers
+  const decrementBand = useCallback(() => {
+    if (bandSpeed <= 0) {
+      flashButton('band-minus')
+      return
+    }
+    setBandSpeed((prev) => Math.max(0, prev - 1))
+  }, [bandSpeed, flashButton])
+
   const handlePointerStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true)
     setLastMousePos({ x: clientX, y: clientY })
   }, [])
 
   const handlePointerMove = useCallback((clientX: number, clientY: number) => {
-    if (!isDragging) return
-    
+    if (!draggingRef.current) {
+      return
+    }
+
     const deltaX = clientX - lastMousePos.x
     const deltaY = clientY - lastMousePos.y
-    
     const sensitivity = 0.5
-    setUserRotationY(prev => prev + deltaX * sensitivity)
-    setUserRotationX(prev => prev + deltaY * sensitivity)
-    
+
+    setUserRotationY((prev) => prev + deltaX * sensitivity)
+    setUserRotationX((prev) => prev + deltaY * sensitivity)
     setLastMousePos({ x: clientX, y: clientY })
-  }, [isDragging, lastMousePos])
+  }, [lastMousePos])
 
   const handlePointerEnd = useCallback(() => {
     setIsDragging(false)
@@ -139,66 +208,155 @@ export const RetroGlobe = () => {
     handlePointerMove(touch.clientX, touch.clientY)
   }, [handlePointerMove])
 
-  // Generate latitude rings (horizontal circles)
-  const latitudes = useMemo(() => {
-    const rings = []
-    for (let i = 0; i <= 8; i++) {
-      const lat = -80 + (i * 20) // -80° to +80° in 20° steps
-      const latRad = (lat * Math.PI) / 180
-      const ringRadius = R * Math.cos(latRad)
-      const yOffset = R * Math.sin(latRad)
-      
-      rings.push({
-        lat,
-        radius: ringRadius,
-        yOffset,
-        isEquator: lat === 0
-      })
-    }
-    return rings
-  }, [R])
-
-  // Generate longitude meridians (vertical circles)
-  const longitudes = useMemo(() => {
-    const meridians = []
-    for (let i = 0; i < 12; i++) {
-      const lon = i * 30 // 0° to 330° in 30° steps
-      meridians.push({
-        lon,
-        isPrimeMeridian: lon === 0
-      })
-    }
-    return meridians
-  }, [])
-
   useEffect(() => {
     setMounted(true)
   }, [])
 
   useEffect(() => {
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [checkMobile])
+    controlsRef.current = {
+      lineWidth,
+      lineDensity,
+      xSpeed: xRotationSpeed,
+      ySpeed: rotationSpeed,
+      zSpeed: zRotationSpeed,
+      wobbleSpeed,
+      bandSpeed,
+      isFlashing: isGlobeFlashing
+    }
+  }, [lineWidth, lineDensity, xRotationSpeed, rotationSpeed, zRotationSpeed, wobbleSpeed, bandSpeed, isGlobeFlashing])
 
-  // Global mouse/touch event listeners for drag handling
   useEffect(() => {
-    if (!mounted) return
+    userRotationRef.current = {
+      x: userRotationX,
+      y: userRotationY
+    }
+  }, [userRotationX, userRotationY])
+
+  useEffect(() => {
+    pausedRef.current = isPaused
+    runtimeRef.current.paused = isPaused
+  }, [isPaused])
+
+  useEffect(() => {
+    draggingRef.current = isDragging
+  }, [isDragging])
+
+  useEffect(() => {
+    if (!mounted) {
+      return
+    }
+
+    const canvas = canvasRef.current
+    const wrapper = globeWrapperRef.current
+
+    if (!canvas || !wrapper) {
+      return
+    }
+
+    const updateSize = () => {
+      const rect = wrapper.getBoundingClientRect()
+      const width = Math.max(1, Math.round(rect.width))
+      const height = Math.max(1, Math.round(rect.height))
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+
+      const nextCanvasWidth = Math.round(width * dpr)
+      const nextCanvasHeight = Math.round(height * dpr)
+
+      if (canvas.width !== nextCanvasWidth || canvas.height !== nextCanvasHeight) {
+        canvas.width = nextCanvasWidth
+        canvas.height = nextCanvasHeight
+        canvas.style.width = `${width}px`
+        canvas.style.height = `${height}px`
+      }
+
+      renderSizeRef.current = { width, height, dpr }
+      contextRef.current = canvas.getContext('2d', { alpha: true })
+    }
+
+    updateSize()
+
+    const observer = new ResizeObserver(updateSize)
+    observer.observe(wrapper)
+    window.addEventListener('resize', updateSize)
+
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateSize)
+    }
+  }, [mounted])
+
+  useEffect(() => {
+    if (!mounted) {
+      return
+    }
+
+    const animate = (timestamp: number) => {
+      const prevTimestamp = lastTimestampRef.current ?? timestamp
+      const deltaSeconds = Math.min((timestamp - prevTimestamp) / 1000, 0.05)
+
+      lastTimestampRef.current = timestamp
+
+      const runtime = runtimeRef.current
+      const controls = controlsRef.current
+
+      if (!pausedRef.current && !draggingRef.current) {
+        runtime.rotX = normalizeRadians(runtime.rotX + speedLevelToAngularVelocity(controls.xSpeed) * deltaSeconds)
+        runtime.rotY = normalizeRadians(runtime.rotY + speedLevelToAngularVelocity(controls.ySpeed) * deltaSeconds)
+        runtime.rotZ = normalizeRadians(runtime.rotZ + speedLevelToAngularVelocity(controls.zSpeed) * deltaSeconds)
+        runtime.wobble = normalizeRadians(runtime.wobble + wobbleLevelToAngularVelocity(controls.wobbleSpeed) * deltaSeconds)
+        runtime.bandPhase = normalizeRadians(
+          runtime.bandPhase + bandLevelToAngularVelocity(controls.bandSpeed) * deltaSeconds
+        )
+      }
+
+      const ctx = contextRef.current
+      const { width, height, dpr } = renderSizeRef.current
+
+      if (ctx) {
+        renderRetroGlobeFrame(ctx, {
+          width,
+          height,
+          dpr,
+          runtime,
+          controls,
+          userRotationXDeg: userRotationRef.current.x,
+          userRotationYDeg: userRotationRef.current.y
+        })
+      }
+
+      frameRef.current = window.requestAnimationFrame(animate)
+    }
+
+    frameRef.current = window.requestAnimationFrame(animate)
+
+    return () => {
+      if (frameRef.current !== null) {
+        window.cancelAnimationFrame(frameRef.current)
+        frameRef.current = null
+      }
+      lastTimestampRef.current = null
+    }
+  }, [mounted])
+
+  useEffect(() => {
+    if (!mounted) {
+      return
+    }
 
     const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (isDragging) {
+      if (draggingRef.current) {
         handlePointerMove(e.clientX, e.clientY)
       }
     }
 
     const handleGlobalMouseUp = () => {
-      if (isDragging) {
+      if (draggingRef.current) {
         handlePointerEnd()
       }
     }
 
     const handleGlobalTouchMove = (e: TouchEvent) => {
-      if (isDragging && e.touches.length > 0) {
+      if (draggingRef.current && e.touches.length > 0) {
         e.preventDefault()
         const touch = e.touches[0]
         handlePointerMove(touch.clientX, touch.clientY)
@@ -206,7 +364,7 @@ export const RetroGlobe = () => {
     }
 
     const handleGlobalTouchEnd = () => {
-      if (isDragging) {
+      if (draggingRef.current) {
         handlePointerEnd()
       }
     }
@@ -224,113 +382,72 @@ export const RetroGlobe = () => {
       document.removeEventListener('touchend', handleGlobalTouchEnd)
       document.removeEventListener('touchcancel', handleGlobalTouchEnd)
     }
-  }, [mounted, isDragging, handlePointerMove, handlePointerEnd])
+  }, [mounted, handlePointerMove, handlePointerEnd])
 
   if (!mounted) {
     return (
       <div className="retro-globe-container">
         <div className="globe-wrapper">
-          <div className="globe-sphere">
+          <div className="globe-canvas-stage">
+            <canvas className="globe-canvas" aria-hidden="true" />
           </div>
         </div>
       </div>
     )
   }
 
-
-
   return (
     <div className="retro-globe-container bg-bg-main">
-      <div 
+      <div
         className="globe-wrapper rounded-full"
+        ref={globeWrapperRef}
         onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
       >
-        <div 
-          className={`globe-sphere ${isPaused ? 'paused' : ''} ${isDragging ? 'dragging' : ''}`} 
-          style={{ 
-            animationDuration: rotationSpeed > 0 ? `${28 / rotationSpeed}s` : `${28 / 0.1}s`,
-            transform: isDragging 
-              ? `rotateX(${15 + userRotationX}deg) rotateY(${animationRotation + userRotationY}deg)` 
-              : undefined
-          }}
-        >
-          <div 
-            className={`x-rotation-layer ${xRotationSpeed >= 0 ? 'active' : ''}`}
-            style={{ 
-              animationDuration: xRotationSpeed > 0 ? `${28 / xRotationSpeed}s` : `${28 / 0.1}s`
-            }}
-          >
-            <div 
-              className={`z-rotation-layer ${zRotationSpeed >= 0 ? 'active' : ''}`}
-              style={{ 
-                animationDuration: zRotationSpeed > 0 ? `${28 / zRotationSpeed}s` : `${28 / 0.1}s`
-              }}
-            >
-              <div className="tilt-layer" style={{ animationDuration: `${12 / wobbleSpeed}s` }}>
-                {/* True 3D Wireframe Grid */}
-                <div className="wireframe-sphere">
-              {/* Latitude rings */}
-              {latitudes.map((lat, i) => (
-                <div
-                  key={`lat-${i}`}
-                  className={`latitude-ring ${lat.isEquator ? 'equator' : ''} ${isGlobeFlashing ? 'globe-flashing-red' : ''}`}
-                  style={{
-                    width: `${R * 2}px`,
-                    height: `${R * 2}px`,
-                    transform: `translate3d(-50%, -50%, 0px) rotateX(${lat.lat}deg)`,
-                    borderWidth: `${lat.isEquator ? lineWidth + 1 : lineWidth}px`,
-                    animationDuration: `${28 / rotationSpeed}s`
-                  }}
-                />
-              ))}
-              
-              {/* Longitude meridians */}
-              {longitudes.map((lon, i) => (
-                <div
-                  key={`lon-${i}`}
-                  className={`meridian-line ${lon.isPrimeMeridian ? 'prime-meridian' : ''} ${isGlobeFlashing ? 'globe-flashing-red' : ''}`}
-                  style={{
-                    transform: `rotateY(${lon.lon}deg)`,
-                    borderWidth: `${lon.isPrimeMeridian ? lineWidth + 1 : lineWidth}px`,
-                    animationDuration: `${28 / rotationSpeed}s`
-                  }}
-                />
-              ))}
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className={`globe-canvas-stage ${isPaused ? 'paused' : ''} ${isDragging ? 'dragging' : ''}`}>
+          <canvas
+            ref={canvasRef}
+            className={`globe-canvas ${isGlobeFlashing ? 'globe-canvas-flashing' : ''}`}
+            aria-label="Retro globe"
+            role="img"
+          />
         </div>
       </div>
 
-      {/* Control Bar */}
       <div className="globe-control-bar">
         <div className="control-bar-grid">
           <div className="boombox-controls play-pause">
-            <button 
+            <button
               className={`boombox-button ${!isPaused ? 'active' : 'inactive'}`}
               onClick={() => setIsPaused(false)}
             >
               ▶
             </button>
-            <button 
+            <button
               className={`boombox-button ${isPaused ? 'active' : 'inactive'}`}
               onClick={() => setIsPaused(true)}
             >
               ■
             </button>
           </div>
+
           <div className="boombox-controls labeled">
-            <span className="control-label">SCAN<span className="value-box"><span className={lineWidth > 0 ? 'glowing-digit' : ''}>{lineWidth}</span></span></span>
+            <span className="control-label">
+              SCAN
+              <span className="value-box">
+                <span className={lineWidth > 0 ? 'glowing-digit' : ''}>{lineWidth}</span>
+              </span>
+            </span>
             <div className="control-buttons-row">
-              <button 
+              <button
                 className={`boombox-button ${flashingButton === 'line-minus' ? 'flashing-red' : ''}`}
                 onClick={decrementLineWidth}
               >
                 -
               </button>
-              <button 
+              <button
                 className={`boombox-button ${flashingButton === 'line-plus' ? 'flashing-red' : ''}`}
                 onClick={incrementLineWidth}
               >
@@ -338,25 +455,51 @@ export const RetroGlobe = () => {
               </button>
             </div>
           </div>
+
+          <div className="boombox-controls labeled">
+            <span className="control-label">
+              DENS
+              <span className="value-box">
+                <span className={lineDensity > 0 ? 'glowing-digit' : ''}>{lineDensity}</span>
+              </span>
+            </span>
+            <div className="control-buttons-row">
+              <button
+                className={`boombox-button ${flashingButton === 'density-minus' ? 'flashing-red' : ''}`}
+                onClick={decrementLineDensity}
+              >
+                -
+              </button>
+              <button
+                className={`boombox-button ${flashingButton === 'density-plus' ? 'flashing-red' : ''}`}
+                onClick={incrementLineDensity}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
           <div className="boombox-controls equalizer-controls">
             <div className="vertical-speed-label">SPIN</div>
             <div className="equalizer-container">
-              {['X', 'Y', 'Z'].map((axis, axisIndex) => {
+              {['X', 'Y', 'Z'].map((axis) => {
                 const currentSpeed = axis === 'X' ? xRotationSpeed : axis === 'Y' ? rotationSpeed : zRotationSpeed
+
                 return (
                   <div key={axis} className="equalizer-row">
                     <div className="equalizer-levels">
-                      {[0, 1, 2, 3, 5].map((level) => {
+                      {SPEED_LEVELS.map((level) => {
                         const isActive = level === currentSpeed
                         const isLitUp = level <= currentSpeed && currentSpeed > 0
                         const isMaxAndActive = level === 5 && isActive
                         const isActiveNotMax = isActive && level < 5
                         const shouldPulseRed = isMaxAndActive && wobbleSpeed === 5
+
                         return (
                           <button
                             key={level}
                             className={`equalizer-level ${isActiveNotMax ? 'active' : ''} ${shouldPulseRed ? 'active-red-pulsing' : isMaxAndActive ? 'active-red' : ''} ${isLitUp && !isActive ? 'lit-up' : ''}`}
-                            onClick={() => setSpeedLevel(axis.toLowerCase() as 'x' | 'y' | 'z', level)}
+                            onClick={() => setSpeedLevel(axis.toLowerCase() as RotationAxis, level)}
                             data-level={level}
                           >
                           </button>
@@ -368,18 +511,47 @@ export const RetroGlobe = () => {
               })}
             </div>
           </div>
+
           <div className="boombox-controls labeled">
-            <span className="control-label">OSC<span className="value-box"><span className={wobbleSpeed === 5 ? 'red-glowing-digit' : 'glowing-digit'}>{wobbleSpeed}</span></span></span>
+            <span className="control-label">
+              OSC
+              <span className="value-box">
+                <span className={wobbleSpeed === 5 ? 'red-glowing-digit' : 'glowing-digit'}>{wobbleSpeed}</span>
+              </span>
+            </span>
             <div className="control-buttons-row">
-              <button 
+              <button
                 className={`boombox-button ${flashingButton === 'wobble-minus' ? 'flashing-red' : ''}`}
                 onClick={decrementWobble}
               >
                 -
               </button>
-              <button 
+              <button
                 className={`boombox-button ${flashingButton === 'wobble-plus' ? 'flashing-red' : ''}`}
                 onClick={incrementWobble}
+              >
+                +
+              </button>
+            </div>
+          </div>
+
+          <div className="boombox-controls labeled">
+            <span className="control-label">
+              BAND
+              <span className="value-box">
+                <span className={bandSpeed > 0 ? 'glowing-digit' : ''}>{bandSpeed}</span>
+              </span>
+            </span>
+            <div className="control-buttons-row">
+              <button
+                className={`boombox-button ${flashingButton === 'band-minus' ? 'flashing-red' : ''}`}
+                onClick={decrementBand}
+              >
+                -
+              </button>
+              <button
+                className={`boombox-button ${flashingButton === 'band-plus' ? 'flashing-red' : ''}`}
+                onClick={incrementBand}
               >
                 +
               </button>
