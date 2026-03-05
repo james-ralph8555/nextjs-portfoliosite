@@ -81,6 +81,31 @@
     @apply mx-auto border border-box-outline;
   }
 
+  .prose video {
+    @apply mx-auto border border-box-outline;
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 1rem;
+    background: #000;
+  }
+
+  .prose .mermaid-diagram {
+    @apply my-6 p-3 border border-box-outline bg-bg-main;
+    overflow-x: auto;
+  }
+
+  .prose .mermaid-diagram svg {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose .mermaid-diagram svg text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  }
+
   .prose .svg-depth-card {
     --svg-tilt-x: 0deg;
     --svg-tilt-y: 0deg;

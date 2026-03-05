@@ -3,6 +3,7 @@ import { getPostById, getAllPosts } from "@/lib/api";
 // Using plain anchors to target static .html paths
 import { hrefHtml } from "@/lib/links";
 import SvgImageReactivity from "./SvgImageReactivity";
+import MermaidRenderer from "./MermaidRenderer";
 
 // Set the title of the page to be the post title, note that we no longer use
 // e.g. next/head in app dir
@@ -39,6 +40,7 @@ export default async function Post(
   return (
     <div className="bg-bg-main font-mono leading-relaxed antialiased selection:bg-primary-green selection:text-bg-main">
       <SvgImageReactivity />
+      <MermaidRenderer />
       <div className="mx-auto min-h-screen max-w-screen-xl px-0 py-6 md:px-8 md:py-12 lg:px-12 lg:py-6">
         <div className="mb-4">
           <div className="fused-terminal-layout max-w-xs !m-0">

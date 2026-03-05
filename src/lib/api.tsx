@@ -9,6 +9,7 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import rehypePrettyCode from "rehype-pretty-code";
 import { visit } from "unist-util-visit";
@@ -170,6 +171,7 @@ async function getParserPre() {
     .use(remarkGfm)
     .use(remarkFigureCaption)
     .use(remarkRehype, {
+      allowDangerousHtml: true,
       handlers: {
         figure: (state: any, node: any) => {
           const figureElement = state.h('figure', state.all(node));
@@ -182,6 +184,7 @@ async function getParserPre() {
         },
       },
     })
+    .use(rehypeRaw)
     // @ts-ignore
     .use(rehypePrettyCode, {
       theme: "one-dark-pro",
