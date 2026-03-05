@@ -1,7 +1,7 @@
 ---
 title: "Globe Updates"
 date: 2026-03-04
-coverImage: "/assets/retroglobe-canvas-migration/cover_globe.webm"
+coverImage: "/assets/retroglobe-canvas-migration/new_200px_globe_thumb.webp"
 ---
 
 <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; align-items: start;">

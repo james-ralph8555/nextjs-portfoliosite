@@ -10,7 +10,6 @@ import {
 } from '@/lib/retroGlobeCanvas'
 
 type RotationAxis = 'x' | 'y' | 'z'
-type MatrixRow = RotationAxis | 'osc' | 'band'
 
 type RenderSize = {
   width: number
@@ -33,7 +32,7 @@ export const RetroGlobe = () => {
   const [lineDensity, setLineDensity] = useState(1)
   const [rotationSpeed, setRotationSpeed] = useState<SpeedLevel>(1)
   const [wobbleSpeed, setWobbleSpeed] = useState(1)
-  const [bandSpeed, setBandSpeed] = useState<SpeedLevel>(2)
+  const [bandSpeed, setBandSpeed] = useState(2)
   const [xRotationSpeed, setXRotationSpeed] = useState<SpeedLevel>(0)
   const [zRotationSpeed, setZRotationSpeed] = useState<SpeedLevel>(0)
   const [flashingButton, setFlashingButton] = useState<string | null>(null)
@@ -79,8 +78,8 @@ export const RetroGlobe = () => {
   const lastTimestampRef = useRef<number | null>(null)
 
   const isGlobeFlashing = useMemo(() => {
-    return wobbleSpeed === 5 && xRotationSpeed === 5 && rotationSpeed === 5 && zRotationSpeed === 5
-  }, [wobbleSpeed, xRotationSpeed, rotationSpeed, zRotationSpeed])
+    return xRotationSpeed === 5 && rotationSpeed === 5 && zRotationSpeed === 5
+  }, [xRotationSpeed, rotationSpeed, zRotationSpeed])
 
   const flashButton = useCallback((buttonId: string) => {
     setFlashingButton(buttonId)
@@ -133,29 +132,31 @@ export const RetroGlobe = () => {
     }
   }, [])
 
-  const setMatrixLevel = useCallback((row: MatrixRow, level: SpeedLevel) => {
-    if (row === 'osc') {
-      setWobbleSpeed(level)
-      return
-    }
-
-    if (row === 'band') {
-      setBandSpeed(level)
-      return
-    }
-
-    setSpeedLevel(row, level)
-  }, [setSpeedLevel])
-
-  const matrixRows = useMemo(() => {
+  const spinMatrixRows = useMemo(() => {
     return [
       { key: 'x' as const, value: xRotationSpeed },
       { key: 'y' as const, value: rotationSpeed },
-      { key: 'z' as const, value: zRotationSpeed },
-      { key: 'osc' as const, value: wobbleSpeed },
-      { key: 'band' as const, value: bandSpeed }
+      { key: 'z' as const, value: zRotationSpeed }
     ]
-  }, [xRotationSpeed, rotationSpeed, zRotationSpeed, wobbleSpeed, bandSpeed])
+  }, [xRotationSpeed, rotationSpeed, zRotationSpeed])
+
+  const handleWobbleSliderChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = Number.parseFloat(event.target.value)
+    if (Number.isNaN(nextValue)) {
+      return
+    }
+
+    setWobbleSpeed(Math.max(0, Math.min(5, nextValue)))
+  }, [])
+
+  const handleBandSliderChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = Number.parseFloat(event.target.value)
+    if (Number.isNaN(nextValue)) {
+      return
+    }
+
+    setBandSpeed(Math.max(0, Math.min(5, nextValue)))
+  }, [])
 
   const handlePointerStart = useCallback((clientX: number, clientY: number) => {
     setIsDragging(true)
@@ -475,20 +476,14 @@ export const RetroGlobe = () => {
             </div>
           </div>
 
-          <div className="boombox-controls equalizer-controls matrix-controls">
+          <div className="boombox-controls equalizer-controls matrix-controls spin-matrix-controls">
             <div className="matrix-segmented-label">
               <div className="matrix-segment spin-segment">
                 <span className="matrix-vertical-text">spin</span>
               </div>
-              <div className="matrix-segment osc-segment">
-                <span className="matrix-vertical-text">O</span>
-              </div>
-              <div className="matrix-segment band-segment">
-                <span className="matrix-vertical-text">B</span>
-              </div>
             </div>
             <div className="equalizer-container">
-              {matrixRows.map((row) => {
+              {spinMatrixRows.map((row) => {
                 const currentSpeed = row.value
 
                 return (
@@ -498,15 +493,14 @@ export const RetroGlobe = () => {
                         const isActive = level === currentSpeed
                         const isLitUp = level <= currentSpeed && currentSpeed > 0
                         const isMaxAndActive = level === 5 && isActive
-                        const isSpinRow = row.key === 'x' || row.key === 'y' || row.key === 'z'
-                        const shouldPulseRed = isSpinRow && isMaxAndActive && wobbleSpeed === 5
+                        const shouldPulseRed = isMaxAndActive && isGlobeFlashing
                         const isActiveNotMax = isActive && level < 5
 
                         return (
                           <button
                             key={level}
                             className={`equalizer-level ${isActiveNotMax ? 'active' : ''} ${shouldPulseRed ? 'active-red-pulsing' : isMaxAndActive ? 'active-red' : ''} ${isLitUp && !isActive ? 'lit-up' : ''}`}
-                            onClick={() => setMatrixLevel(row.key, level)}
+                            onClick={() => setSpeedLevel(row.key, level)}
                             data-level={level}
                           >
                           </button>
@@ -517,6 +511,38 @@ export const RetroGlobe = () => {
                 )
               })}
             </div>
+          </div>
+
+          <div className="boombox-controls slider-controls">
+            <div className="slider-track-shell">
+              <input
+                type="range"
+                className="industrial-vertical-slider"
+                min={0}
+                max={5}
+                step={0.01}
+                value={wobbleSpeed}
+                onChange={handleWobbleSliderChange}
+                aria-label="osc speed"
+              />
+            </div>
+            <span className="slider-bottom-label">osc</span>
+          </div>
+
+          <div className="boombox-controls slider-controls">
+            <div className="slider-track-shell">
+              <input
+                type="range"
+                className="industrial-vertical-slider"
+                min={0}
+                max={5}
+                step={0.01}
+                value={bandSpeed}
+                onChange={handleBandSliderChange}
+                aria-label="band speed"
+              />
+            </div>
+            <span className="slider-bottom-label">bnd</span>
           </div>
         </div>
       </div>
