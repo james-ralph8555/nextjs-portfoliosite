@@ -238,7 +238,7 @@
   }
   
   .terminal-header-text {
-    @apply bg-box-title-bg text-black px-2 py-2 inline-block;
+    @apply bg-box-title-bg text-black px-2 py-1 inline-block;
   }
 
   /* Interactive card components */
