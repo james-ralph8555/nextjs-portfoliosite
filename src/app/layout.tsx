@@ -26,10 +26,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        {/* Preload synth skin SVGs */}
-        <link rel="preload" as="image" href="/synth-skins/knob2.svg" />
-      </head>
       <body className={jetbrainsMono.className}>
               {/* SVG sprite for synthesizer controls will be loaded by components */}
         

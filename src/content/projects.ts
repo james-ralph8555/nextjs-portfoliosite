@@ -10,6 +10,14 @@ const projectsConfig = {
       github: "james-ralph8555/homebench",
     },
     {
+      title: "Real-Time Black Hole Simulator",
+      summary:
+        "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
+      image: "/assets/black-hole-laboratory.webp",
+      url: "https://gravitylens.space",
+      github: "james-ralph8555/black-hole-laboratory",
+    },
+    {
       title: "PageSonic",
       summary:
         "Local first, in-browser PDF viewer + neuralTTS audiobook creator",
@@ -26,14 +34,6 @@ const projectsConfig = {
       url: "/synth.html",
       github: "james-ralph8555/nextjs-portfoliosite",
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
-    },
-    {
-      title: "Real-Time Black Hole Simulator",
-      summary:
-        "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
-      image: "/assets/black-hole-laboratory.webp",
-      url: "https://gravitylens.space",
-      github: "james-ralph8555/black-hole-laboratory",
     },
     {
       title: "portfolio-strategies",
