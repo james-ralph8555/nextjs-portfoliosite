@@ -5,11 +5,13 @@ import matter from "gray-matter";
 import { join } from "path";
 import { unified } from "unified";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
 import rehypeRaw from "rehype-raw";
+import rehypeKatex from "rehype-katex";
 import rehypeStringify from "rehype-stringify";
 import rehypePrettyCode from "rehype-pretty-code";
 import { visit } from "unist-util-visit";
@@ -169,6 +171,7 @@ async function getParserPre() {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
+    .use(remarkMath)
     .use(remarkFigureCaption)
     .use(remarkRehype, {
       allowDangerousHtml: true,
@@ -185,6 +188,7 @@ async function getParserPre() {
       },
     })
     .use(rehypeRaw)
+    .use(rehypeKatex)
     // @ts-ignore
     .use(rehypePrettyCode, {
       theme: "one-dark-pro",

@@ -106,6 +106,17 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
   }
 
+  .prose .katex {
+    color: #808080;
+  }
+
+  .prose .katex-display {
+    margin: 1rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0.25rem 0;
+  }
+
   .prose .svg-depth-card {
     --svg-tilt-x: 0deg;
     --svg-tilt-y: 0deg;

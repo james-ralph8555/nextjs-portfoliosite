@@ -1,4 +1,5 @@
 import './globals.css'
+import 'katex/dist/katex.min.css'
 import type { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import Script from 'next/script'

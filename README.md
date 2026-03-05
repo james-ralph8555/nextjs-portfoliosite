@@ -1,58 +1,65 @@
 # Next.js Portfolio Site
 
-Personal portfolio built with Next.js App Router, TypeScript, and Tailwind CSS. It features JSON‑driven content, Markdown‑powered blog posts, and a retro terminal aesthetic with a CSS 3D spinning globe.
+Personal portfolio built with Next.js App Router, TypeScript, and Tailwind CSS. It features JSON-driven content, Markdown-powered blog posts, and a retro terminal aesthetic with an interactive canvas-rendered spinning globe.
 
 **Highlights**
 - Modern App Router architecture under `src/app/`
 - JSON content in `src/content/` and Markdown posts in `src/_posts/`
-- GFM blog with code highlighting, captions, and anchored headings
-- CSS‑only 3D wireframe globe component (no WebGL/three.js)
+- Markdown blog pipeline with GFM, syntax highlighting, math, Mermaid, and SVG depth effects
+- Interactive canvas 3D wireframe globe with drag controls and boombox-style speed matrix (no WebGL/three.js)
 
 ## Tech Stack
 - Framework: Next.js (App Router)
 - UI: React + Tailwind CSS
 - Language: TypeScript (strict)
-- Markdown: gray-matter + unified (remark/rehype) + rehype-pretty-code
+- Rendering: Canvas 2D API for the retro globe
+- Markdown: gray-matter + unified (remark/rehype) + rehype-pretty-code + KaTeX + Mermaid
 
 ## Architecture
 - `src/app/`: Next.js App Router pages, routes, and UI blocks
   - `page.tsx`: Home view wiring the left profile/retro globe and right content blocks
   - `blog/`: Blog index route
   - `posts/[id]/page.tsx`: Dynamic route for individual Markdown posts
+  - `posts/[id]/MermaidRenderer.tsx`: client-side Mermaid diagram rendering for fenced `mermaid` code blocks
+  - `posts/[id]/SvgImageReactivity.tsx`: interactive layered SVG/image depth effect in post content
   - UI Blocks: `AboutBlock.tsx`, `ExperienceBlock.tsx`, `ProjectsBlock.tsx`, `BlogLinkBlock.tsx`, `SideBar.tsx`, `Socials.tsx`
 - `src/_posts/`: Markdown posts consumed by `src/lib/api.tsx`
 - `src/content/`: User‑editable JSON for About, Experience, Projects
 - `src/lib/api.tsx`: Markdown parsing pipeline and post helpers
+- `src/lib/retroGlobeCanvas.ts`: Globe rendering math + Canvas frame renderer
 - `public/`: Static assets (images, icons)
 - Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`
 
 ## Spinning Globe
-The globe is a pure CSS 3D wireframe sphere rendered via nested divs and transforms. No WebGL or canvas is used.
+The globe now uses a dedicated canvas renderer with a React control shell. No WebGL/three.js is used.
 
 - Component: `src/app/RetroGlobe.tsx`
-- Styles: `src/app/globals.css` (search for “RETRO GLOBE 3D WIREFRAME”)
+- Renderer: `src/lib/retroGlobeCanvas.ts`
+- Styles: `src/styles/06-3d-globe.css` (imported from `src/app/globals.css`)
 - How it works:
-  - Renders latitude rings and longitude meridians as bordered circles positioned/rotated in 3D (`rotateX`/`rotateY`)
-  - Continuous rotation via `@keyframes globe-rotate`; subtle tilt via `@keyframes globe-wobble`
-  - Atmospheric effects with `.globe-glow` and gradient shading
+  - `requestAnimationFrame` loop advances runtime state (`rotX`, `rotY`, `rotZ`, `wobble`, `bandPhase`)
+  - Draws projected latitude/longitude shell lines and moving light bands in multiple passes
+  - React state controls line width/density, axis spin speeds, wobble speed, and band speed
+  - Supports drag-to-rotate (mouse and touch), plus pause/play controls
   - Mount guard avoids hydration mismatches in SSR (`mounted` state)
 - Customize:
-  - Size: change `const R = 120` in `RetroGlobe.tsx` and matching `.meridian-line` width/height in CSS
-  - Speed: tweak animation durations in `globals.css` (`globe-rotate`, `globe-wobble`)
-  - Theme: adjust Tailwind tokens and `.latitude-ring`/`.meridian-line` borders
+  - Shell complexity/palette math: `src/lib/retroGlobeCanvas.ts`
+  - Control UI/layout: `src/app/RetroGlobe.tsx` + `src/styles/06-3d-globe.css`
+  - Size/perspective: `.globe-wrapper` and responsive media queries in `06-3d-globe.css`
 - Mobile/perf:
-  - Uses `translate3d` and tuned `perspective` to force GPU acceleration
-  - iOS fallbacks increase border thickness and adjust perspective for clarity
+  - Canvas DPR-aware sizing keeps rendering sharp while clamping DPR to control cost
+  - Includes iOS-focused perspective/transform fallbacks in globe styles
 
 ## Development
 - Install deps: `npm ci` (or `npm install`)
-- Dev server: `npm run dev` → http://localhost:3000
 - Build: `npm run build` → outputs `out/` (static export)
 - Serve: `npm run serve` → serves the static export from `out/`
+- Preview loop: `npm run preview` (clean build + serve)
 - Lint: `npm run lint`
 - Optional: `nix develop` for a preconfigured Node 20 dev shell
 - SVG utility (one-time): `uv tool install --editable /home/james/projects/svg-layer-tool`
 - Generate layered blog SVGs: `npm run svg:post -- --post src/_posts/<post>.md`
+- Optimize generated SVG assets: `npm run svg:optimize`
 
 ## Content Editing
 All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown).
@@ -71,14 +78,22 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
   ---
   title: My Awesome Blog Post
   date: 2025-08-16
-  image: /blog/my-post-featured-image.webp
+  coverImage: /assets/my-post/cover.webp
   ---
   ```
 - Features:
   - GitHub Flavored Markdown
+  - Math via `remark-math` + `rehype-katex`
   - Syntax highlighting (`rehype-pretty-code`)
+  - Mermaid diagrams from fenced code blocks (rendered client-side on post pages)
   - Image captions via italic line after image (figure + figcaption)
   - Linkable headings via `rehype-slug` + autolink
+  - Layered SVG/image depth cards driven by optional post sidecar maps (`src/_posts/<post>.svg-map.json`)
+  - HTML media embeds in posts (for example `<video>`), plus video or image `coverImage` support in blog listings
+- Blog surfaces:
+  - Home page `BLOG` block (`BlogLinkBlock`) shows recent posts in terminal-table/card format
+  - `/blog` route lists all posts
+  - `/posts/[id]` route renders full post HTML content
 - Note: Markdown parser creation is memoized for faster builds
 
 ## Deployment (AWS CDK)

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "postId": "2026-03-04-retroglobe-canvas-migration",
+  "generatedAt": "2026-03-05T03:14:32Z",
+  "style": "gold-fill-transparent",
+  "images": [
+    {
+      "src": "/assets/retroglobe-canvas-migration/projection.png",
+      "status": "ok",
+      "svgSrc": "/assets/retroglobe-canvas-migration/svg/projection.svg",
+      "layers": [
+        {
+          "kind": "bg",
+          "src": "/assets/retroglobe-canvas-migration/svg/projection.bg.svg",
+          "opacity": 1.0,
+          "blend": "normal"
+        },
+        {
+          "kind": "tone",
+          "src": "/assets/retroglobe-canvas-migration/svg/projection.tone.svg",
+          "opacity": 0.88,
+          "blend": "normal"
+        },
+        {
+          "kind": "highlight",
+          "src": "/assets/retroglobe-canvas-migration/svg/projection.highlight.svg",
+          "opacity": 0.72,
+          "blend": "normal"
+        },
+        {
+          "kind": "line",
+          "src": "/assets/retroglobe-canvas-migration/svg/projection.line.svg",
+          "opacity": 0.62,
+          "blend": "normal"
+        }
+      ],
+      "palette": {
+        "dark": "#101010",
+        "mid": "#5d4a1f",
+        "bright": "#d4af37"
+      }
+    }
+  ]
+}
