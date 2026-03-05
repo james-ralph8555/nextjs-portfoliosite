@@ -4,8 +4,15 @@ date: 2026-03-04
 coverImage: "/assets/retroglobe-canvas-migration/thumb.webp"
 ---
 
-![CSS and Canvas Retroglobe (Top/Bottom)](/assets/retroglobe-canvas-migration/css-vs-canvas-stacked.webp)
-*Top: CSS renderer. Bottom: canvas renderer.*
+<video autoplay loop muted playsinline controls preload="metadata">
+  <source src="/assets/retroglobe-canvas-migration/css_retroglobe.mp4" type="video/mp4" />
+</video>
+*Top comparison clip: CSS renderer.*
+
+<video autoplay loop muted playsinline controls preload="metadata">
+  <source src="/assets/retroglobe-canvas-migration/canvas_retroglobe.mp4" type="video/mp4" />
+</video>
+*Bottom comparison clip: canvas renderer.*
 
 ## 0. TL;DR
 
@@ -28,14 +35,6 @@ The CSS version was built from nested structural layers:
 
 Motion came from multiple animation tracks (`globe-rotate`, `globe-rotate-x`, `globe-rotate-z`, `globe-wobble`) combined with pointer-driven transforms.
 
-![Legacy CSS Globe](/assets/retroglobe-canvas-migration/old-css-globe.webp)
-*Legacy CSS globe controls and wireframe.*
-
-<video autoplay loop muted playsinline controls preload="metadata">
-  <source src="/assets/retroglobe-canvas-migration/css_retroglobe.mp4" type="video/mp4" />
-</video>
-*CSS renderer animation capture.*
-
 Strengths:
 
 - Visual behavior was mostly declarative.
@@ -53,9 +52,6 @@ Limitations:
 ## 2. New Canvas Renderer Architecture
 
 The new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer.
-
-![Canvas Retroglobe](/assets/retroglobe-canvas-migration/new-canvas-globe.webp)
-*Canvas renderer with matrix-based control surface.*
 
 ### 2.1 System Flow
 
@@ -101,11 +97,6 @@ Control-speed mapping is centralized in:
 - `bandLevelToAngularVelocity`
 
 That keeps UI controls and motion behavior consistent.
-
-<video autoplay loop muted playsinline controls preload="metadata">
-  <source src="/assets/retroglobe-canvas-migration/canvas_retroglobe.mp4" type="video/mp4" />
-</video>
-*Canvas renderer animation capture.*
 
 ### 2.4 Why This Architecture Feels Better
 
