@@ -292,11 +292,14 @@ export const RetroGlobe = () => {
       const runtime = runtimeRef.current
       const controls = controlsRef.current
 
-      if (!pausedRef.current && !draggingRef.current) {
-        runtime.rotX = normalizeRadians(runtime.rotX + speedLevelToAngularVelocity(controls.xSpeed) * deltaSeconds)
-        runtime.rotY = normalizeRadians(runtime.rotY + speedLevelToAngularVelocity(controls.ySpeed) * deltaSeconds)
-        runtime.rotZ = normalizeRadians(runtime.rotZ + speedLevelToAngularVelocity(controls.zSpeed) * deltaSeconds)
-        runtime.wobble = normalizeRadians(runtime.wobble + wobbleLevelToAngularVelocity(controls.wobbleSpeed) * deltaSeconds)
+      if (!pausedRef.current) {
+        if (!draggingRef.current) {
+          runtime.rotX = normalizeRadians(runtime.rotX + speedLevelToAngularVelocity(controls.xSpeed) * deltaSeconds)
+          runtime.rotY = normalizeRadians(runtime.rotY + speedLevelToAngularVelocity(controls.ySpeed) * deltaSeconds)
+          runtime.rotZ = normalizeRadians(runtime.rotZ + speedLevelToAngularVelocity(controls.zSpeed) * deltaSeconds)
+          runtime.wobble = normalizeRadians(runtime.wobble + wobbleLevelToAngularVelocity(controls.wobbleSpeed) * deltaSeconds)
+        }
+
         runtime.bandPhase = normalizeRadians(
           runtime.bandPhase + bandLevelToAngularVelocity(controls.bandSpeed) * deltaSeconds
         )
