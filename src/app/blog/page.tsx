@@ -9,6 +9,7 @@ const colors = require('tailwindcss/colors');
 
 const BlogItem = ({ id, date, title, coverImage }) => {
   const image = coverImage;
+  const isVideoCover = typeof image === 'string' && /\.(webm|mp4|ogg)$/i.test(image);
   return(
     <li key={id} className="mb-3">
       <a href={hrefHtml(`/posts/${id}`)} className="group list-item-card block cursor-pointer">
@@ -19,7 +20,7 @@ const BlogItem = ({ id, date, title, coverImage }) => {
               <h3 className="text-box-title-bg group-hover:text-primary-green transition-colors text-sm">{title}</h3>
             </div>
           </div>
-          {image && (
+          {image && !isVideoCover && (
             <Image
               alt={title}
               width={100}
@@ -27,6 +28,20 @@ const BlogItem = ({ id, date, title, coverImage }) => {
               className="border border-box-outline transition group-hover:border-highlight-text ml-4 flex-shrink-0"
               src={image}
               style={{ color: colors.transparent }}
+            />
+          )}
+          {image && isVideoCover && (
+            <video
+              className="border border-box-outline transition group-hover:border-highlight-text ml-4 flex-shrink-0"
+              width={100}
+              height={50}
+              src={image}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              aria-label={title}
             />
           )}
         </div>

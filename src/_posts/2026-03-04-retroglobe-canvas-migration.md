@@ -1,7 +1,7 @@
 ---
 title: "From CSS Wireframe to Canvas Retroglobe"
 date: 2026-03-04
-coverImage: "/assets/retroglobe-canvas-migration/thumb.webp"
+coverImage: "/assets/retroglobe-canvas-migration/cover_globe.webm"
 ---
 
 <video autoplay loop muted playsinline controls preload="metadata">
