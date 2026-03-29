@@ -141,7 +141,7 @@ export const ProjectsBlock = () => {
           {/* Separator before projects table */}
           <div className="my-6 border-t border-box-outline"></div>
           
-          <div className="hidden md:block overflow-x-auto">
+          <div className="project-table-scroll hidden overflow-x-auto overflow-y-auto md:block md:h-[26rem] lg:h-[30rem]">
             <table className="data-table w-full font-mono text-xs">
               <thead>
                 <tr>

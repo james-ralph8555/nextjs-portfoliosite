@@ -36,6 +36,14 @@ const projectsConfig = {
       githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/docs/synthesizer.md",
     },
     {
+      title: "Weil",
+      summary:
+        "Web app for OCR, translation, fine-grained review, search, and book assembly from scanned documents.",
+      image: null,
+      url: "https://github.com/james-ralph8555/weil",
+      github: "james-ralph8555/weil",
+    },
+    {
       title: "portfolio-strategies",
       summary:
         "A modern web application for implementing and backtesting quantitative trading strategies.",
