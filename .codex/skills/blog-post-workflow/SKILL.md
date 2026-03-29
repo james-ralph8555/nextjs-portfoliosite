@@ -1,6 +1,6 @@
 ---
 name: blog-post-workflow
-description: Guide blog post creation in this portfolio repo, including where to place markdown files and image assets, how to run SVG layering/optimization commands, and how to commit asset submodule updates and parent repo blog changes using the strict two-commit workflow. Use when creating, updating, or publishing posts in src/_posts with assets in public/assets.
+description: Guide blog post creation in this portfolio repo, including where to place markdown files and image/audio assets, how to run SVG layering/optimization and blog audio generation commands, and how to commit asset submodule updates and parent repo blog changes using the strict two-commit workflow. Use when creating, updating, or publishing posts in src/_posts with assets in public/assets.
 ---
 
 # Blog Post Workflow
@@ -11,7 +11,9 @@ description: Guide blog post creation in this portfolio repo, including where to
 - Name posts as `YYYY-MM-DD-post-slug.md`.
 - Treat the post id as the filename without `.md`.
 - Place optional SVG map files next to posts as `src/_posts/<post-id>.svg-map.json`.
+- Place optional audio map files next to posts as `src/_posts/<post-id>.audio-map.json`.
 - Place post images inside the assets submodule at `public/assets/<post-slug>/`.
+- Place generated post narration inside the assets submodule at `public/assets/post-audio/<post-id>/post.mp3`.
 - Reference images from markdown with absolute paths like `/assets/<post-slug>/<file>.webp`.
 
 ## Author a New Post
@@ -30,7 +32,7 @@ image: /assets/<post-slug>/thumb.webp
 - Keep `<post-slug>` stable across markdown, asset directory, and image URLs.
 - Prefer optimized image formats (WebP when practical).
 
-## Run Blog SVG/Image Pipeline
+## Run Blog Asset Pipelines
 
 - Ensure `svg-layer-tool` is installed before SVG generation:
   - `uv tool install --editable /home/james/projects/svg-layer-tool`
@@ -40,6 +42,17 @@ image: /assets/<post-slug>/thumb.webp
   - `src/_posts/YYYY-MM-DD-<post-slug>.svg-map.json`
 - Optimize SVG assets when relevant:
   - `npm run svg:optimize`
+- Bootstrap the copied blog-audio runtime before the first audio run in a shell/environment:
+  - `npm run audio:bootstrap`
+- Generate blog narration audio and sidecar metadata when needed:
+  - `npm run audio:post -- --post src/_posts/YYYY-MM-DD-<post-slug>.md --language English`
+- Confirm audio outputs exist after generation:
+  - `src/_posts/YYYY-MM-DD-<post-slug>.audio-map.json`
+  - `public/assets/post-audio/YYYY-MM-DD-<post-slug>/post.mp3`
+- Notes for audio generation:
+  - `ffmpeg` must be available for the MP3 transcode step.
+  - `audio:post` uses the built-in narration prompt when `--instruct` is omitted.
+  - Generated audio defaults to overwriting the public MP3 for the post unless the command is changed to disable overwrite.
 
 ## Validate Before Committing
 
@@ -49,7 +62,7 @@ image: /assets/<post-slug>/thumb.webp
 - Run project checks from repo root:
   - `npm run lint`
   - `npm run build`
-- Verify post and assets to commit are the intended files only.
+- Verify post markdown, optional sidecars, and assets to commit are the intended files only.
 
 ## Commit With Strict Two-Commit Flow
 
@@ -71,6 +84,7 @@ git -C public/assets log -1 --oneline
 git status --short
 git add src/_posts/YYYY-MM-DD-<post-slug>.md
 git add src/_posts/YYYY-MM-DD-<post-slug>.svg-map.json   # if generated
+git add src/_posts/YYYY-MM-DD-<post-slug>.audio-map.json # if generated
 git add public/assets                                     # submodule pointer update
 git commit -m "feat(blog): publish <post-slug>"
 git push

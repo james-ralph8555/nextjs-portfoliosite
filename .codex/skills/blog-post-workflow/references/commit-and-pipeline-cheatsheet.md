@@ -4,7 +4,9 @@
 
 - Post markdown: `src/_posts/YYYY-MM-DD-<post-slug>.md`
 - SVG map (optional): `src/_posts/YYYY-MM-DD-<post-slug>.svg-map.json`
+- Audio map (optional): `src/_posts/YYYY-MM-DD-<post-slug>.audio-map.json`
 - Assets (submodule): `public/assets/<post-slug>/...`
+- Blog audio asset (submodule): `public/assets/post-audio/YYYY-MM-DD-<post-slug>/post.mp3`
 
 ## Pipeline Commands
 
@@ -17,6 +19,12 @@ npm run svg:post -- --post src/_posts/YYYY-MM-DD-<post-slug>.md
 
 # Optimize SVG files in assets folders
 npm run svg:optimize
+
+# Bootstrap the copied blog-audio runtime
+npm run audio:bootstrap
+
+# Generate narration audio + audio map for a post
+npm run audio:post -- --post src/_posts/YYYY-MM-DD-<post-slug>.md --language English
 ```
 
 ## Strict Two-Commit Sequence
@@ -32,6 +40,7 @@ git -C public/assets push
 git status --short
 git add src/_posts/YYYY-MM-DD-<post-slug>.md
 git add src/_posts/YYYY-MM-DD-<post-slug>.svg-map.json   # if generated
+git add src/_posts/YYYY-MM-DD-<post-slug>.audio-map.json # if generated
 git add public/assets
 git commit -m "feat(blog): publish <post-slug>"
 git push

@@ -1,0 +1,11 @@
+accelerate==1.12.0
+einops
+gradio
+librosa
+numpy
+onnxruntime
+soundfile
+sox
+torch
+torchaudio
+transformers==4.57.3

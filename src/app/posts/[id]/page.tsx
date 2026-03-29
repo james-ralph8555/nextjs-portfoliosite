@@ -4,6 +4,7 @@ import { getPostById, getAllPosts } from "@/lib/api";
 import { hrefHtml } from "@/lib/links";
 import SvgImageReactivity from "./SvgImageReactivity";
 import MermaidRenderer from "./MermaidRenderer";
+import PostAudioPlayer from "./PostAudioPlayer";
 
 // Set the title of the page to be the post title, note that we no longer use
 // e.g. next/head in app dir
@@ -35,12 +36,19 @@ export default async function Post(
   const params = await props.params;
   const { id } = params;
   const cleanId = id.replace(/\.html$/, "");
-  const { html, title, date } = await getPostById(cleanId);
+  const { html, title, date, audioNarration } = await getPostById(cleanId);
 
   return (
     <div className="bg-bg-main font-mono leading-relaxed antialiased selection:bg-primary-green selection:text-bg-main">
       <SvgImageReactivity />
       <MermaidRenderer />
+      {audioNarration?.audioSrc ? (
+        <PostAudioPlayer
+          audioSrc={audioNarration.audioSrc}
+          title={title}
+          chunks={audioNarration.transcript?.chunks}
+        />
+      ) : null}
       <div className="mx-auto min-h-screen max-w-screen-xl px-0 py-6 md:px-8 md:py-12 lg:px-12 lg:py-6">
         <div className="mb-4">
           <div className="fused-terminal-layout max-w-xs !m-0">
@@ -63,7 +71,8 @@ export default async function Post(
               <p className="text-xs text-table-text font-mono uppercase tracking-wide">{date}</p>
             </header>
             <div 
-              className="prose prose-lg max-w-none px-0 py-4 md:px-4" 
+              className="prose prose-lg max-w-none px-0 py-4 md:px-4"
+              data-post-article=""
               dangerouslySetInnerHTML={{ __html: html }} 
             />
           </div>

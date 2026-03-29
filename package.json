@@ -8,7 +8,10 @@
     "preview": "rm -rf .next out && npm run build && npm run serve",
     "lint": "next lint",
     "svg:post": "python3 scripts/blog-image-svg/cli.py",
-    "svg:optimize": "svgo --multipass public/assets/**/svg/*.svg"
+    "svg:optimize": "svgo --multipass public/assets/**/svg/*.svg",
+    "audio:bootstrap": "bash scripts/blog-audio/bootstrap-runtime.sh",
+    "audio:design": "bash scripts/blog-audio/uv-run.sh scripts/blog-audio/voice_workflow.py",
+    "audio:post": "bash scripts/blog-audio/uv-run.sh scripts/blog-audio-post.py"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

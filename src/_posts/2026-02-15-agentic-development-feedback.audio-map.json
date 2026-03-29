@@ -1,0 +1,1249 @@
+{
+  "version": 3,
+  "postId": "2026-02-15-agentic-development-feedback",
+  "generatedAt": "2026-03-29T03:27:57Z",
+  "status": "ok",
+  "narration": {
+    "postPath": "src/_posts/2026-02-15-agentic-development-feedback.md",
+    "language": "English",
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
+    "usedDefaultInstruct": true,
+    "generationKwargs": {
+      "do_sample": true,
+      "subtalker_dosample": true,
+      "non_streaming_mode": true
+    },
+    "chunkCount": 26,
+    "pauseMs": 100,
+    "durationSeconds": 462.9,
+    "transcript": {
+      "text": "0. TL;DR\n\nAgentic development becomes useful when the agent can do more than generate code. It needs to run the code, inspect what happened, and keep iterating until it can show evidence that the change worked.\n\nThe difference is not better prompting. The difference is a working feedback loop.\n\n1. What Agentic Full-Stack Development Means\n\nIn practice, this is not \"AI writes code.\" It is \"AI executes a complete development loop\":\n\nMake a small change.\n\nRun tests, scripts, or the app.\n\nInspect outputs and intermediate state.\n\nDecide the next step from evidence.\n\nRepeat until there is a clear pass condition.\n\nThis works with one agent or multiple agents. You can have one agent implementing and another verifying. The important part is that each step is driven by observed results, not guesses.\n\n2. Why Feedback Changes Everything\n\nCode generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits.\n\nBut most real bugs are not solved at generation time. They are solved by observing behavior:\n\nA test fails for a specific reason.\n\nA network request returns the wrong payload.\n\nA query writes incorrect intermediate data.\n\nA deployment uses a different config than expected.\n\nWithout feedback, an agent can only produce plausible text. With feedback, it can produce working changes.\n\n3. The Development Loop You Can Copy\n\nUse this loop as the default:\n\nPlan the smallest useful change.\n\nImplement it.\n\nRun the relevant checks.\n\nObserve outputs and state.\n\nRecord a verdict: pass or fail, plus why.\n\nIterate or stop.\n\nPackage evidence.\n\nThree habits make this loop reliable:\n\nKeep diffs small.\n\nKeep pass criteria explicit.\n\nKeep iteration fast.\n\nWhen these are true, progress is easy to measure and easy to trust.\n\n4. Treat Evidence Bundles as a Required Deliverable\n\nAn evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought.\n\nA simple checklist:\n\nPatch or commit reference.\n\nExact commands that were run.\n\nTest or script results with exit codes.\n\nKey logs or output excerpts.\n\nArtifacts (screenshots, traces, JSON output, benchmark results when needed).\n\nShort explanation of what changed and why.\n\nShort explanation of how the evidence supports success.\n\nYou can store this in a markdown file under /evidence, as a PR comment template, or as CI artifacts. The location matters less than consistency.\n\n5. Make the Application Observable to the Agent\n\nAgents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.\n\n5.1 Execution Observability\n\nStandard scripts should exist and be predictable:\n\ndev\n\ntest\n\nlint\n\ntypecheck\n\ne2e (if applicable)\n\nOne obvious command per task is a contract. It removes guesswork.\n\n5.2 Output Observability\n\nOutputs should be stable and machine-friendly:\n\nConsistent error summaries.\n\nStructured lint and test output.\n\nCaptured exit codes.\n\nShort summary lines that are easy to parse.\n\nIf output shape changes every run, the loop becomes fragile.\n\n5.3 Intermediate State Observability\n\nFor data-heavy flows, inspect intermediate state directly:\n\nTables and row counts.\n\nNull and uniqueness checks.\n\nGenerated files.\n\nQueue or cache state when relevant.\n\nThis is often where hidden issues are found fastest.\n\n6. Tool Pillars That Improve Feedback Quality\n\n6.1 Browser Verification (Chrome MCP)\n\nUseful for reproducing UI bugs and validating user flows:\n\nReproduce issue.\n\nInspect console and network.\n\nPatch.\n\nRe-run and confirm behavior.\n\nCapture screenshot and key logs.\n\nEvidence typically includes console output, network snippets, and final screenshots.\n\n6.2 Infrastructure Reality Checks (AWS CLI)\n\nUseful for validating deployed state:\n\nVerify identity and region.\n\nRead actual resource configuration.\n\nCompare expected vs actual fields.\n\nChange only after read-side validation.\n\nEvidence should include exact commands and redacted JSON excerpts of real state.\n\n6.3 Local Databases\n\nUseful for checking data correctness during development:\n\nWrite intermediate outputs to explicit tables.\n\nRun basic invariants after each step.\n\nSave query outputs that confirm correctness.\n\nEvidence includes executed queries and the resulting counts or sample rows.\n\n6.4 CI/CD\n\nUseful as an external judge:\n\nPush branch.\n\nRead failing jobs.\n\nFix and rerun until green.\n\nAttach CI evidence.\n\nEvidence includes CI links, fail-to-pass summaries, and test artifacts.\n\n6.5 Git\n\nUseful for change clarity and rollback safety:\n\nOne logical change per commit.\n\nUse git diff as source of truth for what changed.\n\nReference evidence in commit or PR text.\n\nThis keeps reviews clear and debugging faster.\n\n7. Why Monorepos Help Agentic Work\n\nAgentic workflows improve when the codebase is visible in one workspace:\n\nFrontend, backend, and infrastructure in one tree.\n\nShared types reduce interface mismatch.\n\nConsistent scripts reduce command ambiguity.\n\nA simple structure:\n\nWhen root and package scripts use the same names (dev, test, lint, typecheck), agents can navigate the project with less trial and error.\n\n8. Guardrails That Keep Verification Cheap\n\nUse guardrails that reduce friction:\n\nFast smoke tests for quick signal.\n\nStable repro commands.\n\nFewer flaky checks.\n\nData constraints and API contract checks.\n\n\"No console errors\" checks for important UI flows.\n\nStructured logs with consistent keys.\n\nA simple rule helps a lot: every final answer must cite evidence, not just conclusions.\n\n9. Keep Safety Simple\n\nUse least-privilege credentials, keep tool-call logs, and separate read from write access where possible. Keep this lightweight but non-optional.\n\n10. Closing: Start With One Loop\n\nThe goal is not full autonomy. The goal is reliable competence.\n\nIf you are adopting this now, start with three steps:\n\nStandardize scripts.\n\nRequire evidence bundles.\n\nAdd one strong verification surface (browser checks or database checks).\n\nThen expand into CI and infrastructure validation as your workflow matures.",
+      "chunkSeparator": "\n\n",
+      "chunks": [
+        {
+          "index": 1,
+          "charCount": 210,
+          "text": "0. TL;DR\n\nAgentic development becomes useful when the agent can do more than generate code. It needs to run the code, inspect what happened, and keep iterating until it can show evidence that the change worked.",
+          "spokenText": "0. TL;DR.\n\nAgentic development becomes useful when the agent can do more than generate code. It needs to run the code, inspect what happened, and keep iterating until it can show evidence that the change worked.",
+          "startChar": 0,
+          "endChar": 210,
+          "blockStart": 0,
+          "blockEnd": 1,
+          "segments": [
+            {
+              "blockId": 0,
+              "startChar": 0,
+              "endChar": 8,
+              "text": "0. TL;DR"
+            },
+            {
+              "blockId": 1,
+              "startChar": 0,
+              "endChar": 200,
+              "text": "Agentic development becomes useful when the agent can do more than generate code. It needs to run the code, inspect what happened, and keep iterating until it can show evidence that the change worked."
+            }
+          ],
+          "audioFile": "chunk-001.wav",
+          "durationSeconds": 14.08,
+          "startTimeSeconds": 0.0,
+          "endTimeSeconds": 14.08,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 2,
+          "charCount": 221,
+          "text": "The difference is not better prompting. The difference is a working feedback loop.\n\n1. What Agentic Full-Stack Development Means\n\nIn practice, this is not \"AI writes code.\" It is \"AI executes a complete development loop\":",
+          "spokenText": "The difference is not better prompting. The difference is a working feedback loop.\n\n1. What Agentic Full-Stack Development Means.\n\nIn practice, this is not \"AI writes code.\" It is \"AI executes a complete development loop\":",
+          "startChar": 212,
+          "endChar": 433,
+          "blockStart": 2,
+          "blockEnd": 4,
+          "segments": [
+            {
+              "blockId": 2,
+              "startChar": 0,
+              "endChar": 82,
+              "text": "The difference is not better prompting. The difference is a working feedback loop."
+            },
+            {
+              "blockId": 3,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "1. What Agentic Full-Stack Development Means"
+            },
+            {
+              "blockId": 4,
+              "startChar": 0,
+              "endChar": 91,
+              "text": "In practice, this is not \"AI writes code.\" It is \"AI executes a complete development loop\":"
+            }
+          ],
+          "audioFile": "chunk-002.wav",
+          "durationSeconds": 16.0,
+          "startTimeSeconds": 14.18,
+          "endTimeSeconds": 30.18,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 3,
+          "charCount": 365,
+          "text": "Make a small change.\n\nRun tests, scripts, or the app.\n\nInspect outputs and intermediate state.\n\nDecide the next step from evidence.\n\nRepeat until there is a clear pass condition.\n\nThis works with one agent or multiple agents. You can have one agent implementing and another verifying. The important part is that each step is driven by observed results, not guesses.",
+          "spokenText": "Make a small change.\n\nRun tests, scripts, or the app.\n\nInspect outputs and intermediate state.\n\nDecide the next step from evidence.\n\nRepeat until there is a clear pass condition.\n\nThis works with one agent or multiple agents. You can have one agent implementing and another verifying. The important part is that each step is driven by observed results, not guesses.",
+          "startChar": 435,
+          "endChar": 800,
+          "blockStart": 5,
+          "blockEnd": 10,
+          "segments": [
+            {
+              "blockId": 5,
+              "startChar": 0,
+              "endChar": 20,
+              "text": "Make a small change."
+            },
+            {
+              "blockId": 6,
+              "startChar": 0,
+              "endChar": 31,
+              "text": "Run tests, scripts, or the app."
+            },
+            {
+              "blockId": 7,
+              "startChar": 0,
+              "endChar": 39,
+              "text": "Inspect outputs and intermediate state."
+            },
+            {
+              "blockId": 8,
+              "startChar": 0,
+              "endChar": 35,
+              "text": "Decide the next step from evidence."
+            },
+            {
+              "blockId": 9,
+              "startChar": 0,
+              "endChar": 45,
+              "text": "Repeat until there is a clear pass condition."
+            },
+            {
+              "blockId": 10,
+              "startChar": 0,
+              "endChar": 185,
+              "text": "This works with one agent or multiple agents. You can have one agent implementing and another verifying. The important part is that each step is driven by observed results, not guesses."
+            }
+          ],
+          "audioFile": "chunk-003.wav",
+          "durationSeconds": 26.24,
+          "startTimeSeconds": 30.28,
+          "endTimeSeconds": 56.52,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 4,
+          "charCount": 249,
+          "text": "2. Why Feedback Changes Everything\n\nCode generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits.\n\nBut most real bugs are not solved at generation time. They are solved by observing behavior:",
+          "spokenText": "2. Why Feedback Changes Everything.\n\nCode generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits.\n\nBut most real bugs are not solved at generation time. They are solved by observing behavior:",
+          "startChar": 802,
+          "endChar": 1051,
+          "blockStart": 11,
+          "blockEnd": 13,
+          "segments": [
+            {
+              "blockId": 11,
+              "startChar": 0,
+              "endChar": 34,
+              "text": "2. Why Feedback Changes Everything"
+            },
+            {
+              "blockId": 12,
+              "startChar": 0,
+              "endChar": 119,
+              "text": "Code generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits."
+            },
+            {
+              "blockId": 13,
+              "startChar": 0,
+              "endChar": 92,
+              "text": "But most real bugs are not solved at generation time. They are solved by observing behavior:"
+            }
+          ],
+          "audioFile": "chunk-004.wav",
+          "durationSeconds": 15.92,
+          "startTimeSeconds": 56.62,
+          "endTimeSeconds": 72.54,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 5,
+          "charCount": 287,
+          "text": "A test fails for a specific reason.\n\nA network request returns the wrong payload.\n\nA query writes incorrect intermediate data.\n\nA deployment uses a different config than expected.\n\nWithout feedback, an agent can only produce plausible text. With feedback, it can produce working changes.",
+          "spokenText": "A test fails for a specific reason.\n\nA network request returns the wrong payload.\n\nA query writes incorrect intermediate data.\n\nA deployment uses a different config than expected.\n\nWithout feedback, an agent can only produce plausible text. With feedback, it can produce working changes.",
+          "startChar": 1053,
+          "endChar": 1340,
+          "blockStart": 14,
+          "blockEnd": 18,
+          "segments": [
+            {
+              "blockId": 14,
+              "startChar": 0,
+              "endChar": 35,
+              "text": "A test fails for a specific reason."
+            },
+            {
+              "blockId": 15,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "A network request returns the wrong payload."
+            },
+            {
+              "blockId": 16,
+              "startChar": 0,
+              "endChar": 43,
+              "text": "A query writes incorrect intermediate data."
+            },
+            {
+              "blockId": 17,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "A deployment uses a different config than expected."
+            },
+            {
+              "blockId": 18,
+              "startChar": 0,
+              "endChar": 106,
+              "text": "Without feedback, an agent can only produce plausible text. With feedback, it can produce working changes."
+            }
+          ],
+          "audioFile": "chunk-005.wav",
+          "durationSeconds": 19.12,
+          "startTimeSeconds": 72.64,
+          "endTimeSeconds": 91.76,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 6,
+          "charCount": 213,
+          "text": "3. The Development Loop You Can Copy\n\nUse this loop as the default:\n\nPlan the smallest useful change.\n\nImplement it.\n\nRun the relevant checks.\n\nObserve outputs and state.\n\nRecord a verdict: pass or fail, plus why.",
+          "spokenText": "3. The Development Loop You Can Copy.\n\nUse this loop as the default:\n\nPlan the smallest useful change.\n\nImplement it.\n\nRun the relevant checks.\n\nObserve outputs and state.\n\nRecord a verdict: pass or fail, plus why.",
+          "startChar": 1342,
+          "endChar": 1555,
+          "blockStart": 19,
+          "blockEnd": 25,
+          "segments": [
+            {
+              "blockId": 19,
+              "startChar": 0,
+              "endChar": 36,
+              "text": "3. The Development Loop You Can Copy"
+            },
+            {
+              "blockId": 20,
+              "startChar": 0,
+              "endChar": 29,
+              "text": "Use this loop as the default:"
+            },
+            {
+              "blockId": 21,
+              "startChar": 0,
+              "endChar": 32,
+              "text": "Plan the smallest useful change."
+            },
+            {
+              "blockId": 22,
+              "startChar": 0,
+              "endChar": 13,
+              "text": "Implement it."
+            },
+            {
+              "blockId": 23,
+              "startChar": 0,
+              "endChar": 24,
+              "text": "Run the relevant checks."
+            },
+            {
+              "blockId": 24,
+              "startChar": 0,
+              "endChar": 26,
+              "text": "Observe outputs and state."
+            },
+            {
+              "blockId": 25,
+              "startChar": 0,
+              "endChar": 41,
+              "text": "Record a verdict: pass or fail, plus why."
+            }
+          ],
+          "audioFile": "chunk-006.wav",
+          "durationSeconds": 18.8,
+          "startTimeSeconds": 91.86,
+          "endTimeSeconds": 110.66,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 7,
+          "charCount": 214,
+          "text": "Iterate or stop.\n\nPackage evidence.\n\nThree habits make this loop reliable:\n\nKeep diffs small.\n\nKeep pass criteria explicit.\n\nKeep iteration fast.\n\nWhen these are true, progress is easy to measure and easy to trust.",
+          "spokenText": "Iterate or stop.\n\nPackage evidence.\n\nThree habits make this loop reliable:\n\nKeep diffs small.\n\nKeep pass criteria explicit.\n\nKeep iteration fast.\n\nWhen these are true, progress is easy to measure and easy to trust.",
+          "startChar": 1557,
+          "endChar": 1771,
+          "blockStart": 26,
+          "blockEnd": 32,
+          "segments": [
+            {
+              "blockId": 26,
+              "startChar": 0,
+              "endChar": 16,
+              "text": "Iterate or stop."
+            },
+            {
+              "blockId": 27,
+              "startChar": 0,
+              "endChar": 17,
+              "text": "Package evidence."
+            },
+            {
+              "blockId": 28,
+              "startChar": 0,
+              "endChar": 37,
+              "text": "Three habits make this loop reliable:"
+            },
+            {
+              "blockId": 29,
+              "startChar": 0,
+              "endChar": 17,
+              "text": "Keep diffs small."
+            },
+            {
+              "blockId": 30,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "Keep pass criteria explicit."
+            },
+            {
+              "blockId": 31,
+              "startChar": 0,
+              "endChar": 20,
+              "text": "Keep iteration fast."
+            },
+            {
+              "blockId": 32,
+              "startChar": 0,
+              "endChar": 67,
+              "text": "When these are true, progress is easy to measure and easy to trust."
+            }
+          ],
+          "audioFile": "chunk-007.wav",
+          "durationSeconds": 16.08,
+          "startTimeSeconds": 110.76,
+          "endTimeSeconds": 126.84,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 8,
+          "charCount": 222,
+          "text": "4. Treat Evidence Bundles as a Required Deliverable\n\nAn evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought.\n\nA simple checklist:\n\nPatch or commit reference.",
+          "spokenText": "4. Treat Evidence Bundles as a Required Deliverable.\n\nAn evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought.\n\nA simple checklist:\n\nPatch or commit reference.",
+          "startChar": 1773,
+          "endChar": 1995,
+          "blockStart": 33,
+          "blockEnd": 36,
+          "segments": [
+            {
+              "blockId": 33,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "4. Treat Evidence Bundles as a Required Deliverable"
+            },
+            {
+              "blockId": 34,
+              "startChar": 0,
+              "endChar": 120,
+              "text": "An evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought."
+            },
+            {
+              "blockId": 35,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "A simple checklist:"
+            },
+            {
+              "blockId": 36,
+              "startChar": 0,
+              "endChar": 26,
+              "text": "Patch or commit reference."
+            }
+          ],
+          "audioFile": "chunk-008.wav",
+          "durationSeconds": 17.52,
+          "startTimeSeconds": 126.94,
+          "endTimeSeconds": 144.46,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 9,
+          "charCount": 222,
+          "text": "Exact commands that were run.\n\nTest or script results with exit codes.\n\nKey logs or output excerpts.\n\nArtifacts (screenshots, traces, JSON output, benchmark results when needed).\n\nShort explanation of what changed and why.",
+          "spokenText": "Exact commands that were run.\n\nTest or script results with exit codes.\n\nKey logs or output excerpts.\n\nArtifacts (screenshots, traces, JSON output, benchmark results when needed).\n\nShort explanation of what changed and why.",
+          "startChar": 1997,
+          "endChar": 2219,
+          "blockStart": 37,
+          "blockEnd": 41,
+          "segments": [
+            {
+              "blockId": 37,
+              "startChar": 0,
+              "endChar": 29,
+              "text": "Exact commands that were run."
+            },
+            {
+              "blockId": 38,
+              "startChar": 0,
+              "endChar": 39,
+              "text": "Test or script results with exit codes."
+            },
+            {
+              "blockId": 39,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "Key logs or output excerpts."
+            },
+            {
+              "blockId": 40,
+              "startChar": 0,
+              "endChar": 76,
+              "text": "Artifacts (screenshots, traces, JSON output, benchmark results when needed)."
+            },
+            {
+              "blockId": 41,
+              "startChar": 0,
+              "endChar": 42,
+              "text": "Short explanation of what changed and why."
+            }
+          ],
+          "audioFile": "chunk-009.wav",
+          "durationSeconds": 16.4,
+          "startTimeSeconds": 144.56,
+          "endTimeSeconds": 160.96,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 10,
+          "charCount": 201,
+          "text": "Short explanation of how the evidence supports success.\n\nYou can store this in a markdown file under /evidence, as a PR comment template, or as CI artifacts. The location matters less than consistency.",
+          "spokenText": "Short explanation of how the evidence supports success.\n\nYou can store this in a markdown file under /evidence, as a PR comment template, or as CI artifacts. The location matters less than consistency.",
+          "startChar": 2221,
+          "endChar": 2422,
+          "blockStart": 42,
+          "blockEnd": 43,
+          "segments": [
+            {
+              "blockId": 42,
+              "startChar": 0,
+              "endChar": 55,
+              "text": "Short explanation of how the evidence supports success."
+            },
+            {
+              "blockId": 43,
+              "startChar": 0,
+              "endChar": 144,
+              "text": "You can store this in a markdown file under /evidence, as a PR comment template, or as CI artifacts. The location matters less than consistency."
+            }
+          ],
+          "audioFile": "chunk-010.wav",
+          "durationSeconds": 13.44,
+          "startTimeSeconds": 161.06,
+          "endTimeSeconds": 174.5,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 11,
+          "charCount": 248,
+          "text": "5. Make the Application Observable to the Agent\n\nAgents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.\n\n5.1 Execution Observability\n\nStandard scripts should exist and be predictable:",
+          "spokenText": "5. Make the Application Observable to the Agent.\n\nAgents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.\n\n5.1 Execution Observability.\n\nStandard scripts should exist and be predictable:",
+          "startChar": 2424,
+          "endChar": 2672,
+          "blockStart": 44,
+          "blockEnd": 47,
+          "segments": [
+            {
+              "blockId": 44,
+              "startChar": 0,
+              "endChar": 47,
+              "text": "5. Make the Application Observable to the Agent"
+            },
+            {
+              "blockId": 45,
+              "startChar": 0,
+              "endChar": 119,
+              "text": "Agents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders."
+            },
+            {
+              "blockId": 46,
+              "startChar": 0,
+              "endChar": 27,
+              "text": "5.1 Execution Observability"
+            },
+            {
+              "blockId": 47,
+              "startChar": 0,
+              "endChar": 49,
+              "text": "Standard scripts should exist and be predictable:"
+            }
+          ],
+          "audioFile": "chunk-011.wav",
+          "durationSeconds": 18.4,
+          "startTimeSeconds": 174.6,
+          "endTimeSeconds": 193.0,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 12,
+          "charCount": 217,
+          "text": "dev\n\ntest\n\nlint\n\ntypecheck\n\ne2e (if applicable)\n\nOne obvious command per task is a contract. It removes guesswork.\n\n5.2 Output Observability\n\nOutputs should be stable and machine-friendly:\n\nConsistent error summaries.",
+          "spokenText": "dev.\n\ntest.\n\nlint.\n\ntypecheck.\n\ne2e (if applicable).\n\nOne obvious command per task is a contract. It removes guesswork.\n\n5.2 Output Observability.\n\nOutputs should be stable and machine-friendly:\n\nConsistent error summaries.",
+          "startChar": 2674,
+          "endChar": 2891,
+          "blockStart": 48,
+          "blockEnd": 56,
+          "segments": [
+            {
+              "blockId": 48,
+              "startChar": 0,
+              "endChar": 3,
+              "text": "dev"
+            },
+            {
+              "blockId": 49,
+              "startChar": 0,
+              "endChar": 4,
+              "text": "test"
+            },
+            {
+              "blockId": 50,
+              "startChar": 0,
+              "endChar": 4,
+              "text": "lint"
+            },
+            {
+              "blockId": 51,
+              "startChar": 0,
+              "endChar": 9,
+              "text": "typecheck"
+            },
+            {
+              "blockId": 52,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "e2e (if applicable)"
+            },
+            {
+              "blockId": 53,
+              "startChar": 0,
+              "endChar": 65,
+              "text": "One obvious command per task is a contract. It removes guesswork."
+            },
+            {
+              "blockId": 54,
+              "startChar": 0,
+              "endChar": 24,
+              "text": "5.2 Output Observability"
+            },
+            {
+              "blockId": 55,
+              "startChar": 0,
+              "endChar": 46,
+              "text": "Outputs should be stable and machine-friendly:"
+            },
+            {
+              "blockId": 56,
+              "startChar": 0,
+              "endChar": 27,
+              "text": "Consistent error summaries."
+            }
+          ],
+          "audioFile": "chunk-012.wav",
+          "durationSeconds": 21.44,
+          "startTimeSeconds": 193.1,
+          "endTimeSeconds": 214.54,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 13,
+          "charCount": 259,
+          "text": "Structured lint and test output.\n\nCaptured exit codes.\n\nShort summary lines that are easy to parse.\n\nIf output shape changes every run, the loop becomes fragile.\n\n5.3 Intermediate State Observability\n\nFor data-heavy flows, inspect intermediate state directly:",
+          "spokenText": "Structured lint and test output.\n\nCaptured exit codes.\n\nShort summary lines that are easy to parse.\n\nIf output shape changes every run, the loop becomes fragile.\n\n5.3 Intermediate State Observability.\n\nFor data-heavy flows, inspect intermediate state directly:",
+          "startChar": 2893,
+          "endChar": 3152,
+          "blockStart": 57,
+          "blockEnd": 62,
+          "segments": [
+            {
+              "blockId": 57,
+              "startChar": 0,
+              "endChar": 32,
+              "text": "Structured lint and test output."
+            },
+            {
+              "blockId": 58,
+              "startChar": 0,
+              "endChar": 20,
+              "text": "Captured exit codes."
+            },
+            {
+              "blockId": 59,
+              "startChar": 0,
+              "endChar": 43,
+              "text": "Short summary lines that are easy to parse."
+            },
+            {
+              "blockId": 60,
+              "startChar": 0,
+              "endChar": 60,
+              "text": "If output shape changes every run, the loop becomes fragile."
+            },
+            {
+              "blockId": 61,
+              "startChar": 0,
+              "endChar": 36,
+              "text": "5.3 Intermediate State Observability"
+            },
+            {
+              "blockId": 62,
+              "startChar": 0,
+              "endChar": 58,
+              "text": "For data-heavy flows, inspect intermediate state directly:"
+            }
+          ],
+          "audioFile": "chunk-013.wav",
+          "durationSeconds": 22.64,
+          "startTimeSeconds": 214.64,
+          "endTimeSeconds": 237.28,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 14,
+          "charCount": 207,
+          "text": "Tables and row counts.\n\nNull and uniqueness checks.\n\nGenerated files.\n\nQueue or cache state when relevant.\n\nThis is often where hidden issues are found fastest.\n\n6. Tool Pillars That Improve Feedback Quality",
+          "spokenText": "Tables and row counts.\n\nNull and uniqueness checks.\n\nGenerated files.\n\nQueue or cache state when relevant.\n\nThis is often where hidden issues are found fastest.\n\n6. Tool Pillars That Improve Feedback Quality.",
+          "startChar": 3154,
+          "endChar": 3361,
+          "blockStart": 63,
+          "blockEnd": 68,
+          "segments": [
+            {
+              "blockId": 63,
+              "startChar": 0,
+              "endChar": 22,
+              "text": "Tables and row counts."
+            },
+            {
+              "blockId": 64,
+              "startChar": 0,
+              "endChar": 27,
+              "text": "Null and uniqueness checks."
+            },
+            {
+              "blockId": 65,
+              "startChar": 0,
+              "endChar": 16,
+              "text": "Generated files."
+            },
+            {
+              "blockId": 66,
+              "startChar": 0,
+              "endChar": 35,
+              "text": "Queue or cache state when relevant."
+            },
+            {
+              "blockId": 67,
+              "startChar": 0,
+              "endChar": 52,
+              "text": "This is often where hidden issues are found fastest."
+            },
+            {
+              "blockId": 68,
+              "startChar": 0,
+              "endChar": 45,
+              "text": "6. Tool Pillars That Improve Feedback Quality"
+            }
+          ],
+          "audioFile": "chunk-014.wav",
+          "durationSeconds": 16.72,
+          "startTimeSeconds": 237.38,
+          "endTimeSeconds": 254.1,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 15,
+          "charCount": 216,
+          "text": "6.1 Browser Verification (Chrome MCP)\n\nUseful for reproducing UI bugs and validating user flows:\n\nReproduce issue.\n\nInspect console and network.\n\nPatch.\n\nRe-run and confirm behavior.\n\nCapture screenshot and key logs.",
+          "spokenText": "6.1 Browser Verification (Chrome MCP).\n\nUseful for reproducing UI bugs and validating user flows:\n\nReproduce issue.\n\nInspect console and network.\n\nPatch.\n\nRe-run and confirm behavior.\n\nCapture screenshot and key logs.",
+          "startChar": 3363,
+          "endChar": 3579,
+          "blockStart": 69,
+          "blockEnd": 75,
+          "segments": [
+            {
+              "blockId": 69,
+              "startChar": 0,
+              "endChar": 37,
+              "text": "6.1 Browser Verification (Chrome MCP)"
+            },
+            {
+              "blockId": 70,
+              "startChar": 0,
+              "endChar": 57,
+              "text": "Useful for reproducing UI bugs and validating user flows:"
+            },
+            {
+              "blockId": 71,
+              "startChar": 0,
+              "endChar": 16,
+              "text": "Reproduce issue."
+            },
+            {
+              "blockId": 72,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "Inspect console and network."
+            },
+            {
+              "blockId": 73,
+              "startChar": 0,
+              "endChar": 6,
+              "text": "Patch."
+            },
+            {
+              "blockId": 74,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "Re-run and confirm behavior."
+            },
+            {
+              "blockId": 75,
+              "startChar": 0,
+              "endChar": 32,
+              "text": "Capture screenshot and key logs."
+            }
+          ],
+          "audioFile": "chunk-015.wav",
+          "durationSeconds": 16.24,
+          "startTimeSeconds": 254.2,
+          "endTimeSeconds": 270.44,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 16,
+          "charCount": 234,
+          "text": "Evidence typically includes console output, network snippets, and final screenshots.\n\n6.2 Infrastructure Reality Checks (AWS CLI)\n\nUseful for validating deployed state:\n\nVerify identity and region.\n\nRead actual resource configuration.",
+          "spokenText": "Evidence typically includes console output, network snippets, and final screenshots.\n\n6.2 Infrastructure Reality Checks (AWS CLI).\n\nUseful for validating deployed state:\n\nVerify identity and region.\n\nRead actual resource configuration.",
+          "startChar": 3581,
+          "endChar": 3815,
+          "blockStart": 76,
+          "blockEnd": 80,
+          "segments": [
+            {
+              "blockId": 76,
+              "startChar": 0,
+              "endChar": 84,
+              "text": "Evidence typically includes console output, network snippets, and final screenshots."
+            },
+            {
+              "blockId": 77,
+              "startChar": 0,
+              "endChar": 43,
+              "text": "6.2 Infrastructure Reality Checks (AWS CLI)"
+            },
+            {
+              "blockId": 78,
+              "startChar": 0,
+              "endChar": 37,
+              "text": "Useful for validating deployed state:"
+            },
+            {
+              "blockId": 79,
+              "startChar": 0,
+              "endChar": 27,
+              "text": "Verify identity and region."
+            },
+            {
+              "blockId": 80,
+              "startChar": 0,
+              "endChar": 35,
+              "text": "Read actual resource configuration."
+            }
+          ],
+          "audioFile": "chunk-016.wav",
+          "durationSeconds": 20.8,
+          "startTimeSeconds": 270.54,
+          "endTimeSeconds": 291.34,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 17,
+          "charCount": 236,
+          "text": "Compare expected vs actual fields.\n\nChange only after read-side validation.\n\nEvidence should include exact commands and redacted JSON excerpts of real state.\n\n6.3 Local Databases\n\nUseful for checking data correctness during development:",
+          "spokenText": "Compare expected vs actual fields.\n\nChange only after read-side validation.\n\nEvidence should include exact commands and redacted JSON excerpts of real state.\n\n6.3 Local Databases.\n\nUseful for checking data correctness during development:",
+          "startChar": 3817,
+          "endChar": 4053,
+          "blockStart": 81,
+          "blockEnd": 85,
+          "segments": [
+            {
+              "blockId": 81,
+              "startChar": 0,
+              "endChar": 34,
+              "text": "Compare expected vs actual fields."
+            },
+            {
+              "blockId": 82,
+              "startChar": 0,
+              "endChar": 39,
+              "text": "Change only after read-side validation."
+            },
+            {
+              "blockId": 83,
+              "startChar": 0,
+              "endChar": 80,
+              "text": "Evidence should include exact commands and redacted JSON excerpts of real state."
+            },
+            {
+              "blockId": 84,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "6.3 Local Databases"
+            },
+            {
+              "blockId": 85,
+              "startChar": 0,
+              "endChar": 56,
+              "text": "Useful for checking data correctness during development:"
+            }
+          ],
+          "audioFile": "chunk-017.wav",
+          "durationSeconds": 21.36,
+          "startTimeSeconds": 291.44,
+          "endTimeSeconds": 312.8,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 18,
+          "charCount": 208,
+          "text": "Write intermediate outputs to explicit tables.\n\nRun basic invariants after each step.\n\nSave query outputs that confirm correctness.\n\nEvidence includes executed queries and the resulting counts or sample rows.",
+          "spokenText": "Write intermediate outputs to explicit tables.\n\nRun basic invariants after each step.\n\nSave query outputs that confirm correctness.\n\nEvidence includes executed queries and the resulting counts or sample rows.",
+          "startChar": 4055,
+          "endChar": 4263,
+          "blockStart": 86,
+          "blockEnd": 89,
+          "segments": [
+            {
+              "blockId": 86,
+              "startChar": 0,
+              "endChar": 46,
+              "text": "Write intermediate outputs to explicit tables."
+            },
+            {
+              "blockId": 87,
+              "startChar": 0,
+              "endChar": 37,
+              "text": "Run basic invariants after each step."
+            },
+            {
+              "blockId": 88,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "Save query outputs that confirm correctness."
+            },
+            {
+              "blockId": 89,
+              "startChar": 0,
+              "endChar": 75,
+              "text": "Evidence includes executed queries and the resulting counts or sample rows."
+            }
+          ],
+          "audioFile": "chunk-018.wav",
+          "durationSeconds": 16.08,
+          "startTimeSeconds": 312.9,
+          "endTimeSeconds": 328.98,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 19,
+          "charCount": 204,
+          "text": "6.4 CI/CD\n\nUseful as an external judge:\n\nPush branch.\n\nRead failing jobs.\n\nFix and rerun until green.\n\nAttach CI evidence.\n\nEvidence includes CI links, fail-to-pass summaries, and test artifacts.\n\n6.5 Git",
+          "spokenText": "6.4 CI/CD.\n\nUseful as an external judge:\n\nPush branch.\n\nRead failing jobs.\n\nFix and rerun until green.\n\nAttach CI evidence.\n\nEvidence includes CI links, fail-to-pass summaries, and test artifacts.\n\n6.5 Git.",
+          "startChar": 4265,
+          "endChar": 4469,
+          "blockStart": 90,
+          "blockEnd": 97,
+          "segments": [
+            {
+              "blockId": 90,
+              "startChar": 0,
+              "endChar": 9,
+              "text": "6.4 CI/CD"
+            },
+            {
+              "blockId": 91,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "Useful as an external judge:"
+            },
+            {
+              "blockId": 92,
+              "startChar": 0,
+              "endChar": 12,
+              "text": "Push branch."
+            },
+            {
+              "blockId": 93,
+              "startChar": 0,
+              "endChar": 18,
+              "text": "Read failing jobs."
+            },
+            {
+              "blockId": 94,
+              "startChar": 0,
+              "endChar": 26,
+              "text": "Fix and rerun until green."
+            },
+            {
+              "blockId": 95,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "Attach CI evidence."
+            },
+            {
+              "blockId": 96,
+              "startChar": 0,
+              "endChar": 71,
+              "text": "Evidence includes CI links, fail-to-pass summaries, and test artifacts."
+            },
+            {
+              "blockId": 97,
+              "startChar": 0,
+              "endChar": 7,
+              "text": "6.5 Git"
+            }
+          ],
+          "audioFile": "chunk-019.wav",
+          "durationSeconds": 22.88,
+          "startTimeSeconds": 329.08,
+          "endTimeSeconds": 351.96,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 20,
+          "charCount": 219,
+          "text": "Useful for change clarity and rollback safety:\n\nOne logical change per commit.\n\nUse git diff as source of truth for what changed.\n\nReference evidence in commit or PR text.\n\nThis keeps reviews clear and debugging faster.",
+          "spokenText": "Useful for change clarity and rollback safety:\n\nOne logical change per commit.\n\nUse git diff as source of truth for what changed.\n\nReference evidence in commit or PR text.\n\nThis keeps reviews clear and debugging faster.",
+          "startChar": 4471,
+          "endChar": 4690,
+          "blockStart": 98,
+          "blockEnd": 102,
+          "segments": [
+            {
+              "blockId": 98,
+              "startChar": 0,
+              "endChar": 46,
+              "text": "Useful for change clarity and rollback safety:"
+            },
+            {
+              "blockId": 99,
+              "startChar": 0,
+              "endChar": 30,
+              "text": "One logical change per commit."
+            },
+            {
+              "blockId": 100,
+              "startChar": 0,
+              "endChar": 49,
+              "text": "Use git diff as source of truth for what changed."
+            },
+            {
+              "blockId": 101,
+              "startChar": 0,
+              "endChar": 40,
+              "text": "Reference evidence in commit or PR text."
+            },
+            {
+              "blockId": 102,
+              "startChar": 0,
+              "endChar": 46,
+              "text": "This keeps reviews clear and debugging faster."
+            }
+          ],
+          "audioFile": "chunk-020.wav",
+          "durationSeconds": 14.16,
+          "startTimeSeconds": 352.06,
+          "endTimeSeconds": 366.22,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 21,
+          "charCount": 201,
+          "text": "7. Why Monorepos Help Agentic Work\n\nAgentic workflows improve when the codebase is visible in one workspace:\n\nFrontend, backend, and infrastructure in one tree.\n\nShared types reduce interface mismatch.",
+          "spokenText": "7. Why Monorepos Help Agentic Work.\n\nAgentic workflows improve when the codebase is visible in one workspace:\n\nFrontend, backend, and infrastructure in one tree.\n\nShared types reduce interface mismatch.",
+          "startChar": 4692,
+          "endChar": 4893,
+          "blockStart": 103,
+          "blockEnd": 106,
+          "segments": [
+            {
+              "blockId": 103,
+              "startChar": 0,
+              "endChar": 34,
+              "text": "7. Why Monorepos Help Agentic Work"
+            },
+            {
+              "blockId": 104,
+              "startChar": 0,
+              "endChar": 72,
+              "text": "Agentic workflows improve when the codebase is visible in one workspace:"
+            },
+            {
+              "blockId": 105,
+              "startChar": 0,
+              "endChar": 50,
+              "text": "Frontend, backend, and infrastructure in one tree."
+            },
+            {
+              "blockId": 106,
+              "startChar": 0,
+              "endChar": 39,
+              "text": "Shared types reduce interface mismatch."
+            }
+          ],
+          "audioFile": "chunk-021.wav",
+          "durationSeconds": 16.64,
+          "startTimeSeconds": 366.32,
+          "endTimeSeconds": 382.96,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 22,
+          "charCount": 204,
+          "text": "Consistent scripts reduce command ambiguity.\n\nA simple structure:\n\nWhen root and package scripts use the same names (dev, test, lint, typecheck), agents can navigate the project with less trial and error.",
+          "spokenText": "Consistent scripts reduce command ambiguity.\n\nA simple structure:\n\nWhen root and package scripts use the same names (dev, test, lint, typecheck), agents can navigate the project with less trial and error.",
+          "startChar": 4895,
+          "endChar": 5099,
+          "blockStart": 107,
+          "blockEnd": 109,
+          "segments": [
+            {
+              "blockId": 107,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "Consistent scripts reduce command ambiguity."
+            },
+            {
+              "blockId": 108,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "A simple structure:"
+            },
+            {
+              "blockId": 109,
+              "startChar": 0,
+              "endChar": 137,
+              "text": "When root and package scripts use the same names (dev, test, lint, typecheck), agents can navigate the project with less trial and error."
+            }
+          ],
+          "audioFile": "chunk-022.wav",
+          "durationSeconds": 15.52,
+          "startTimeSeconds": 383.06,
+          "endTimeSeconds": 398.58,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 23,
+          "charCount": 204,
+          "text": "8. Guardrails That Keep Verification Cheap\n\nUse guardrails that reduce friction:\n\nFast smoke tests for quick signal.\n\nStable repro commands.\n\nFewer flaky checks.\n\nData constraints and API contract checks.",
+          "spokenText": "8. Guardrails That Keep Verification Cheap.\n\nUse guardrails that reduce friction:\n\nFast smoke tests for quick signal.\n\nStable repro commands.\n\nFewer flaky checks.\n\nData constraints and API contract checks.",
+          "startChar": 5101,
+          "endChar": 5305,
+          "blockStart": 110,
+          "blockEnd": 115,
+          "segments": [
+            {
+              "blockId": 110,
+              "startChar": 0,
+              "endChar": 42,
+              "text": "8. Guardrails That Keep Verification Cheap"
+            },
+            {
+              "blockId": 111,
+              "startChar": 0,
+              "endChar": 36,
+              "text": "Use guardrails that reduce friction:"
+            },
+            {
+              "blockId": 112,
+              "startChar": 0,
+              "endChar": 34,
+              "text": "Fast smoke tests for quick signal."
+            },
+            {
+              "blockId": 113,
+              "startChar": 0,
+              "endChar": 22,
+              "text": "Stable repro commands."
+            },
+            {
+              "blockId": 114,
+              "startChar": 0,
+              "endChar": 19,
+              "text": "Fewer flaky checks."
+            },
+            {
+              "blockId": 115,
+              "startChar": 0,
+              "endChar": 41,
+              "text": "Data constraints and API contract checks."
+            }
+          ],
+          "audioFile": "chunk-023.wav",
+          "durationSeconds": 16.56,
+          "startTimeSeconds": 398.68,
+          "endTimeSeconds": 415.24,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 24,
+          "charCount": 201,
+          "text": "\"No console errors\" checks for important UI flows.\n\nStructured logs with consistent keys.\n\nA simple rule helps a lot: every final answer must cite evidence, not just conclusions.\n\n9. Keep Safety Simple",
+          "spokenText": "\"No console errors\" checks for important UI flows.\n\nStructured logs with consistent keys.\n\nA simple rule helps a lot: every final answer must cite evidence, not just conclusions.\n\n9. Keep Safety Simple.",
+          "startChar": 5307,
+          "endChar": 5508,
+          "blockStart": 116,
+          "blockEnd": 119,
+          "segments": [
+            {
+              "blockId": 116,
+              "startChar": 0,
+              "endChar": 50,
+              "text": "\"No console errors\" checks for important UI flows."
+            },
+            {
+              "blockId": 117,
+              "startChar": 0,
+              "endChar": 37,
+              "text": "Structured logs with consistent keys."
+            },
+            {
+              "blockId": 118,
+              "startChar": 0,
+              "endChar": 87,
+              "text": "A simple rule helps a lot: every final answer must cite evidence, not just conclusions."
+            },
+            {
+              "blockId": 119,
+              "startChar": 0,
+              "endChar": 21,
+              "text": "9. Keep Safety Simple"
+            }
+          ],
+          "audioFile": "chunk-024.wav",
+          "durationSeconds": 14.8,
+          "startTimeSeconds": 415.34,
+          "endTimeSeconds": 430.14,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 25,
+          "charCount": 244,
+          "text": "Use least-privilege credentials, keep tool-call logs, and separate read from write access where possible. Keep this lightweight but non-optional.\n\n10. Closing: Start With One Loop\n\nThe goal is not full autonomy. The goal is reliable competence.",
+          "spokenText": "Use least-privilege credentials, keep tool-call logs, and separate read from write access where possible. Keep this lightweight but non-optional.\n\n10. Closing: Start With One Loop.\n\nThe goal is not full autonomy. The goal is reliable competence.",
+          "startChar": 5510,
+          "endChar": 5754,
+          "blockStart": 120,
+          "blockEnd": 122,
+          "segments": [
+            {
+              "blockId": 120,
+              "startChar": 0,
+              "endChar": 145,
+              "text": "Use least-privilege credentials, keep tool-call logs, and separate read from write access where possible. Keep this lightweight but non-optional."
+            },
+            {
+              "blockId": 121,
+              "startChar": 0,
+              "endChar": 32,
+              "text": "10. Closing: Start With One Loop"
+            },
+            {
+              "blockId": 122,
+              "startChar": 0,
+              "endChar": 63,
+              "text": "The goal is not full autonomy. The goal is reliable competence."
+            }
+          ],
+          "audioFile": "chunk-025.wav",
+          "durationSeconds": 17.04,
+          "startTimeSeconds": 430.24,
+          "endTimeSeconds": 447.28,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 26,
+          "charCount": 253,
+          "text": "If you are adopting this now, start with three steps:\n\nStandardize scripts.\n\nRequire evidence bundles.\n\nAdd one strong verification surface (browser checks or database checks).\n\nThen expand into CI and infrastructure validation as your workflow matures.",
+          "spokenText": "If you are adopting this now, start with three steps:\n\nStandardize scripts.\n\nRequire evidence bundles.\n\nAdd one strong verification surface (browser checks or database checks).\n\nThen expand into CI and infrastructure validation as your workflow matures.",
+          "startChar": 5756,
+          "endChar": 6009,
+          "blockStart": 123,
+          "blockEnd": 127,
+          "segments": [
+            {
+              "blockId": 123,
+              "startChar": 0,
+              "endChar": 53,
+              "text": "If you are adopting this now, start with three steps:"
+            },
+            {
+              "blockId": 124,
+              "startChar": 0,
+              "endChar": 20,
+              "text": "Standardize scripts."
+            },
+            {
+              "blockId": 125,
+              "startChar": 0,
+              "endChar": 25,
+              "text": "Require evidence bundles."
+            },
+            {
+              "blockId": 126,
+              "startChar": 0,
+              "endChar": 72,
+              "text": "Add one strong verification surface (browser checks or database checks)."
+            },
+            {
+              "blockId": 127,
+              "startChar": 0,
+              "endChar": 75,
+              "text": "Then expand into CI and infrastructure validation as your workflow matures."
+            }
+          ],
+          "audioFile": "chunk-026.wav",
+          "durationSeconds": 15.52,
+          "startTimeSeconds": 447.38,
+          "endTimeSeconds": 462.9,
+          "pauseAfterMs": 0
+        }
+      ],
+      "blockCount": 128
+    },
+    "publicAssets": {
+      "audioSrc": "/assets/post-audio/2026-02-15-agentic-development-feedback/post.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    "privateArtifacts": {
+      "runDir": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/post.wav",
+      "mp3Path": "public/assets/post-audio/2026-02-15-agentic-development-feedback/post.mp3"
+    }
+  }
+}

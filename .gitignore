@@ -51,3 +51,5 @@ infra/node_modules/
 # python cache
 __pycache__/
 *.py[cod]
+scripts/blog-audio/.venv/
+scripts/blog-audio/.local/

@@ -24,10 +24,12 @@ Personal portfolio built with Next.js App Router, TypeScript, and Tailwind CSS. 
   - `posts/[id]/SvgImageReactivity.tsx`: interactive layered SVG/image depth effect in post content
   - UI Blocks: `AboutBlock.tsx`, `ExperienceBlock.tsx`, `ProjectsBlock.tsx`, `BlogLinkBlock.tsx`, `SideBar.tsx`, `Socials.tsx`
 - `src/_posts/`: Markdown posts consumed by `src/lib/api.tsx`
+- `src/_posts/*.audio-map.json`: generated sidecars for blog audio assets
 - `src/content/`: User‑editable JSON for About, Experience, Projects
 - `src/lib/api.tsx`: Markdown parsing pipeline and post helpers
 - `src/lib/retroGlobeCanvas.ts`: Globe rendering math + Canvas frame renderer
 - `public/`: Static assets (images, icons)
+- `public/assets/post-audio/`: generated public blog audio assets
 - Config: `next.config.js`, `tailwind.config.ts`, `tsconfig.json`
 
 ## Spinning Globe
@@ -56,10 +58,16 @@ The globe now uses a dedicated canvas renderer with a React control shell. No We
 - Serve: `npm run serve` → serves the static export from `out/`
 - Preview loop: `npm run preview` (clean build + serve)
 - Lint: `npm run lint`
-- Optional: `nix develop` for a preconfigured Node 20 dev shell
+- Optional: `nix develop` for a combined Node + CUDA + uv dev shell
 - SVG utility (one-time): `uv tool install --editable /home/james/projects/svg-layer-tool`
 - Generate layered blog SVGs: `npm run svg:post -- --post src/_posts/<post>.md`
 - Optimize generated SVG assets: `npm run svg:optimize`
+- Bootstrap the copied blog-audio runtime: `npm run audio:bootstrap`
+- Raw voice design CLI: `npm run audio:design -- design --text "..." --instruct "..." --language English`
+- Blog-native audio sidecar generation: `npm run audio:post -- --post src/_posts/<post>.md --language English`
+- Audio post generation uses paragraph-sized chunking by default (`200-500` chars, `100ms` pauses), merges adjacent short blocks, and publishes `public/assets/post-audio/<post>/post.mp3`
+- Blog-audio sidecars include transcript text plus per-chunk text/timing metadata for later synchronized highlighting
+- `ffmpeg` is required for the MP3 transcode in `audio:post`
 
 ## Content Editing
 All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown).
@@ -89,6 +97,7 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
   - Image captions via italic line after image (figure + figcaption)
   - Linkable headings via `rehype-slug` + autolink
   - Layered SVG/image depth cards driven by optional post sidecar maps (`src/_posts/<post>.svg-map.json`)
+  - Blog-audio sidecars written to `src/_posts/<post>.audio-map.json`
   - HTML media embeds in posts (for example `<video>`), plus video or image `coverImage` support in blog listings
 - Blog surfaces:
   - Home page `BLOG` block (`BlogLinkBlock`) shows recent posts in terminal-table/card format

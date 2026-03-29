@@ -1,0 +1,770 @@
+{
+  "version": 3,
+  "postId": "2026-03-04-retroglobe-canvas-migration",
+  "generatedAt": "2026-03-29T03:03:01Z",
+  "status": "ok",
+  "narration": {
+    "postPath": "src/_posts/2026-03-04-retroglobe-canvas-migration.md",
+    "language": "English",
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
+    "usedDefaultInstruct": true,
+    "generationKwargs": {
+      "do_sample": true,
+      "subtalker_dosample": true,
+      "non_streaming_mode": true
+    },
+    "chunkCount": 19,
+    "pauseMs": 100,
+    "durationSeconds": 375.08,
+    "transcript": {
+      "text": "0. TL;DR\n\nThe original globe used layered DOM elements plus synchronized CSS keyframes. The new globe keeps the same retro visual identity, but renders through a canvas frame loop with explicit 3D math in TypeScript.\n\nThis change made the renderer easier to reason about, easier to evolve, and less coupled to complex selector/keyframe choreography.\n\n1. Baseline: Legacy CSS Globe\n\nFrom the original CSS implementation in git history, the globe used 5 nested structural layers around the wireframe plus 21 generated wireframe elements (9 latitude rings + 12 meridian lines).\n\nMotion was driven by 4 concurrent animation tracks with pointer-driven transforms layered on top.\n\nStrengths:\n\nVisual behavior was mostly declarative.\n\nIndividual layers were easy to inspect in DevTools.\n\nStyling changes were quick for simple cases.\n\nLimitations:\n\nRenderer behavior was split across many selectors and keyframes.\n\nCoordination across axes and wobble layers became harder to maintain.\n\nAdding new rendering effects meant adding more DOM/CSS complexity.\n\n2. New Canvas Renderer Architecture\n\nThe new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer.\n\n2.1 System Flow\n\nThis is the general JavaScript canvas pattern: collect input state, advance runtime state by frame time, run transform/projection math, then issue layered draw passes.\n\n2.2 React Shell Responsibilities (src/app/RetroGlobe.tsx)\n\nRetroGlobe.tsx now acts as the orchestration layer:\n\nTracks user control state (lineWidth, lineDensity, axis speeds, wobble, band speed, pause).\n\nStores mutable runtime rotation state in refs for smooth frame updates.\n\nHandles drag/touch input and maps it to user rotation offsets.\n\nSyncs canvas backing resolution to element size and DPR.\n\nCalls renderRetroGlobeFrame(...) once per animation frame.\n\n2.3 Render Core Responsibilities (src/lib/retroGlobeCanvas.ts)\n\nThe renderer is a clear draw pipeline:\n\nApply rotational transforms in 3D.\n\nProject transformed points with perspective.\n\nDraw segmented latitude/longitude wireframe shells.\n\nRender gated rotating band highlights (core + glow passes).\n\nFinish with vignette and palette-specific compositing.\n\nControl-speed mapping is centralized in:\n\nspeedLevelToAngularVelocity\n\nwobbleLevelToAngularVelocity\n\nbandLevelToAngularVelocity\n\nThat keeps UI controls and motion behavior consistent.\n\n2.4 Why This Architecture Feels Better\n\nRendering logic is expressed as code stages instead of distributed animation declarations.\n\nNew effects can be inserted into one renderer pipeline.\n\nInteraction and drawing concerns are cleaner to separate and test.\n\n3. why not webgl/three.js?\n\nthree.js is massively popular, and it keeps getting more accessible.\n\nAI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project gravitylens.space is shader-first and uses WebGL-style rendering techniques directly.\n\n3.1 Why we still kept this component on 2D canvas\n\nBrowser/driver behavior for WebGL can vary more than Canvas2D in edge cases (context loss, power-saving modes, GPU policy differences).\n\nA small renderer with line work, segmented bands, and compositing does not need full GPU pipeline complexity.\n\nRuntime and dependency weight matters when this is one visual module inside a broader site.\n\nCanvas2D keeps the debugging loop simpler here: points, transforms, and draw passes map directly to code.\n\nWe wanted deterministic behavior across the exact visual style of this wireframe globe, not a general 3D scene framework.\n\n4. Math: transformation and projection\n\nThe canvas renderer is built from straightforward 3D math applied to a sphere before mapping to 2D.\n\nGiven latitude , longitude , and shell radius , a local point on the sphere is:\n\nRotation matrices:\n\nThe renderer applies the composed rotation in this order (matching rotatePoint):\n\nPerspective projection with camera distance D, center (cx, cy), and clamped denominator:\n\nDepth-based segment alpha (matching depthAlpha) is:\n\nSpeed controls are converted to angular velocity with fixed-period mappings:\n\nThis is the main loop in formula form: rotate, project, depth-gate alpha, draw layered passes, repeat every frame.\n\n5. Why Canvas Won Here\n\nThe migration was not about replacing CSS broadly. It was about moving one rendering-heavy component into a model where behavior is explicit and programmable.\n\nIn the CSS version, the visual system was good but mechanically fragmented. In the canvas version, the sphere is one render target with one frame function and well-defined phases.\n\nTradeoff:\n\nYou own more custom rendering code and math.\n\nPayoff:\n\nBetter long-term control over motion, layering, and effect evolution.\n\n6. Closing\n\nThis migration kept the retro look while changing the implementation model underneath it. The result is a globe renderer that is easier to extend, easier to debug, and easier to iterate on without accumulating more structural CSS complexity.",
+      "chunkSeparator": "\n\n",
+      "chunks": [
+        {
+          "index": 1,
+          "charCount": 216,
+          "text": "0. TL;DR\n\nThe original globe used layered DOM elements plus synchronized CSS keyframes. The new globe keeps the same retro visual identity, but renders through a canvas frame loop with explicit 3D math in TypeScript.",
+          "spokenText": "0. TL;DR.\n\nThe original globe used layered DOM elements plus synchronized CSS keyframes. The new globe keeps the same retro visual identity, but renders through a canvas frame loop with explicit 3D math in TypeScript.",
+          "startChar": 0,
+          "endChar": 216,
+          "blockStart": 0,
+          "blockEnd": 1,
+          "segments": [
+            {
+              "blockId": 0,
+              "startChar": 0,
+              "endChar": 8,
+              "text": "0. TL;DR"
+            },
+            {
+              "blockId": 1,
+              "startChar": 0,
+              "endChar": 206,
+              "text": "The original globe used layered DOM elements plus synchronized CSS keyframes. The new globe keeps the same retro visual identity, but renders through a canvas frame loop with explicit 3D math in TypeScript."
+            }
+          ],
+          "audioFile": "chunk-001.wav",
+          "durationSeconds": 18.48,
+          "startTimeSeconds": 0.0,
+          "endTimeSeconds": 18.48,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 2,
+          "charCount": 356,
+          "text": "This change made the renderer easier to reason about, easier to evolve, and less coupled to complex selector/keyframe choreography.\n\n1. Baseline: Legacy CSS Globe\n\nFrom the original CSS implementation in git history, the globe used 5 nested structural layers around the wireframe plus 21 generated wireframe elements (9 latitude rings + 12 meridian lines).",
+          "spokenText": "This change made the renderer easier to reason about, easier to evolve, and less coupled to complex selector/keyframe choreography.\n\n1. Baseline: Legacy CSS Globe.\n\nFrom the original CSS implementation in git history, the globe used 5 nested structural layers around the wireframe plus 21 generated wireframe elements (9 latitude rings + 12 meridian lines).",
+          "startChar": 218,
+          "endChar": 574,
+          "blockStart": 2,
+          "blockEnd": 4,
+          "segments": [
+            {
+              "blockId": 2,
+              "startChar": 0,
+              "endChar": 131,
+              "text": "This change made the renderer easier to reason about, easier to evolve, and less coupled to complex selector/keyframe choreography."
+            },
+            {
+              "blockId": 3,
+              "startChar": 0,
+              "endChar": 29,
+              "text": "1. Baseline: Legacy CSS Globe"
+            },
+            {
+              "blockId": 4,
+              "startChar": 0,
+              "endChar": 192,
+              "text": "From the original CSS implementation in git history, the globe used 5 nested structural layers around the wireframe plus 21 generated wireframe elements (9 latitude rings + 12 meridian lines)."
+            }
+          ],
+          "audioFile": "chunk-002.wav",
+          "durationSeconds": 25.68,
+          "startTimeSeconds": 18.58,
+          "endTimeSeconds": 44.26,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 3,
+          "charCount": 203,
+          "text": "Motion was driven by 4 concurrent animation tracks with pointer-driven transforms layered on top.\n\nStrengths:\n\nVisual behavior was mostly declarative.\n\nIndividual layers were easy to inspect in DevTools.",
+          "spokenText": "Motion was driven by 4 concurrent animation tracks with pointer-driven transforms layered on top.\n\nStrengths:\n\nVisual behavior was mostly declarative.\n\nIndividual layers were easy to inspect in DevTools.",
+          "startChar": 576,
+          "endChar": 779,
+          "blockStart": 5,
+          "blockEnd": 8,
+          "segments": [
+            {
+              "blockId": 5,
+              "startChar": 0,
+              "endChar": 97,
+              "text": "Motion was driven by 4 concurrent animation tracks with pointer-driven transforms layered on top."
+            },
+            {
+              "blockId": 6,
+              "startChar": 0,
+              "endChar": 10,
+              "text": "Strengths:"
+            },
+            {
+              "blockId": 7,
+              "startChar": 0,
+              "endChar": 39,
+              "text": "Visual behavior was mostly declarative."
+            },
+            {
+              "blockId": 8,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "Individual layers were easy to inspect in DevTools."
+            }
+          ],
+          "audioFile": "chunk-003.wav",
+          "durationSeconds": 14.56,
+          "startTimeSeconds": 44.36,
+          "endTimeSeconds": 58.92,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 4,
+          "charCount": 263,
+          "text": "Styling changes were quick for simple cases.\n\nLimitations:\n\nRenderer behavior was split across many selectors and keyframes.\n\nCoordination across axes and wobble layers became harder to maintain.\n\nAdding new rendering effects meant adding more DOM/CSS complexity.",
+          "spokenText": "Styling changes were quick for simple cases.\n\nLimitations:\n\nRenderer behavior was split across many selectors and keyframes.\n\nCoordination across axes and wobble layers became harder to maintain.\n\nAdding new rendering effects meant adding more DOM/CSS complexity.",
+          "startChar": 781,
+          "endChar": 1044,
+          "blockStart": 9,
+          "blockEnd": 13,
+          "segments": [
+            {
+              "blockId": 9,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "Styling changes were quick for simple cases."
+            },
+            {
+              "blockId": 10,
+              "startChar": 0,
+              "endChar": 12,
+              "text": "Limitations:"
+            },
+            {
+              "blockId": 11,
+              "startChar": 0,
+              "endChar": 64,
+              "text": "Renderer behavior was split across many selectors and keyframes."
+            },
+            {
+              "blockId": 12,
+              "startChar": 0,
+              "endChar": 69,
+              "text": "Coordination across axes and wobble layers became harder to maintain."
+            },
+            {
+              "blockId": 13,
+              "startChar": 0,
+              "endChar": 66,
+              "text": "Adding new rendering effects meant adding more DOM/CSS complexity."
+            }
+          ],
+          "audioFile": "chunk-004.wav",
+          "durationSeconds": 20.4,
+          "startTimeSeconds": 59.02,
+          "endTimeSeconds": 79.42,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 5,
+          "charCount": 344,
+          "text": "2. New Canvas Renderer Architecture\n\nThe new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer.\n\n2.1 System Flow\n\nThis is the general JavaScript canvas pattern: collect input state, advance runtime state by frame time, run transform/projection math, then issue layered draw passes.",
+          "spokenText": "2. New Canvas Renderer Architecture.\n\nThe new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer.\n\n2.1 System Flow.\n\nThis is the general JavaScript canvas pattern: collect input state, advance runtime state by frame time, run transform/projection math, then issue layered draw passes.",
+          "startChar": 1046,
+          "endChar": 1390,
+          "blockStart": 14,
+          "blockEnd": 17,
+          "segments": [
+            {
+              "blockId": 14,
+              "startChar": 0,
+              "endChar": 35,
+              "text": "2. New Canvas Renderer Architecture"
+            },
+            {
+              "blockId": 15,
+              "startChar": 0,
+              "endChar": 121,
+              "text": "The new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer."
+            },
+            {
+              "blockId": 16,
+              "startChar": 0,
+              "endChar": 15,
+              "text": "2.1 System Flow"
+            },
+            {
+              "blockId": 17,
+              "startChar": 0,
+              "endChar": 167,
+              "text": "This is the general JavaScript canvas pattern: collect input state, advance runtime state by frame time, run transform/projection math, then issue layered draw passes."
+            }
+          ],
+          "audioFile": "chunk-005.wav",
+          "durationSeconds": 22.72,
+          "startTimeSeconds": 79.52,
+          "endTimeSeconds": 102.24,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 6,
+          "charCount": 203,
+          "text": "2.2 React Shell Responsibilities (src/app/RetroGlobe.tsx)\n\nRetroGlobe.tsx now acts as the orchestration layer:\n\nTracks user control state (lineWidth, lineDensity, axis speeds, wobble, band speed, pause).",
+          "spokenText": "2.2 React Shell Responsibilities (src/app/RetroGlobe.tsx).\n\nRetroGlobe.tsx now acts as the orchestration layer:\n\nTracks user control state (lineWidth, lineDensity, axis speeds, wobble, band speed, pause).",
+          "startChar": 1392,
+          "endChar": 1595,
+          "blockStart": 18,
+          "blockEnd": 20,
+          "segments": [
+            {
+              "blockId": 18,
+              "startChar": 0,
+              "endChar": 57,
+              "text": "2.2 React Shell Responsibilities (src/app/RetroGlobe.tsx)"
+            },
+            {
+              "blockId": 19,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "RetroGlobe.tsx now acts as the orchestration layer:"
+            },
+            {
+              "blockId": 20,
+              "startChar": 0,
+              "endChar": 91,
+              "text": "Tracks user control state (lineWidth, lineDensity, axis speeds, wobble, band speed, pause)."
+            }
+          ],
+          "audioFile": "chunk-006.wav",
+          "durationSeconds": 20.16,
+          "startTimeSeconds": 102.34,
+          "endTimeSeconds": 122.5,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 7,
+          "charCount": 253,
+          "text": "Stores mutable runtime rotation state in refs for smooth frame updates.\n\nHandles drag/touch input and maps it to user rotation offsets.\n\nSyncs canvas backing resolution to element size and DPR.\n\nCalls renderRetroGlobeFrame(...) once per animation frame.",
+          "spokenText": "Stores mutable runtime rotation state in refs for smooth frame updates.\n\nHandles drag/touch input and maps it to user rotation offsets.\n\nSyncs canvas backing resolution to element size and DPR.\n\nCalls renderRetroGlobeFrame(...) once per animation frame.",
+          "startChar": 1597,
+          "endChar": 1850,
+          "blockStart": 21,
+          "blockEnd": 24,
+          "segments": [
+            {
+              "blockId": 21,
+              "startChar": 0,
+              "endChar": 71,
+              "text": "Stores mutable runtime rotation state in refs for smooth frame updates."
+            },
+            {
+              "blockId": 22,
+              "startChar": 0,
+              "endChar": 62,
+              "text": "Handles drag/touch input and maps it to user rotation offsets."
+            },
+            {
+              "blockId": 23,
+              "startChar": 0,
+              "endChar": 56,
+              "text": "Syncs canvas backing resolution to element size and DPR."
+            },
+            {
+              "blockId": 24,
+              "startChar": 0,
+              "endChar": 58,
+              "text": "Calls renderRetroGlobeFrame(...) once per animation frame."
+            }
+          ],
+          "audioFile": "chunk-007.wav",
+          "durationSeconds": 18.8,
+          "startTimeSeconds": 122.6,
+          "endTimeSeconds": 141.4,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 8,
+          "charCount": 237,
+          "text": "2.3 Render Core Responsibilities (src/lib/retroGlobeCanvas.ts)\n\nThe renderer is a clear draw pipeline:\n\nApply rotational transforms in 3D.\n\nProject transformed points with perspective.\n\nDraw segmented latitude/longitude wireframe shells.",
+          "spokenText": "2.3 Render Core Responsibilities (src/lib/retroGlobeCanvas.ts).\n\nThe renderer is a clear draw pipeline:\n\nApply rotational transforms in 3D.\n\nProject transformed points with perspective.\n\nDraw segmented latitude/longitude wireframe shells.",
+          "startChar": 1852,
+          "endChar": 2089,
+          "blockStart": 25,
+          "blockEnd": 29,
+          "segments": [
+            {
+              "blockId": 25,
+              "startChar": 0,
+              "endChar": 62,
+              "text": "2.3 Render Core Responsibilities (src/lib/retroGlobeCanvas.ts)"
+            },
+            {
+              "blockId": 26,
+              "startChar": 0,
+              "endChar": 38,
+              "text": "The renderer is a clear draw pipeline:"
+            },
+            {
+              "blockId": 27,
+              "startChar": 0,
+              "endChar": 34,
+              "text": "Apply rotational transforms in 3D."
+            },
+            {
+              "blockId": 28,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "Project transformed points with perspective."
+            },
+            {
+              "blockId": 29,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "Draw segmented latitude/longitude wireframe shells."
+            }
+          ],
+          "audioFile": "chunk-008.wav",
+          "durationSeconds": 19.28,
+          "startTimeSeconds": 141.5,
+          "endTimeSeconds": 160.78,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 9,
+          "charCount": 216,
+          "text": "Render gated rotating band highlights (core + glow passes).\n\nFinish with vignette and palette-specific compositing.\n\nControl-speed mapping is centralized in:\n\nspeedLevelToAngularVelocity\n\nwobbleLevelToAngularVelocity",
+          "spokenText": "Render gated rotating band highlights (core + glow passes).\n\nFinish with vignette and palette-specific compositing.\n\nControl-speed mapping is centralized in:\n\nspeedLevelToAngularVelocity.\n\nwobbleLevelToAngularVelocity.",
+          "startChar": 2091,
+          "endChar": 2307,
+          "blockStart": 30,
+          "blockEnd": 34,
+          "segments": [
+            {
+              "blockId": 30,
+              "startChar": 0,
+              "endChar": 59,
+              "text": "Render gated rotating band highlights (core + glow passes)."
+            },
+            {
+              "blockId": 31,
+              "startChar": 0,
+              "endChar": 54,
+              "text": "Finish with vignette and palette-specific compositing."
+            },
+            {
+              "blockId": 32,
+              "startChar": 0,
+              "endChar": 40,
+              "text": "Control-speed mapping is centralized in:"
+            },
+            {
+              "blockId": 33,
+              "startChar": 0,
+              "endChar": 27,
+              "text": "speedLevelToAngularVelocity"
+            },
+            {
+              "blockId": 34,
+              "startChar": 0,
+              "endChar": 28,
+              "text": "wobbleLevelToAngularVelocity"
+            }
+          ],
+          "audioFile": "chunk-009.wav",
+          "durationSeconds": 16.4,
+          "startTimeSeconds": 160.88,
+          "endTimeSeconds": 177.28,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 10,
+          "charCount": 214,
+          "text": "bandLevelToAngularVelocity\n\nThat keeps UI controls and motion behavior consistent.\n\n2.4 Why This Architecture Feels Better\n\nRendering logic is expressed as code stages instead of distributed animation declarations.",
+          "spokenText": "bandLevelToAngularVelocity.\n\nThat keeps UI controls and motion behavior consistent.\n\n2.4 Why This Architecture Feels Better.\n\nRendering logic is expressed as code stages instead of distributed animation declarations.",
+          "startChar": 2309,
+          "endChar": 2523,
+          "blockStart": 35,
+          "blockEnd": 38,
+          "segments": [
+            {
+              "blockId": 35,
+              "startChar": 0,
+              "endChar": 26,
+              "text": "bandLevelToAngularVelocity"
+            },
+            {
+              "blockId": 36,
+              "startChar": 0,
+              "endChar": 54,
+              "text": "That keeps UI controls and motion behavior consistent."
+            },
+            {
+              "blockId": 37,
+              "startChar": 0,
+              "endChar": 38,
+              "text": "2.4 Why This Architecture Feels Better"
+            },
+            {
+              "blockId": 38,
+              "startChar": 0,
+              "endChar": 90,
+              "text": "Rendering logic is expressed as code stages instead of distributed animation declarations."
+            }
+          ],
+          "audioFile": "chunk-010.wav",
+          "durationSeconds": 15.2,
+          "startTimeSeconds": 177.38,
+          "endTimeSeconds": 192.58,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 11,
+          "charCount": 221,
+          "text": "New effects can be inserted into one renderer pipeline.\n\nInteraction and drawing concerns are cleaner to separate and test.\n\n3. why not webgl/three.js?\n\nthree.js is massively popular, and it keeps getting more accessible.",
+          "spokenText": "New effects can be inserted into one renderer pipeline.\n\nInteraction and drawing concerns are cleaner to separate and test.\n\n3. why not webgl/three.js?\n\nthree.js is massively popular, and it keeps getting more accessible.",
+          "startChar": 2525,
+          "endChar": 2746,
+          "blockStart": 39,
+          "blockEnd": 42,
+          "segments": [
+            {
+              "blockId": 39,
+              "startChar": 0,
+              "endChar": 55,
+              "text": "New effects can be inserted into one renderer pipeline."
+            },
+            {
+              "blockId": 40,
+              "startChar": 0,
+              "endChar": 66,
+              "text": "Interaction and drawing concerns are cleaner to separate and test."
+            },
+            {
+              "blockId": 41,
+              "startChar": 0,
+              "endChar": 26,
+              "text": "3. why not webgl/three.js?"
+            },
+            {
+              "blockId": 42,
+              "startChar": 0,
+              "endChar": 68,
+              "text": "three.js is massively popular, and it keeps getting more accessible."
+            }
+          ],
+          "audioFile": "chunk-011.wav",
+          "durationSeconds": 15.52,
+          "startTimeSeconds": 192.68,
+          "endTimeSeconds": 208.2,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 12,
+          "charCount": 246,
+          "text": "AI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project gravitylens.space is shader-first and uses WebGL-style rendering techniques directly.\n\n3.1 Why we still kept this component on 2D canvas",
+          "spokenText": "AI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project gravitylens.space is shader-first and uses WebGL-style rendering techniques directly.\n\n3.1 Why we still kept this component on 2D canvas.",
+          "startChar": 2748,
+          "endChar": 2994,
+          "blockStart": 43,
+          "blockEnd": 44,
+          "segments": [
+            {
+              "blockId": 43,
+              "startChar": 0,
+              "endChar": 195,
+              "text": "AI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project gravitylens.space is shader-first and uses WebGL-style rendering techniques directly."
+            },
+            {
+              "blockId": 44,
+              "startChar": 0,
+              "endChar": 49,
+              "text": "3.1 Why we still kept this component on 2D canvas"
+            }
+          ],
+          "audioFile": "chunk-012.wav",
+          "durationSeconds": 18.0,
+          "startTimeSeconds": 208.3,
+          "endTimeSeconds": 226.3,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 13,
+          "charCount": 246,
+          "text": "Browser/driver behavior for WebGL can vary more than Canvas2D in edge cases (context loss, power-saving modes, GPU policy differences).\n\nA small renderer with line work, segmented bands, and compositing does not need full GPU pipeline complexity.",
+          "spokenText": "Browser/driver behavior for WebGL can vary more than Canvas2D in edge cases (context loss, power-saving modes, GPU policy differences).\n\nA small renderer with line work, segmented bands, and compositing does not need full GPU pipeline complexity.",
+          "startChar": 2996,
+          "endChar": 3242,
+          "blockStart": 45,
+          "blockEnd": 46,
+          "segments": [
+            {
+              "blockId": 45,
+              "startChar": 0,
+              "endChar": 135,
+              "text": "Browser/driver behavior for WebGL can vary more than Canvas2D in edge cases (context loss, power-saving modes, GPU policy differences)."
+            },
+            {
+              "blockId": 46,
+              "startChar": 0,
+              "endChar": 109,
+              "text": "A small renderer with line work, segmented bands, and compositing does not need full GPU pipeline complexity."
+            }
+          ],
+          "audioFile": "chunk-013.wav",
+          "durationSeconds": 19.92,
+          "startTimeSeconds": 226.4,
+          "endTimeSeconds": 246.32,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 14,
+          "charCount": 321,
+          "text": "Runtime and dependency weight matters when this is one visual module inside a broader site.\n\nCanvas2D keeps the debugging loop simpler here: points, transforms, and draw passes map directly to code.\n\nWe wanted deterministic behavior across the exact visual style of this wireframe globe, not a general 3D scene framework.",
+          "spokenText": "Runtime and dependency weight matters when this is one visual module inside a broader site.\n\nCanvas2D keeps the debugging loop simpler here: points, transforms, and draw passes map directly to code.\n\nWe wanted deterministic behavior across the exact visual style of this wireframe globe, not a general 3D scene framework.",
+          "startChar": 3244,
+          "endChar": 3565,
+          "blockStart": 47,
+          "blockEnd": 49,
+          "segments": [
+            {
+              "blockId": 47,
+              "startChar": 0,
+              "endChar": 91,
+              "text": "Runtime and dependency weight matters when this is one visual module inside a broader site."
+            },
+            {
+              "blockId": 48,
+              "startChar": 0,
+              "endChar": 105,
+              "text": "Canvas2D keeps the debugging loop simpler here: points, transforms, and draw passes map directly to code."
+            },
+            {
+              "blockId": 49,
+              "startChar": 0,
+              "endChar": 121,
+              "text": "We wanted deterministic behavior across the exact visual style of this wireframe globe, not a general 3D scene framework."
+            }
+          ],
+          "audioFile": "chunk-014.wav",
+          "durationSeconds": 25.52,
+          "startTimeSeconds": 246.42,
+          "endTimeSeconds": 271.94,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 15,
+          "charCount": 220,
+          "text": "4. Math: transformation and projection\n\nThe canvas renderer is built from straightforward 3D math applied to a sphere before mapping to 2D.\n\nGiven latitude , longitude , and shell radius , a local point on the sphere is:",
+          "spokenText": "4. Math: transformation and projection.\n\nThe canvas renderer is built from straightforward 3D math applied to a sphere before mapping to 2D.\n\nGiven latitude , longitude , and shell radius , a local point on the sphere is:",
+          "startChar": 3567,
+          "endChar": 3787,
+          "blockStart": 50,
+          "blockEnd": 52,
+          "segments": [
+            {
+              "blockId": 50,
+              "startChar": 0,
+              "endChar": 38,
+              "text": "4. Math: transformation and projection"
+            },
+            {
+              "blockId": 51,
+              "startChar": 0,
+              "endChar": 99,
+              "text": "The canvas renderer is built from straightforward 3D math applied to a sphere before mapping to 2D."
+            },
+            {
+              "blockId": 52,
+              "startChar": 0,
+              "endChar": 79,
+              "text": "Given latitude , longitude , and shell radius , a local point on the sphere is:"
+            }
+          ],
+          "audioFile": "chunk-015.wav",
+          "durationSeconds": 16.48,
+          "startTimeSeconds": 272.04,
+          "endTimeSeconds": 288.52,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 16,
+          "charCount": 243,
+          "text": "Rotation matrices:\n\nThe renderer applies the composed rotation in this order (matching rotatePoint):\n\nPerspective projection with camera distance D, center (cx, cy), and clamped denominator:\n\nDepth-based segment alpha (matching depthAlpha) is:",
+          "spokenText": "Rotation matrices:\n\nThe renderer applies the composed rotation in this order (matching rotatePoint):\n\nPerspective projection with camera distance D, center (cx, cy), and clamped denominator:\n\nDepth-based segment alpha (matching depthAlpha) is:",
+          "startChar": 3789,
+          "endChar": 4032,
+          "blockStart": 53,
+          "blockEnd": 56,
+          "segments": [
+            {
+              "blockId": 53,
+              "startChar": 0,
+              "endChar": 18,
+              "text": "Rotation matrices:"
+            },
+            {
+              "blockId": 54,
+              "startChar": 0,
+              "endChar": 80,
+              "text": "The renderer applies the composed rotation in this order (matching rotatePoint):"
+            },
+            {
+              "blockId": 55,
+              "startChar": 0,
+              "endChar": 88,
+              "text": "Perspective projection with camera distance D, center (cx, cy), and clamped denominator:"
+            },
+            {
+              "blockId": 56,
+              "startChar": 0,
+              "endChar": 51,
+              "text": "Depth-based segment alpha (matching depthAlpha) is:"
+            }
+          ],
+          "audioFile": "chunk-016.wav",
+          "durationSeconds": 20.8,
+          "startTimeSeconds": 288.62,
+          "endTimeSeconds": 309.42,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 17,
+          "charCount": 216,
+          "text": "Speed controls are converted to angular velocity with fixed-period mappings:\n\nThis is the main loop in formula form: rotate, project, depth-gate alpha, draw layered passes, repeat every frame.\n\n5. Why Canvas Won Here",
+          "spokenText": "Speed controls are converted to angular velocity with fixed-period mappings:\n\nThis is the main loop in formula form: rotate, project, depth-gate alpha, draw layered passes, repeat every frame.\n\n5. Why Canvas Won Here.",
+          "startChar": 4034,
+          "endChar": 4250,
+          "blockStart": 57,
+          "blockEnd": 59,
+          "segments": [
+            {
+              "blockId": 57,
+              "startChar": 0,
+              "endChar": 76,
+              "text": "Speed controls are converted to angular velocity with fixed-period mappings:"
+            },
+            {
+              "blockId": 58,
+              "startChar": 0,
+              "endChar": 114,
+              "text": "This is the main loop in formula form: rotate, project, depth-gate alpha, draw layered passes, repeat every frame."
+            },
+            {
+              "blockId": 59,
+              "startChar": 0,
+              "endChar": 22,
+              "text": "5. Why Canvas Won Here"
+            }
+          ],
+          "audioFile": "chunk-017.wav",
+          "durationSeconds": 15.92,
+          "startTimeSeconds": 309.52,
+          "endTimeSeconds": 325.44,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 18,
+          "charCount": 339,
+          "text": "The migration was not about replacing CSS broadly. It was about moving one rendering-heavy component into a model where behavior is explicit and programmable.\n\nIn the CSS version, the visual system was good but mechanically fragmented. In the canvas version, the sphere is one render target with one frame function and well-defined phases.",
+          "spokenText": "The migration was not about replacing CSS broadly. It was about moving one rendering-heavy component into a model where behavior is explicit and programmable.\n\nIn the CSS version, the visual system was good but mechanically fragmented. In the canvas version, the sphere is one render target with one frame function and well-defined phases.",
+          "startChar": 4252,
+          "endChar": 4591,
+          "blockStart": 60,
+          "blockEnd": 61,
+          "segments": [
+            {
+              "blockId": 60,
+              "startChar": 0,
+              "endChar": 158,
+              "text": "The migration was not about replacing CSS broadly. It was about moving one rendering-heavy component into a model where behavior is explicit and programmable."
+            },
+            {
+              "blockId": 61,
+              "startChar": 0,
+              "endChar": 179,
+              "text": "In the CSS version, the visual system was good but mechanically fragmented. In the canvas version, the sphere is one render target with one frame function and well-defined phases."
+            }
+          ],
+          "audioFile": "chunk-018.wav",
+          "durationSeconds": 22.72,
+          "startTimeSeconds": 325.54,
+          "endTimeSeconds": 348.26,
+          "pauseAfterMs": 100
+        },
+        {
+          "index": 19,
+          "charCount": 390,
+          "text": "Tradeoff:\n\nYou own more custom rendering code and math.\n\nPayoff:\n\nBetter long-term control over motion, layering, and effect evolution.\n\n6. Closing\n\nThis migration kept the retro look while changing the implementation model underneath it. The result is a globe renderer that is easier to extend, easier to debug, and easier to iterate on without accumulating more structural CSS complexity.",
+          "spokenText": "Tradeoff:\n\nYou own more custom rendering code and math.\n\nPayoff:\n\nBetter long-term control over motion, layering, and effect evolution.\n\n6. Closing.\n\nThis migration kept the retro look while changing the implementation model underneath it. The result is a globe renderer that is easier to extend, easier to debug, and easier to iterate on without accumulating more structural CSS complexity.",
+          "startChar": 4593,
+          "endChar": 4983,
+          "blockStart": 62,
+          "blockEnd": 67,
+          "segments": [
+            {
+              "blockId": 62,
+              "startChar": 0,
+              "endChar": 9,
+              "text": "Tradeoff:"
+            },
+            {
+              "blockId": 63,
+              "startChar": 0,
+              "endChar": 44,
+              "text": "You own more custom rendering code and math."
+            },
+            {
+              "blockId": 64,
+              "startChar": 0,
+              "endChar": 7,
+              "text": "Payoff:"
+            },
+            {
+              "blockId": 65,
+              "startChar": 0,
+              "endChar": 69,
+              "text": "Better long-term control over motion, layering, and effect evolution."
+            },
+            {
+              "blockId": 66,
+              "startChar": 0,
+              "endChar": 10,
+              "text": "6. Closing"
+            },
+            {
+              "blockId": 67,
+              "startChar": 0,
+              "endChar": 241,
+              "text": "This migration kept the retro look while changing the implementation model underneath it. The result is a globe renderer that is easier to extend, easier to debug, and easier to iterate on without accumulating more structural CSS complexity."
+            }
+          ],
+          "audioFile": "chunk-019.wav",
+          "durationSeconds": 26.72,
+          "startTimeSeconds": 348.36,
+          "endTimeSeconds": 375.08,
+          "pauseAfterMs": 0
+        }
+      ],
+      "blockCount": 68
+    },
+    "publicAssets": {
+      "audioSrc": "/assets/post-audio/2026-03-04-retroglobe-canvas-migration/post.mp3",
+      "mimeType": "audio/mpeg"
+    },
+    "privateArtifacts": {
+      "runDir": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/post.wav",
+      "mp3Path": "public/assets/post-audio/2026-03-04-retroglobe-canvas-migration/post.mp3"
+    }
+  }
+}
