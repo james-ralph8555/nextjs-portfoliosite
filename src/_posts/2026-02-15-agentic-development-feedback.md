@@ -93,8 +93,6 @@ You can store this in a markdown file under `/evidence`, as a PR comment templat
 ## 5. Make the Application Observable to the Agent
 
 ![Observability Control Board - Section 5](/assets/agentic-development-feedback-post/agentic-dev-05.webp)
-*Generated from the Section 5 prompt.*
-
 Agents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.
 
 ### 5.1 Execution Observability
