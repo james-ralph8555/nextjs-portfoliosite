@@ -175,6 +175,36 @@ class VoiceDesignVllmModelTests(unittest.TestCase):
         self.assertEqual(sr, 22050)
         self.assertEqual(wavs[0].tolist(), [0.4, 0.5])
 
+    def test_generate_voice_clone_builds_base_request(self):
+        omni = FakeOmni([FakeResponse({"audio": [FakeTensor([0.6, 0.7])], "sr": [FakeTensor([24000])]})])
+        model = vllm_voice_design.VoiceDesignVllmModel(
+            model_name="Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+            omni=omni,
+            tokenizer=FakeTokenizer(),
+            talker_config=types.SimpleNamespace(codec_language_id={"english": 1}, spk_is_dialect={}),
+        )
+
+        wavs, sr = model.generate_voice_clone(
+            text="Hello clone",
+            language="English",
+            ref_audio="/tmp/reference.wav",
+            x_vector_only_mode=True,
+            max_new_tokens=1024,
+            non_streaming_mode=True,
+        )
+
+        self.assertEqual(sr, 24000)
+        self.assertEqual(wavs[0].tolist(), [0.6, 0.7])
+        self.assertEqual(FakeTalker.last_call["task_type"], "Base")
+        payload = FakeTalker.last_call["additional_information"]
+        self.assertEqual(payload["task_type"], ["Base"])
+        self.assertEqual(payload["text"], ["Hello clone"])
+        self.assertEqual(payload["language"], ["English"])
+        self.assertEqual(payload["ref_audio"], ["/tmp/reference.wav"])
+        self.assertEqual(payload["x_vector_only_mode"], [True])
+        self.assertEqual(payload["max_new_tokens"], [1024])
+        self.assertEqual(payload["non_streaming_mode"], [True])
+
     def test_close_forwards_to_omni(self):
         omni = FakeOmni([])
         model = vllm_voice_design.VoiceDesignVllmModel(

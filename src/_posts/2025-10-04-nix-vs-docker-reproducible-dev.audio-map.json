@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2025-10-04-nix-vs-docker-reproducible-dev",
-  "generatedAt": "2026-03-29T03:20:29Z",
+  "generatedAt": "2026-03-29T04:32:55Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2025-10-04-nix-vs-docker-reproducible-dev.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 14,
     "pauseMs": 100,
-    "durationSeconds": 279.06,
+    "durationSeconds": 248.66,
     "transcript": {
       "text": "Overview\n\nDocker popularized reproducible development with container images, but it often brings heavy images, non\u2011deterministic builds, and awkward \u201ckitchen\u2011sink\u201d tool stacks. Nix treats packages as immutable values under unique hashed paths, so multiple versions can coexist and all dependencies are explicitly declared. For day\u2011to\u2011day development, Nix dev shells replace launching an isolated kernel, avoiding virtualization overhead and making composition simpler.\n\nNix runs on macOS and Linux and integrates with the huge nixpkgs collection. You can share fully declarative dev environments via flakes. For day\u2011to\u2011day dev, prefer tracking nixpkgs-unstable and update on your schedule; pin nixpkgs only for CI or strict reproducibility. Auto\u2011activate shells with direnv. Docker is still excellent for deployment and isolation; for local development on non\u2011NixOS, Nix provides a cleaner, native alternative.\n\nWhy developers outgrow Docker for dev\n\nImage overhead: large base images, layered rebuilds, slow iteration.\n\nNon\u2011determinism: apt-get without pinning, mutable OS state, drifting versions.\n\nAwkward composition: multi\u2011tool images become hard to maintain and reason about.\n\nFor dev, you often just want a predictable toolchain, fast startup, and the ability to mix versions without global conflicts.\n\nHow Nix models environments\n\nImmutable store: Everything lives under hashed paths like /nix/store/ -pkg-version.\n\nPure inputs: Hashes come from exact sources and build options; change inputs, get a new path.\n\nCoexistence: Multiple versions of the same tool can exist side\u2011by\u2011side without conflicts.\n\nDev shells: Environments are composed by exporting environment variables (e.g., PATH) that point to packages in the Nix store, rather than running a containerized OS. The shell simply adjusts your environment to include the specified tools while keeping you on your native host system.\n\nThe nixpkgs ecosystem and flakes\n\nFlakes: A modern, reproducible interface for pinning inputs and sharing outputs (dev shells, packages, apps).\n\nFlakes provide a uniform structure for Nix projects, allow pinning specific versions of dependencies, and share these dependencies via lock files. They make it more convenient to write reproducible Nix expressions.\n\nFlake Examples for Development Shells\n\nAll examples use mkShell from nixpkgs to create development environments. While flakes provide the structure and dependency management, mkShell is the function that actually builds the development shell with your specified packages and environment variables.\n\nExample 1: Tracking nixpkgs-unstable (Recommended for Local Dev)\n\nFor day\u2011to\u2011day development, prefer nixpkgs-unstable so you get recent compilers and tools without chasing patches. With flakes, you still get a precise lock in flake.lock, and you can intentionally update with nix flake update when you're ready.\n\nUpdate to the latest tools when you choose:\n\nExample 2: Pinned to a Specific Version (For CI/Reproducibility)\n\nFor CI or strict reproducibility guarantees, pin nixpkgs to a specific commit:\n\nExample 3: Using GitHub Dependencies\n\nFlakes make it easy to depend on other GitHub repositories that provide flake outputs:\n\nEnable flakes (if not already) and drop into the shell:\n\nUpdate to the latest tools when you choose:\n\nAuto\u2011activation with direnv\n\nLet the shell auto\u2011activate when you cd into the project.\n\nThen allow once per directory:\n\nWhen to still use Docker\n\nDeployment packaging and isolation across hosts.\n\nRunning services that expect Linux kernel features your host lacks.\n\nSecurity boundaries stronger than a userland dev shell.\n\nFor local development on macOS and Linux, Nix is typically leaner and more maintainable.\n\nKey Takeaways\n\nNix dev shells give native, reproducible environments without container overhead.\n\nFlakes provide a modern, reproducible interface with automatic locking and dependency management.\n\nUse nixpkgs-unstable for local development, pin to specific versions for CI, and easily include GitHub dependencies.\n\nDeclare all tools via mkShell, and add direnv for ergonomics.",
       "chunkSeparator": "\n\n",
@@ -45,9 +48,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 29.76,
+          "durationSeconds": 27.52,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 29.76,
+          "endTimeSeconds": 27.52,
           "pauseAfterMs": 100
         },
         {
@@ -68,9 +71,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 27.92,
-          "startTimeSeconds": 29.86,
-          "endTimeSeconds": 57.78,
+          "durationSeconds": 26.96,
+          "startTimeSeconds": 27.62,
+          "endTimeSeconds": 54.58,
           "pauseAfterMs": 100
         },
         {
@@ -109,9 +112,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 21.6,
-          "startTimeSeconds": 57.88,
-          "endTimeSeconds": 79.48,
+          "durationSeconds": 17.52,
+          "startTimeSeconds": 54.68,
+          "endTimeSeconds": 72.2,
           "pauseAfterMs": 100
         },
         {
@@ -144,9 +147,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 20.8,
-          "startTimeSeconds": 79.58,
-          "endTimeSeconds": 100.38,
+          "durationSeconds": 15.52,
+          "startTimeSeconds": 72.3,
+          "endTimeSeconds": 87.82,
           "pauseAfterMs": 100
         },
         {
@@ -179,9 +182,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 29.36,
-          "startTimeSeconds": 100.48,
-          "endTimeSeconds": 129.84,
+          "durationSeconds": 25.36,
+          "startTimeSeconds": 87.92,
+          "endTimeSeconds": 113.28,
           "pauseAfterMs": 100
         },
         {
@@ -214,9 +217,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 21.28,
-          "startTimeSeconds": 129.94,
-          "endTimeSeconds": 151.22,
+          "durationSeconds": 21.6,
+          "startTimeSeconds": 113.38,
+          "endTimeSeconds": 134.98,
           "pauseAfterMs": 100
         },
         {
@@ -243,9 +246,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 17.12,
-          "startTimeSeconds": 151.32,
-          "endTimeSeconds": 168.44,
+          "durationSeconds": 17.36,
+          "startTimeSeconds": 135.08,
+          "endTimeSeconds": 152.44,
           "pauseAfterMs": 100
         },
         {
@@ -272,9 +275,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 20.8,
-          "startTimeSeconds": 168.54,
-          "endTimeSeconds": 189.34,
+          "durationSeconds": 19.76,
+          "startTimeSeconds": 152.54,
+          "endTimeSeconds": 172.3,
           "pauseAfterMs": 100
         },
         {
@@ -313,9 +316,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 17.04,
-          "startTimeSeconds": 189.44,
-          "endTimeSeconds": 206.48,
+          "durationSeconds": 14.32,
+          "startTimeSeconds": 172.4,
+          "endTimeSeconds": 186.72,
           "pauseAfterMs": 100
         },
         {
@@ -354,9 +357,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 17.12,
-          "startTimeSeconds": 206.58,
-          "endTimeSeconds": 223.7,
+          "durationSeconds": 13.04,
+          "startTimeSeconds": 186.82,
+          "endTimeSeconds": 199.86,
           "pauseAfterMs": 100
         },
         {
@@ -401,9 +404,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 17.84,
-          "startTimeSeconds": 223.8,
-          "endTimeSeconds": 241.64,
+          "durationSeconds": 15.44,
+          "startTimeSeconds": 199.96,
+          "endTimeSeconds": 215.4,
           "pauseAfterMs": 100
         },
         {
@@ -442,9 +445,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 16.4,
-          "startTimeSeconds": 241.74,
-          "endTimeSeconds": 258.14,
+          "durationSeconds": 14.72,
+          "startTimeSeconds": 215.5,
+          "endTimeSeconds": 230.22,
           "pauseAfterMs": 100
         },
         {
@@ -471,9 +474,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 15.44,
-          "startTimeSeconds": 258.24,
-          "endTimeSeconds": 273.68,
+          "durationSeconds": 13.44,
+          "startTimeSeconds": 230.32,
+          "endTimeSeconds": 243.76,
           "pauseAfterMs": 100
         },
         {
@@ -494,9 +497,9 @@
             }
           ],
           "audioFile": "chunk-014.wav",
-          "durationSeconds": 5.28,
-          "startTimeSeconds": 273.78,
-          "endTimeSeconds": 279.06,
+          "durationSeconds": 4.8,
+          "startTimeSeconds": 243.86,
+          "endTimeSeconds": 248.66,
           "pauseAfterMs": 0
         }
       ],
@@ -507,10 +510,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-031812_2025-10-04-nix-vs-docker-reproducible-dev",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-031812_2025-10-04-nix-vs-docker-reproducible-dev/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-031812_2025-10-04-nix-vs-docker-reproducible-dev/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-031812_2025-10-04-nix-vs-docker-reproducible-dev/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-043042_2025-10-04-nix-vs-docker-reproducible-dev",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-043042_2025-10-04-nix-vs-docker-reproducible-dev/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-043042_2025-10-04-nix-vs-docker-reproducible-dev/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/narration-runs/20260329-043042_2025-10-04-nix-vs-docker-reproducible-dev/post.wav",
       "mp3Path": "public/assets/post-audio/2025-10-04-nix-vs-docker-reproducible-dev/post.mp3"
     }
   }

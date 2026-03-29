@@ -92,7 +92,19 @@ post_audio = importlib.import_module("blog_audio.post_audio")
 
 
 class FakeNarrationModel:
-    def generate_voice_design(self, text, language, instruct, **kwargs):
+    def __init__(self):
+        self.calls = []
+
+    def generate_voice_clone(self, text, language, ref_audio, x_vector_only_mode, **kwargs):
+        self.calls.append(
+            {
+                "text": text,
+                "language": language,
+                "ref_audio": ref_audio,
+                "x_vector_only_mode": x_vector_only_mode,
+                **kwargs,
+            }
+        )
         samples = max(4, len(text.split()))
         return [np.linspace(0.0, 0.5, samples, dtype=np.float32)], 24000
 
@@ -275,8 +287,11 @@ This paragraph is long enough to stand on its own as one narration chunk.
                     metadata={
                         "language": "English",
                         "model": "design-model",
-                        "instruct": "Calm voice",
-                        "used_default_instruct": True,
+                        "task_type": "Base",
+                        "ref_audio": "/tmp/reference.wav",
+                        "x_vector_only_mode": True,
+                        "instruct": None,
+                        "used_default_instruct": False,
                         "generation_kwargs": {"temperature": 0.7},
                         "chunk_count": 3,
                         "pause_ms": 100,
@@ -314,6 +329,9 @@ This paragraph is long enough to stand on its own as one narration chunk.
             self.assertIn("design", audio_map)
             self.assertEqual(audio_map["narration"]["publicAssets"]["audioSrc"], "/assets/post-audio/example-post/post.mp3")
             self.assertEqual(audio_map["narration"]["privateArtifacts"]["stitchedWavPath"], "state/run/post.wav")
+            self.assertEqual(audio_map["narration"]["taskType"], "Base")
+            self.assertEqual(audio_map["narration"]["refAudio"], "/tmp/reference.wav")
+            self.assertTrue(audio_map["narration"]["xVectorOnlyMode"])
             self.assertEqual(audio_map["narration"]["transcript"]["text"], "Chunk one.\n\nChunk two.")
             self.assertEqual(audio_map["narration"]["transcript"]["blockCount"], 2)
             self.assertEqual(audio_map["narration"]["transcript"]["chunks"][0]["startChar"], 0)
@@ -372,15 +390,16 @@ This second paragraph creates another chunk and ensures the stitcher is exercise
             original_release_model = post_audio.workflow.release_model
             original_transcode = post_audio.transcode_to_mp3
             original_repo_root = post_audio.repo_relative.__globals__["REPO_ROOT"]
-            post_audio.workflow.load_model = lambda model_name, args: FakeNarrationModel()
+            fake_model = FakeNarrationModel()
+            post_audio.workflow.load_model = lambda model_name, args: fake_model
             post_audio.workflow.release_model = lambda model: None
             post_audio.transcode_to_mp3 = lambda input_wav, output_mp3, bitrate: output_mp3.write_bytes(b"mp3")
             post_audio.repo_relative.__globals__["REPO_ROOT"] = root
+            ref_audio_path = root / "reference.wav"
+            ref_audio_path.write_bytes(b"wav")
             try:
                 args = SimpleNamespace(
                     post=str(post_path),
-                    instruct=None,
-                    instruct_file=None,
                     run_name="example-post",
                     posts_root=str(posts_root),
                     public_root=str(public_root),
@@ -388,7 +407,8 @@ This second paragraph creates another chunk and ensures the stitcher is exercise
                     audio_map="",
                     asset_root=str(public_root / "assets" / "post-audio"),
                     overwrite_public_audio=True,
-                    design_model="design-model",
+                    model="base-model",
+                    ref_audio=str(ref_audio_path),
                     chunk_min_chars=80,
                     chunk_max_chars=220,
                     pause_ms=100,
@@ -421,12 +441,21 @@ This second paragraph creates another chunk and ensures the stitcher is exercise
             payload = json.loads(audio_map_path.read_text(encoding="utf-8"))
             self.assertEqual(payload["postId"], "example-post")
             self.assertEqual(payload["narration"]["publicAssets"]["audioSrc"], "/assets/post-audio/example-post/post.mp3")
-            self.assertTrue(payload["narration"]["usedDefaultInstruct"])
+            self.assertFalse(payload["narration"]["usedDefaultInstruct"])
+            self.assertEqual(payload["narration"]["taskType"], "Base")
+            self.assertEqual(payload["narration"]["refAudio"], str(ref_audio_path.resolve()))
+            self.assertTrue(payload["narration"]["xVectorOnlyMode"])
             self.assertIn("transcript", payload["narration"])
             self.assertGreaterEqual(len(payload["narration"]["transcript"]["chunks"]), 1)
             run_dir = root / payload["narration"]["privateArtifacts"]["runDir"]
             metadata = json.loads((run_dir / "metadata.json").read_text(encoding="utf-8"))
             self.assertEqual(metadata["engine"], "vllm")
+            self.assertEqual(metadata["task_type"], "Base")
+            self.assertEqual(metadata["ref_audio"], str(ref_audio_path.resolve()))
+            self.assertTrue(metadata["x_vector_only_mode"])
+            self.assertGreaterEqual(len(fake_model.calls), 1)
+            self.assertTrue(all(call["x_vector_only_mode"] for call in fake_model.calls))
+            self.assertTrue(all(call["ref_audio"] == str(ref_audio_path.resolve()) for call in fake_model.calls))
             first_chunk = payload["narration"]["transcript"]["chunks"][0]
             self.assertIn("startChar", first_chunk)
             self.assertIn("startTimeSeconds", first_chunk)
@@ -437,10 +466,12 @@ This second paragraph creates another chunk and ensures the stitcher is exercise
         parser = post_audio.parse_args([
             "--post", "example-post",
         ])
-        self.assertEqual(parser.instruct, None)
+        self.assertFalse(hasattr(parser, "instruct"))
         self.assertEqual(parser.chunk_min_chars, post_audio.DEFAULT_CHUNK_MIN_CHARS)
         self.assertEqual(parser.chunk_max_chars, post_audio.DEFAULT_CHUNK_MAX_CHARS)
         self.assertEqual(parser.mp3_bitrate, post_audio.DEFAULT_MP3_BITRATE)
+        self.assertEqual(parser.model, post_audio.DEFAULT_BASE_MODEL)
+        self.assertEqual(parser.ref_audio, str(post_audio.DEFAULT_REF_AUDIO))
 
     def test_post_parser_accepts_legacy_runtime_flags(self):
         parser = post_audio.parse_args([

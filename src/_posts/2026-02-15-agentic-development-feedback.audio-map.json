@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2026-02-15-agentic-development-feedback",
-  "generatedAt": "2026-03-29T03:27:57Z",
+  "generatedAt": "2026-03-29T04:40:14Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2026-02-15-agentic-development-feedback.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 26,
     "pauseMs": 100,
-    "durationSeconds": 462.9,
+    "durationSeconds": 420.02,
     "transcript": {
       "text": "0. TL;DR\n\nAgentic development becomes useful when the agent can do more than generate code. It needs to run the code, inspect what happened, and keep iterating until it can show evidence that the change worked.\n\nThe difference is not better prompting. The difference is a working feedback loop.\n\n1. What Agentic Full-Stack Development Means\n\nIn practice, this is not \"AI writes code.\" It is \"AI executes a complete development loop\":\n\nMake a small change.\n\nRun tests, scripts, or the app.\n\nInspect outputs and intermediate state.\n\nDecide the next step from evidence.\n\nRepeat until there is a clear pass condition.\n\nThis works with one agent or multiple agents. You can have one agent implementing and another verifying. The important part is that each step is driven by observed results, not guesses.\n\n2. Why Feedback Changes Everything\n\nCode generation alone is helpful for quick starts. It can scaffold files, suggest patterns, and speed up routine edits.\n\nBut most real bugs are not solved at generation time. They are solved by observing behavior:\n\nA test fails for a specific reason.\n\nA network request returns the wrong payload.\n\nA query writes incorrect intermediate data.\n\nA deployment uses a different config than expected.\n\nWithout feedback, an agent can only produce plausible text. With feedback, it can produce working changes.\n\n3. The Development Loop You Can Copy\n\nUse this loop as the default:\n\nPlan the smallest useful change.\n\nImplement it.\n\nRun the relevant checks.\n\nObserve outputs and state.\n\nRecord a verdict: pass or fail, plus why.\n\nIterate or stop.\n\nPackage evidence.\n\nThree habits make this loop reliable:\n\nKeep diffs small.\n\nKeep pass criteria explicit.\n\nKeep iteration fast.\n\nWhen these are true, progress is easy to measure and easy to trust.\n\n4. Treat Evidence Bundles as a Required Deliverable\n\nAn evidence bundle is the output that proves the change is real. It should be part of the workflow, not an afterthought.\n\nA simple checklist:\n\nPatch or commit reference.\n\nExact commands that were run.\n\nTest or script results with exit codes.\n\nKey logs or output excerpts.\n\nArtifacts (screenshots, traces, JSON output, benchmark results when needed).\n\nShort explanation of what changed and why.\n\nShort explanation of how the evidence supports success.\n\nYou can store this in a markdown file under /evidence, as a PR comment template, or as CI artifacts. The location matters less than consistency.\n\n5. Make the Application Observable to the Agent\n\nAgents need handles into reality. In most projects, this is where progress slows down for both teams and solo builders.\n\n5.1 Execution Observability\n\nStandard scripts should exist and be predictable:\n\ndev\n\ntest\n\nlint\n\ntypecheck\n\ne2e (if applicable)\n\nOne obvious command per task is a contract. It removes guesswork.\n\n5.2 Output Observability\n\nOutputs should be stable and machine-friendly:\n\nConsistent error summaries.\n\nStructured lint and test output.\n\nCaptured exit codes.\n\nShort summary lines that are easy to parse.\n\nIf output shape changes every run, the loop becomes fragile.\n\n5.3 Intermediate State Observability\n\nFor data-heavy flows, inspect intermediate state directly:\n\nTables and row counts.\n\nNull and uniqueness checks.\n\nGenerated files.\n\nQueue or cache state when relevant.\n\nThis is often where hidden issues are found fastest.\n\n6. Tool Pillars That Improve Feedback Quality\n\n6.1 Browser Verification (Chrome MCP)\n\nUseful for reproducing UI bugs and validating user flows:\n\nReproduce issue.\n\nInspect console and network.\n\nPatch.\n\nRe-run and confirm behavior.\n\nCapture screenshot and key logs.\n\nEvidence typically includes console output, network snippets, and final screenshots.\n\n6.2 Infrastructure Reality Checks (AWS CLI)\n\nUseful for validating deployed state:\n\nVerify identity and region.\n\nRead actual resource configuration.\n\nCompare expected vs actual fields.\n\nChange only after read-side validation.\n\nEvidence should include exact commands and redacted JSON excerpts of real state.\n\n6.3 Local Databases\n\nUseful for checking data correctness during development:\n\nWrite intermediate outputs to explicit tables.\n\nRun basic invariants after each step.\n\nSave query outputs that confirm correctness.\n\nEvidence includes executed queries and the resulting counts or sample rows.\n\n6.4 CI/CD\n\nUseful as an external judge:\n\nPush branch.\n\nRead failing jobs.\n\nFix and rerun until green.\n\nAttach CI evidence.\n\nEvidence includes CI links, fail-to-pass summaries, and test artifacts.\n\n6.5 Git\n\nUseful for change clarity and rollback safety:\n\nOne logical change per commit.\n\nUse git diff as source of truth for what changed.\n\nReference evidence in commit or PR text.\n\nThis keeps reviews clear and debugging faster.\n\n7. Why Monorepos Help Agentic Work\n\nAgentic workflows improve when the codebase is visible in one workspace:\n\nFrontend, backend, and infrastructure in one tree.\n\nShared types reduce interface mismatch.\n\nConsistent scripts reduce command ambiguity.\n\nA simple structure:\n\nWhen root and package scripts use the same names (dev, test, lint, typecheck), agents can navigate the project with less trial and error.\n\n8. Guardrails That Keep Verification Cheap\n\nUse guardrails that reduce friction:\n\nFast smoke tests for quick signal.\n\nStable repro commands.\n\nFewer flaky checks.\n\nData constraints and API contract checks.\n\n\"No console errors\" checks for important UI flows.\n\nStructured logs with consistent keys.\n\nA simple rule helps a lot: every final answer must cite evidence, not just conclusions.\n\n9. Keep Safety Simple\n\nUse least-privilege credentials, keep tool-call logs, and separate read from write access where possible. Keep this lightweight but non-optional.\n\n10. Closing: Start With One Loop\n\nThe goal is not full autonomy. The goal is reliable competence.\n\nIf you are adopting this now, start with three steps:\n\nStandardize scripts.\n\nRequire evidence bundles.\n\nAdd one strong verification surface (browser checks or database checks).\n\nThen expand into CI and infrastructure validation as your workflow matures.",
       "chunkSeparator": "\n\n",
@@ -45,9 +48,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 14.08,
+          "durationSeconds": 12.24,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 14.08,
+          "endTimeSeconds": 12.24,
           "pauseAfterMs": 100
         },
         {
@@ -80,9 +83,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 16.0,
-          "startTimeSeconds": 14.18,
-          "endTimeSeconds": 30.18,
+          "durationSeconds": 15.28,
+          "startTimeSeconds": 12.34,
+          "endTimeSeconds": 27.62,
           "pauseAfterMs": 100
         },
         {
@@ -133,9 +136,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 26.24,
-          "startTimeSeconds": 30.28,
-          "endTimeSeconds": 56.52,
+          "durationSeconds": 22.72,
+          "startTimeSeconds": 27.72,
+          "endTimeSeconds": 50.44,
           "pauseAfterMs": 100
         },
         {
@@ -168,9 +171,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 15.92,
-          "startTimeSeconds": 56.62,
-          "endTimeSeconds": 72.54,
+          "durationSeconds": 17.44,
+          "startTimeSeconds": 50.54,
+          "endTimeSeconds": 67.98,
           "pauseAfterMs": 100
         },
         {
@@ -215,9 +218,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 19.12,
-          "startTimeSeconds": 72.64,
-          "endTimeSeconds": 91.76,
+          "durationSeconds": 19.52,
+          "startTimeSeconds": 68.08,
+          "endTimeSeconds": 87.6,
           "pauseAfterMs": 100
         },
         {
@@ -274,9 +277,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 18.8,
-          "startTimeSeconds": 91.86,
-          "endTimeSeconds": 110.66,
+          "durationSeconds": 16.16,
+          "startTimeSeconds": 87.7,
+          "endTimeSeconds": 103.86,
           "pauseAfterMs": 100
         },
         {
@@ -333,9 +336,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 16.08,
-          "startTimeSeconds": 110.76,
-          "endTimeSeconds": 126.84,
+          "durationSeconds": 14.8,
+          "startTimeSeconds": 103.96,
+          "endTimeSeconds": 118.76,
           "pauseAfterMs": 100
         },
         {
@@ -374,9 +377,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 17.52,
-          "startTimeSeconds": 126.94,
-          "endTimeSeconds": 144.46,
+          "durationSeconds": 14.24,
+          "startTimeSeconds": 118.86,
+          "endTimeSeconds": 133.1,
           "pauseAfterMs": 100
         },
         {
@@ -421,9 +424,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 16.4,
-          "startTimeSeconds": 144.56,
-          "endTimeSeconds": 160.96,
+          "durationSeconds": 18.0,
+          "startTimeSeconds": 133.2,
+          "endTimeSeconds": 151.2,
           "pauseAfterMs": 100
         },
         {
@@ -450,9 +453,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 13.44,
-          "startTimeSeconds": 161.06,
-          "endTimeSeconds": 174.5,
+          "durationSeconds": 11.92,
+          "startTimeSeconds": 151.3,
+          "endTimeSeconds": 163.22,
           "pauseAfterMs": 100
         },
         {
@@ -491,9 +494,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 18.4,
-          "startTimeSeconds": 174.6,
-          "endTimeSeconds": 193.0,
+          "durationSeconds": 17.28,
+          "startTimeSeconds": 163.32,
+          "endTimeSeconds": 180.6,
           "pauseAfterMs": 100
         },
         {
@@ -562,9 +565,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 21.44,
-          "startTimeSeconds": 193.1,
-          "endTimeSeconds": 214.54,
+          "durationSeconds": 17.04,
+          "startTimeSeconds": 180.7,
+          "endTimeSeconds": 197.74,
           "pauseAfterMs": 100
         },
         {
@@ -615,9 +618,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 22.64,
-          "startTimeSeconds": 214.64,
-          "endTimeSeconds": 237.28,
+          "durationSeconds": 19.04,
+          "startTimeSeconds": 197.84,
+          "endTimeSeconds": 216.88,
           "pauseAfterMs": 100
         },
         {
@@ -668,9 +671,9 @@
             }
           ],
           "audioFile": "chunk-014.wav",
-          "durationSeconds": 16.72,
-          "startTimeSeconds": 237.38,
-          "endTimeSeconds": 254.1,
+          "durationSeconds": 15.84,
+          "startTimeSeconds": 216.98,
+          "endTimeSeconds": 232.82,
           "pauseAfterMs": 100
         },
         {
@@ -727,9 +730,9 @@
             }
           ],
           "audioFile": "chunk-015.wav",
-          "durationSeconds": 16.24,
-          "startTimeSeconds": 254.2,
-          "endTimeSeconds": 270.44,
+          "durationSeconds": 17.28,
+          "startTimeSeconds": 232.92,
+          "endTimeSeconds": 250.2,
           "pauseAfterMs": 100
         },
         {
@@ -774,9 +777,9 @@
             }
           ],
           "audioFile": "chunk-016.wav",
-          "durationSeconds": 20.8,
-          "startTimeSeconds": 270.54,
-          "endTimeSeconds": 291.34,
+          "durationSeconds": 19.04,
+          "startTimeSeconds": 250.3,
+          "endTimeSeconds": 269.34,
           "pauseAfterMs": 100
         },
         {
@@ -821,9 +824,9 @@
             }
           ],
           "audioFile": "chunk-017.wav",
-          "durationSeconds": 21.36,
-          "startTimeSeconds": 291.44,
-          "endTimeSeconds": 312.8,
+          "durationSeconds": 15.76,
+          "startTimeSeconds": 269.44,
+          "endTimeSeconds": 285.2,
           "pauseAfterMs": 100
         },
         {
@@ -862,9 +865,9 @@
             }
           ],
           "audioFile": "chunk-018.wav",
-          "durationSeconds": 16.08,
-          "startTimeSeconds": 312.9,
-          "endTimeSeconds": 328.98,
+          "durationSeconds": 14.24,
+          "startTimeSeconds": 285.3,
+          "endTimeSeconds": 299.54,
           "pauseAfterMs": 100
         },
         {
@@ -927,9 +930,9 @@
             }
           ],
           "audioFile": "chunk-019.wav",
-          "durationSeconds": 22.88,
-          "startTimeSeconds": 329.08,
-          "endTimeSeconds": 351.96,
+          "durationSeconds": 18.08,
+          "startTimeSeconds": 299.64,
+          "endTimeSeconds": 317.72,
           "pauseAfterMs": 100
         },
         {
@@ -974,9 +977,9 @@
             }
           ],
           "audioFile": "chunk-020.wav",
-          "durationSeconds": 14.16,
-          "startTimeSeconds": 352.06,
-          "endTimeSeconds": 366.22,
+          "durationSeconds": 13.04,
+          "startTimeSeconds": 317.82,
+          "endTimeSeconds": 330.86,
           "pauseAfterMs": 100
         },
         {
@@ -1015,9 +1018,9 @@
             }
           ],
           "audioFile": "chunk-021.wav",
-          "durationSeconds": 16.64,
-          "startTimeSeconds": 366.32,
-          "endTimeSeconds": 382.96,
+          "durationSeconds": 14.48,
+          "startTimeSeconds": 330.96,
+          "endTimeSeconds": 345.44,
           "pauseAfterMs": 100
         },
         {
@@ -1050,9 +1053,9 @@
             }
           ],
           "audioFile": "chunk-022.wav",
-          "durationSeconds": 15.52,
-          "startTimeSeconds": 383.06,
-          "endTimeSeconds": 398.58,
+          "durationSeconds": 12.56,
+          "startTimeSeconds": 345.54,
+          "endTimeSeconds": 358.1,
           "pauseAfterMs": 100
         },
         {
@@ -1103,9 +1106,9 @@
             }
           ],
           "audioFile": "chunk-023.wav",
-          "durationSeconds": 16.56,
-          "startTimeSeconds": 398.68,
-          "endTimeSeconds": 415.24,
+          "durationSeconds": 15.44,
+          "startTimeSeconds": 358.2,
+          "endTimeSeconds": 373.64,
           "pauseAfterMs": 100
         },
         {
@@ -1144,9 +1147,9 @@
             }
           ],
           "audioFile": "chunk-024.wav",
-          "durationSeconds": 14.8,
-          "startTimeSeconds": 415.34,
-          "endTimeSeconds": 430.14,
+          "durationSeconds": 13.92,
+          "startTimeSeconds": 373.74,
+          "endTimeSeconds": 387.66,
           "pauseAfterMs": 100
         },
         {
@@ -1179,9 +1182,9 @@
             }
           ],
           "audioFile": "chunk-025.wav",
-          "durationSeconds": 17.04,
-          "startTimeSeconds": 430.24,
-          "endTimeSeconds": 447.28,
+          "durationSeconds": 17.28,
+          "startTimeSeconds": 387.76,
+          "endTimeSeconds": 405.04,
           "pauseAfterMs": 100
         },
         {
@@ -1226,9 +1229,9 @@
             }
           ],
           "audioFile": "chunk-026.wav",
-          "durationSeconds": 15.52,
-          "startTimeSeconds": 447.38,
-          "endTimeSeconds": 462.9,
+          "durationSeconds": 14.88,
+          "startTimeSeconds": 405.14,
+          "endTimeSeconds": 420.02,
           "pauseAfterMs": 0
         }
       ],
@@ -1239,10 +1242,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-032450_2026-02-15-agentic-development-feedback/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-043708_2026-02-15-agentic-development-feedback",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-043708_2026-02-15-agentic-development-feedback/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-043708_2026-02-15-agentic-development-feedback/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-02-15-agentic-development-feedback/narration-runs/20260329-043708_2026-02-15-agentic-development-feedback/post.wav",
       "mp3Path": "public/assets/post-audio/2026-02-15-agentic-development-feedback/post.mp3"
     }
   }

@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2021-12-20-tbats-time-series-forecasting",
-  "generatedAt": "2026-03-29T03:11:58Z",
+  "generatedAt": "2026-03-29T04:24:51Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2021-12-20-tbats-time-series-forecasting.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 13,
     "pauseMs": 100,
-    "durationSeconds": 278.24,
+    "durationSeconds": 242.88,
     "transcript": {
       "text": "TBATS is a very powerful and flexible time series modelling method. It allows for multiple seasonalities and data with non-constant variance (heteroscedastic). A theoretical treatment of the model is given here, and this article focuses on its implementation in a larger project. In python, this powerful technique can be implemented in just a few lines of code.\n\n The following exercise was given as an interview question to me, and it is an interesting problem due to the anomalies and complexity of the data.\n\nThe Data\n\nThe Austin MetroBike dataset contains every bike trip in the Austin MetroBike system from 2014 until the present. In this exercise, we will use 2014\u20132020 to train the model and predict 2021 values, which can be compared with the published data for 2021 to validate the model.\n\nRequired Packages\n\nPandas\n\nnumpy\n\nmatplotlib\n\nTBATS\n\nData Preparation\n\nAfter we have downloaded AustinMetroBikeTrips.csv, we import it using pandas.\n\nThe dates need to be converted from strings to datetime objects to be useful. The following code converts the checkout dates to datetimes and then adds the checkout time to them to get a datetime object.\n\nTo make the data useful, converting it from a list of points to a frequency per time period is necessary. I chose monthly frequency here, but weekly frequency can work too.\n\nThis visualization informs us of a few characteristics of this data\n\nSeasonality \u2014 Bike trips peak at certain types of the year and dip at others, and this pattern is repeated every year. This is intuitive given changes in weather over the year.\n\nHeteroscedasticity\u2014 There are ways to test for heteroscedasticity, but the massive spike in rides compared to the rest of the data in 2018 and the relatively constant year of 2020 inform us of this visually. This limits the range of models we can use\n\nAnomalies \u2014 During 2016 and 2017, we see a month of zero rides. We can assume that this is not due to every cyclist giving up bike riding in those months, and rather due to a data anomaly. We will interpolate over those points to improve the accuracy of our forecast\n\nThe following lines fill weeks of 0 ridership with NaNs, and interpolate them using the surrounding weeks\n\nSeasonality\n\nWe should expect roughly a 1 year seasonality in biking due to changes in the seasons. We can confirm this via the autocorrelation function.\n\nThe spike at 12 months confirms this. What this plot is showing is that ridership will correlate with ridership 12 months ahead of it \u2014 since our data is in monthly frequency, this is a year.\n\nForecasting with TBATS\n\nThe last step was done since we need to know the seasonality of the data for TBATS to work. The following code creates our estimator object.\n\nWe want to create a training set to forecast from, using data from 2014\u20132020.\n\nThe following code fits our TBATS model to our data.\n\nNow we can forecast 1 year (12 periods) ahead\n\nWe want to attach dates to these forecasts for easier plotting. pd.daterange creates a range of dates from a start date, number of periods, and a frequency.\n\nResults and Analysis\n\nPlotting our forecast against the ridership data for 2021 is done in matplotlib\n\nThere are a range of metrics for quantifying time series error. In this example, I will use Mean Absolute Percentage Error (MAPE) since percentage errors eliminate the scale of the data. This can be done since the data is always positive, but in cases where the data can be 0, this metric cannot be used due to potential division by zero errors. In that case, Root Mean Squared Error (RMSE) or similar metrics can be used.\n\n Since there are only 7 data points from 2021 published so far, we will take the first 7 months of 2021\u2019s forecasted data for this metric.\n\nGives a MAPE of 23.68%. This number can then be used to compare the efficacy of this approach vs other types of suitable time series models such as GARCH.",
       "chunkSeparator": "\n\n",
@@ -39,9 +42,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 26.64,
+          "durationSeconds": 20.0,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 26.64,
+          "endTimeSeconds": 20.0,
           "pauseAfterMs": 100
         },
         {
@@ -74,9 +77,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 36.32,
-          "startTimeSeconds": 26.74,
-          "endTimeSeconds": 63.06,
+          "durationSeconds": 27.92,
+          "startTimeSeconds": 20.1,
+          "endTimeSeconds": 48.02,
           "pauseAfterMs": 100
         },
         {
@@ -139,9 +142,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 27.12,
-          "startTimeSeconds": 63.16,
-          "endTimeSeconds": 90.28,
+          "durationSeconds": 26.08,
+          "startTimeSeconds": 48.12,
+          "endTimeSeconds": 74.2,
           "pauseAfterMs": 100
         },
         {
@@ -168,9 +171,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 17.52,
-          "startTimeSeconds": 90.38,
-          "endTimeSeconds": 107.9,
+          "durationSeconds": 15.44,
+          "startTimeSeconds": 74.3,
+          "endTimeSeconds": 89.74,
           "pauseAfterMs": 100
         },
         {
@@ -197,9 +200,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 28.72,
-          "startTimeSeconds": 108.0,
-          "endTimeSeconds": 136.72,
+          "durationSeconds": 25.2,
+          "startTimeSeconds": 89.84,
+          "endTimeSeconds": 115.04,
           "pauseAfterMs": 100
         },
         {
@@ -220,9 +223,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 19.6,
-          "startTimeSeconds": 136.82,
-          "endTimeSeconds": 156.42,
+          "durationSeconds": 17.52,
+          "startTimeSeconds": 115.14,
+          "endTimeSeconds": 132.66,
           "pauseAfterMs": 100
         },
         {
@@ -255,9 +258,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 16.88,
-          "startTimeSeconds": 156.52,
-          "endTimeSeconds": 173.4,
+          "durationSeconds": 15.92,
+          "startTimeSeconds": 132.76,
+          "endTimeSeconds": 148.68,
           "pauseAfterMs": 100
         },
         {
@@ -284,9 +287,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 13.76,
-          "startTimeSeconds": 173.5,
-          "endTimeSeconds": 187.26,
+          "durationSeconds": 12.64,
+          "startTimeSeconds": 148.78,
+          "endTimeSeconds": 161.42,
           "pauseAfterMs": 100
         },
         {
@@ -313,9 +316,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 15.12,
-          "startTimeSeconds": 187.36,
-          "endTimeSeconds": 202.48,
+          "durationSeconds": 14.56,
+          "startTimeSeconds": 161.52,
+          "endTimeSeconds": 176.08,
           "pauseAfterMs": 100
         },
         {
@@ -348,9 +351,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 18.0,
-          "startTimeSeconds": 202.58,
-          "endTimeSeconds": 220.58,
+          "durationSeconds": 16.4,
+          "startTimeSeconds": 176.18,
+          "endTimeSeconds": 192.58,
           "pauseAfterMs": 100
         },
         {
@@ -377,9 +380,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 6.4,
-          "startTimeSeconds": 220.68,
-          "endTimeSeconds": 227.08,
+          "durationSeconds": 7.84,
+          "startTimeSeconds": 192.68,
+          "endTimeSeconds": 200.52,
           "pauseAfterMs": 100
         },
         {
@@ -400,9 +403,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 30.96,
-          "startTimeSeconds": 227.18,
-          "endTimeSeconds": 258.14,
+          "durationSeconds": 23.76,
+          "startTimeSeconds": 200.62,
+          "endTimeSeconds": 224.38,
           "pauseAfterMs": 100
         },
         {
@@ -429,9 +432,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 20.0,
-          "startTimeSeconds": 258.24,
-          "endTimeSeconds": 278.24,
+          "durationSeconds": 18.4,
+          "startTimeSeconds": 224.48,
+          "endTimeSeconds": 242.88,
           "pauseAfterMs": 0
         }
       ],
@@ -442,10 +445,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-030937_2021-12-20-tbats-time-series-forecasting",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-030937_2021-12-20-tbats-time-series-forecasting/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-030937_2021-12-20-tbats-time-series-forecasting/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-030937_2021-12-20-tbats-time-series-forecasting/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-042237_2021-12-20-tbats-time-series-forecasting",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-042237_2021-12-20-tbats-time-series-forecasting/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-042237_2021-12-20-tbats-time-series-forecasting/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2021-12-20-tbats-time-series-forecasting/narration-runs/20260329-042237_2021-12-20-tbats-time-series-forecasting/post.wav",
       "mp3Path": "public/assets/post-audio/2021-12-20-tbats-time-series-forecasting/post.mp3"
     }
   }

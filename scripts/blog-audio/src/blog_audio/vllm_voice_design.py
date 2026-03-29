@@ -29,7 +29,9 @@ else:
 
 
 ENGINE_NAME = "vllm"
-DEFAULT_TASK_TYPE = "VoiceDesign"
+VOICE_DESIGN_TASK_TYPE = "VoiceDesign"
+BASE_TASK_TYPE = "Base"
+DEFAULT_BASE_MODEL = "Qwen/Qwen3-TTS-12Hz-1.7B-Base"
 
 
 def ensure_runtime_imports() -> None:
@@ -73,7 +75,7 @@ def _first_value(value: Any, default: Any = None) -> Any:
     return value
 
 
-class VoiceDesignVllmModel:
+class Qwen3TTSVllmModel:
     def __init__(
         self,
         *,
@@ -94,7 +96,7 @@ class VoiceDesignVllmModel:
         cls,
         pretrained_model_name_or_path: str,
         **kwargs: Any,
-    ) -> "VoiceDesignVllmModel":
+    ) -> "Qwen3TTSVllmModel":
         ensure_runtime_imports()
         omni = Omni(model=pretrained_model_name_or_path)
         tokenizer = AutoTokenizer.from_pretrained(
@@ -118,16 +120,21 @@ class VoiceDesignVllmModel:
         if self.omni is not None:
             self.omni.close()
 
-    def _estimate_prompt_len(self, additional_information: Dict[str, Any]) -> int:
+    def _wrap_scalar(self, value: Any) -> Any:
+        if isinstance(value, list):
+            return value
+        return [value]
+
+    def _estimate_prompt_len(self, *, task_type: str, additional_information: Dict[str, Any]) -> int:
         return Qwen3TTSTalkerForConditionalGeneration.estimate_prompt_len_from_additional_information(
             additional_information=additional_information,
-            task_type=DEFAULT_TASK_TYPE,
+            task_type=task_type,
             tokenize_prompt=lambda text: self.tokenizer(text, padding=False)["input_ids"],
             codec_language_id=getattr(self.talker_config, "codec_language_id", None),
             spk_is_dialect=getattr(self.talker_config, "spk_is_dialect", None),
         )
 
-    def _build_additional_information(
+    def _build_voice_design_information(
         self,
         *,
         text: str,
@@ -136,7 +143,7 @@ class VoiceDesignVllmModel:
         generation_kwargs: Dict[str, Any],
     ) -> Dict[str, Any]:
         additional_information: Dict[str, Any] = {
-            "task_type": [DEFAULT_TASK_TYPE],
+            "task_type": [VOICE_DESIGN_TASK_TYPE],
             "text": [text],
             "language": [language],
             "instruct": [instruct],
@@ -144,8 +151,52 @@ class VoiceDesignVllmModel:
         for key, value in generation_kwargs.items():
             if value is None:
                 continue
-            additional_information[key] = value if isinstance(value, list) else [value]
+            additional_information[key] = self._wrap_scalar(value)
         return additional_information
+
+    def _build_voice_clone_information(
+        self,
+        *,
+        text: str,
+        language: str,
+        ref_audio: str,
+        ref_text: Optional[str],
+        x_vector_only_mode: bool,
+        generation_kwargs: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        additional_information: Dict[str, Any] = {
+            "task_type": [BASE_TASK_TYPE],
+            "text": [text],
+            "language": [language],
+            "ref_audio": [ref_audio],
+            "x_vector_only_mode": [x_vector_only_mode],
+        }
+        if ref_text is not None:
+            additional_information["ref_text"] = [ref_text]
+        for key, value in generation_kwargs.items():
+            if value is None:
+                continue
+            additional_information[key] = self._wrap_scalar(value)
+        return additional_information
+
+    def _generate(self, *, task_type: str, additional_information: Dict[str, Any]) -> tuple[list[Any], int]:
+        prompt_len = self._estimate_prompt_len(task_type=task_type, additional_information=additional_information)
+        inputs = {
+            "prompt_token_ids": [1] * prompt_len,
+            "additional_information": additional_information,
+        }
+
+        responses = self.omni.generate([inputs])
+        if not responses:
+            raise RuntimeError("No response returned by vLLM.")
+
+        multimodal_output = responses[0].multimodal_output
+        if not multimodal_output or "audio" not in multimodal_output or "sr" not in multimodal_output:
+            raise RuntimeError(f"Missing audio output from vLLM: {multimodal_output!r}")
+
+        wav = self._flatten_audio_tensor(multimodal_output["audio"])
+        sample_rate = self._resolve_sample_rate(multimodal_output["sr"])
+        return [wav], sample_rate
 
     def _flatten_audio_tensor(self, audio_data: Any) -> Any:
         ensure_runtime_imports()
@@ -179,29 +230,44 @@ class VoiceDesignVllmModel:
         instruct: str,
         **generation_kwargs: Any,
     ) -> tuple[list[Any], int]:
-        additional_information = self._build_additional_information(
+        additional_information = self._build_voice_design_information(
             text=text,
             language=language,
             instruct=instruct,
             generation_kwargs=generation_kwargs,
         )
-        prompt_len = self._estimate_prompt_len(additional_information)
-        inputs = {
-            "prompt_token_ids": [1] * prompt_len,
-            "additional_information": additional_information,
-        }
+        return self._generate(task_type=VOICE_DESIGN_TASK_TYPE, additional_information=additional_information)
 
-        responses = self.omni.generate([inputs])
-        if not responses:
-            raise RuntimeError("No response returned by vLLM.")
+    def generate_voice_clone(
+        self,
+        *,
+        text: str,
+        language: str,
+        ref_audio: str,
+        ref_text: Optional[str] = None,
+        x_vector_only_mode: bool = False,
+        **generation_kwargs: Any,
+    ) -> tuple[list[Any], int]:
+        additional_information = self._build_voice_clone_information(
+            text=text,
+            language=language,
+            ref_audio=ref_audio,
+            ref_text=ref_text,
+            x_vector_only_mode=x_vector_only_mode,
+            generation_kwargs=generation_kwargs,
+        )
+        return self._generate(task_type=BASE_TASK_TYPE, additional_information=additional_information)
 
-        multimodal_output = responses[0].multimodal_output
-        if not multimodal_output or "audio" not in multimodal_output or "sr" not in multimodal_output:
-            raise RuntimeError(f"Missing audio output from vLLM: {multimodal_output!r}")
 
-        wav = self._flatten_audio_tensor(multimodal_output["audio"])
-        sample_rate = self._resolve_sample_rate(multimodal_output["sr"])
-        return [wav], sample_rate
+VoiceDesignVllmModel = Qwen3TTSVllmModel
 
 
-__all__ = ["ENGINE_NAME", "VoiceDesignVllmModel", "ensure_runtime_imports"]
+__all__ = [
+    "BASE_TASK_TYPE",
+    "DEFAULT_BASE_MODEL",
+    "ENGINE_NAME",
+    "Qwen3TTSVllmModel",
+    "VOICE_DESIGN_TASK_TYPE",
+    "VoiceDesignVllmModel",
+    "ensure_runtime_imports",
+]

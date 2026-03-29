@@ -53,3 +53,4 @@ __pycache__/
 *.py[cod]
 scripts/blog-audio/.venv/
 scripts/blog-audio/.local/
+AGENTS.md

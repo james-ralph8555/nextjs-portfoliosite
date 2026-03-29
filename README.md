@@ -66,6 +66,7 @@ The globe now uses a dedicated canvas renderer with a React control shell. No We
 - Raw voice design CLI: `npm run audio:design -- design --text "..." --instruct "..." --language English`
 - Blog-native audio sidecar generation: `npm run audio:post -- --post src/_posts/<post>.md --language English`
 - Audio post generation uses paragraph-sized chunking by default (`200-500` chars, `100ms` pauses), merges adjacent short blocks, and publishes `public/assets/post-audio/<post>/post.mp3`
+- Blog-native post narration uses Qwen Base voice cloning through `vllm-omni` with `/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav` as the default shared reference sample
 - Blog-audio sidecars include transcript text plus per-chunk text/timing metadata for later synchronized highlighting
 - `ffmpeg` is required for the MP3 transcode in `audio:post`
 

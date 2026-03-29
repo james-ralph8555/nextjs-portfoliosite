@@ -16,13 +16,14 @@ import numpy as np
 
 from blog_audio import workflow
 from blog_audio._repo import DEFAULT_POST_AUDIO_STATE_ROOT, DEFAULT_PUBLIC_AUDIO_ROOT, POSTS_ROOT, PUBLIC_ROOT, repo_relative
-from blog_audio.vllm_voice_design import ENGINE_NAME
+from blog_audio.vllm_voice_design import BASE_TASK_TYPE, DEFAULT_BASE_MODEL, ENGINE_NAME
 
 
 DEFAULT_CHUNK_MIN_CHARS = 200
 DEFAULT_CHUNK_MAX_CHARS = 500
 DEFAULT_PAUSE_MS = 100
 DEFAULT_MP3_BITRATE = "96k"
+DEFAULT_REF_AUDIO = Path("/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav")
 
 FRONTMATTER_RE = re.compile(r"^---\s*\n.*?\n---\s*(?:\n|$)", re.DOTALL)
 HEADING_RE = re.compile(r"^(#{1,6})\s+(.*)$")
@@ -608,6 +609,9 @@ def build_audio_map(
         "postPath": repo_relative(post_path),
         "language": metadata.get("language"),
         "model": metadata.get("model"),
+        "taskType": metadata.get("task_type"),
+        "refAudio": metadata.get("ref_audio"),
+        "xVectorOnlyMode": metadata.get("x_vector_only_mode", False),
         "instruct": metadata.get("instruct"),
         "usedDefaultInstruct": metadata.get("used_default_instruct", False),
         "generationKwargs": metadata.get("generation_kwargs", {}),
@@ -639,9 +643,6 @@ def build_audio_map(
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Generate stitched narration audio for a markdown post.")
     parser.add_argument("--post", required=True, help="Post id or markdown path under src/_posts")
-    instruct_group = parser.add_mutually_exclusive_group(required=False)
-    instruct_group.add_argument("--instruct")
-    instruct_group.add_argument("--instruct-file")
     parser.add_argument("--run-name")
     parser.add_argument("--posts-root", default=str(POSTS_ROOT))
     parser.add_argument("--public-root", default=str(PUBLIC_ROOT))
@@ -649,7 +650,8 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--audio-map", default="")
     parser.add_argument("--asset-root", default=str(DEFAULT_PUBLIC_AUDIO_ROOT))
     parser.add_argument("--overwrite-public-audio", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--design-model", default=workflow.DEFAULT_DESIGN_MODEL)
+    parser.add_argument("--model", default=DEFAULT_BASE_MODEL)
+    parser.add_argument("--ref-audio", default=str(DEFAULT_REF_AUDIO))
     parser.add_argument("--chunk-min-chars", type=int, default=DEFAULT_CHUNK_MIN_CHARS)
     parser.add_argument("--chunk-max-chars", type=int, default=DEFAULT_CHUNK_MAX_CHARS)
     parser.add_argument("--pause-ms", type=int, default=DEFAULT_PAUSE_MS)
@@ -685,8 +687,10 @@ def run_post_narration(args: argparse.Namespace) -> Path:
     chunk_audio_dir = chunks_dir(run_dir)
     chunk_audio_dir.mkdir(parents=True, exist_ok=True)
 
-    instruct = workflow.load_instruct_arg(args.instruct, args.instruct_file)
-    used_default_instruct = not args.instruct and not args.instruct_file
+    ref_audio_path = Path(args.ref_audio).expanduser().resolve()
+    if not ref_audio_path.exists():
+        raise FileNotFoundError(f"reference audio not found: {ref_audio_path}")
+
     generation_kwargs = workflow.collect_generation_kwargs(args)
 
     workflow.ensure_runtime_imports()
@@ -697,12 +701,13 @@ def run_post_narration(args: argparse.Namespace) -> Path:
 
     model = None
     try:
-        model = workflow.load_model(args.design_model, args)
+        model = workflow.load_model(args.model, args)
         for index, chunk in enumerate(chunks, start=1):
-            wavs, sr = model.generate_voice_design(
+            wavs, sr = model.generate_voice_clone(
                 text=chunk.spoken_text,
                 language=args.language,
-                instruct=instruct,
+                ref_audio=str(ref_audio_path),
+                x_vector_only_mode=True,
                 **generation_kwargs,
             )
             wav = np.asarray(wavs[0], dtype=np.float32)
@@ -789,10 +794,13 @@ def run_post_narration(args: argparse.Namespace) -> Path:
         "engine": ENGINE_NAME,
         "post_id": post_id,
         "post_path": repo_relative(post_path),
-        "model": args.design_model,
+        "model": args.model,
+        "task_type": BASE_TASK_TYPE,
+        "ref_audio": str(ref_audio_path),
+        "x_vector_only_mode": True,
         "language": args.language,
-        "instruct": instruct,
-        "used_default_instruct": used_default_instruct,
+        "instruct": None,
+        "used_default_instruct": False,
         "generation_kwargs": generation_kwargs,
         "chunk_min_chars": args.chunk_min_chars,
         "chunk_max_chars": args.chunk_max_chars,

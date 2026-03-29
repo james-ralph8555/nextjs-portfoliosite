@@ -4,10 +4,11 @@ Site-local Python package for the portfolio blog audio pipeline.
 
 ## Runtime model
 - The working CUDA runtime is copied from `../tts/.venv`.
-- Blog audio generation now runs through `vllm-omni` for Qwen3 `VoiceDesign`.
+- Blog audio generation runs through `vllm-omni` for Qwen3 TTS.
 - `transformers` is still used for tokenizer/config helpers needed by the vLLM prompt builder.
 - The copied runtime is local-only and should not be committed.
-- The design workflow has one built-in default narration prompt for blog audio when `--instruct` is omitted.
+- Blog-native post narration uses the Qwen Base model with one shared voice sample.
+- The default blog narration sample is `/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav`.
 - Post narration output is stitched into one MP3 under `public/assets/post-audio/<post>/post.mp3`.
 - `ffmpeg` is required for the MP3 transcode step.
 - The shell must provide the same CUDA and C++ runtime support that makes `../tts/.venv` usable.
@@ -29,7 +30,8 @@ uv run --python scripts/blog-audio/.venv/bin/python scripts/blog-audio-post.py -
 ```
 
 ## Narration defaults
-- Omit `--instruct` to use the built-in narration prompt.
+- Post narration uses `task_type=Base` with `x_vector_only_mode=true`.
+- Omit `--ref-audio` to use the shared `_denoise_2.wav` sample.
 - Posts are chunked into paragraph-sized TTS requests.
 - Default chunking targets `200-500` characters per chunk.
 - Adjacent short paragraphs or list items are merged until they reach a useful chunk size.

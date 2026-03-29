@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2021-12-31-grafana-server-monitoring",
-  "generatedAt": "2026-03-29T03:18:05Z",
+  "generatedAt": "2026-03-29T04:30:34Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2021-12-31-grafana-server-monitoring.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 49,
     "pauseMs": 100,
-    "durationSeconds": 1041.68,
+    "durationSeconds": 934.8,
     "transcript": {
       "text": "Grafana is an exceptional tool for status monitoring and alerting, with flexibility and extensibility that is hard to find in other tools. This guide will cover every step of the process, from installation to a usable dashboard. The DIY setup of Grafana is a plus in my mind, since once you set it up, you will understand every metric you have shown. You can have a basic setup with a few key metrics and alerts, or you can tinker it to your heart\u2019s content. Fair warning:\n\n this setup will take a few hours, but you do not need to do every example in the examples section to have a working dashboard.\n\nThe Stack\n\nFor this article, I will use a stack consisting of influxDB v2 with telegraf and grafana on a linux system. These will be deployed via Docker containers. InfluxDB is a time series database that holds all of your metrics. Version 2 comes with a great web interface that makes querying data easy, even if you have no prior database experience. Telegraf is a tool built into influxDB which grabs a wide range of system info, such as system resource usage and docker stats.\n\nDocker\n\nDocker will be used for this guide. If you do not have docker, instructions to install it can be found here. If anything goes wrong during the installation of influxDB or grafana during this guide, you can see error messages with\n\nor\n\nInfluxDB\n\nWe will want to use influxDB 2 here, since it is the newest version. The following docker command starts an influxDB container, and persists the data in the directory labeled . Change that part of the code to whatever directory you want influxDB\u2019s data to reside.\n\nIf all went well, you should be able to navigate to http://localhost:8086 or http:// :8086 and see the influxDB configuration screen:\n\nPress Get Started, and create a user, password, organization name, and an initial bucket name. A good choice for your organization name is your system\u2019s hostname, and you should name your start bucket \u201ctelegraf-bucket\u201d. Once that is setup you should see this screen:\n\nSelect \u201cLoad your data\u201d, and then navigate to the telegraf tab.\n\nTelegraf\n\nOnce you are on the telegraf screen, click \u201ccreate configuration\u201d. You should see options, and I selected \u201cSystem\u201d and \u201cDocker\u201d:\n\nYou can select the other services as well if you run these.\n\nOnce you click \u201ccontinue\u201d, you can give your configuration a name. On the left pane, you will notice Docker has a grey circle next to it. Click on the docker tab and enter\n\nAs the docker endpoint.\n\nOnce you create your telegraf configuration, you will have to install telegraf. I am going to break my own rules here and install telegraf on the system rather than as a docker container. There is less configuration required this way, but either way will work for the purposes of this guide. Instructions for installing telegraf can be found here.\n\nNext, copy the telegraf api token to the clipboard and enter it in your system. Then, start telegraf. Make sure the user you are running it as has permissions to access the resources you specified. I also add a \u201c&\u201d to the end of the telegraf command to run it in the background, like so\n\nThe startup message should alert you to any errors in starting telegraf (likely permissions problems \u2014 I run this as root). If all went well, you should be able to hit \u201clisten for data\u201d in influxDB and see it report \u201cConnection Found\u201d. You can hit the \u201cexplore\u201d tab in influxDB and you should see measurements like cpu and disk being collected.\n\nNote: telegraf can also be configured manually with a configuration file. To see how that is done, see this guide\n\nGrafana\n\nSimilarly to influxDB, we start grafana with the following command:\n\nYou will also have to set proper permissions for \u201c \u201d with\n\nGo to http:// :3000 and you should be presented with the login screen. The default login is\n\nYou should be presented with a screen to change your password after logging in.\n\nYou should now see the grafana start screen:\n\nSelect the gear icon on the left pane and then go to data sources, and select \u201cAdd a data source\u201d, and select \u201cInfluxDB\u201d\n\nData Source Configuration\n\nGo back to the influxDB page at http:// :8086, select the data tab, and then select \u201cAPI Tokens\u201d. Create a token with read permissions for your telegraf bucket.\n\nBack to grafana, you should see a screen like this:\n\nMake sure to select your query type as \u201cFlux\u201d, since we are using influxDB v2. Enter your influxDB url, organization, API token from the previous section, and bucket name. Make sure your data source saves successfully.\n\nUsage\n\nNow, the system is ready to go. However, it\u2019s still not very useful, since there is no dashboard yet. Go to the left pane in grafana and press the plus symbol, and then select dashboard.\n\nSelect add a new panel. You can paste in this example query and you should see data, assuming you enabled system metrics in telegraf.\n\nThis query gives the sum of cpu usage by the system and user across all fields and threads. The nice thing about influxDB is that you don\u2019t have to create these queries by hand. Go the the explore tab of influxDB and create a queries there:\n\nThen click on the \u201cscript editor\u201d button for the query text. You can then paste this in a grafana panel and get the data.\n\nGrafana Visualization Types\n\nThe Grafana documentation gives a good overview of the types of visualizations available. Some visualization types, like bar charts, require transformations in grafana when being used with influxDB, which will be covered in the next section.\n\nGrafana Transformations\n\nTransformations are essential to building a good looking dashboard, but the range of options is overwhelming at first. I will go over a few examples in the next section of how to use them to make useful graphs. The Grafana documentation gives a full list for reference.\n\nGrafana Examples\n\nSingle Stat \u2014 1 Minute System Load\n\nIn InfluxDB, navigate to the explore page, and select \u201csystem\u201d as the measurement and \u201cload1\u201d as the field.\n\nYou can click \u201csubmit\u201d to get a time series graph of the 1 minute load, but what we want here is the text from the script editor. Select that text and paste it into a new grafana panel.\n\nA time series is useful if you want to identify periods of high load. An important thing to understand in grafana is that the time selector on the top right sets the time range for all charts on the dashboard. This is sometimes counter-intuitive. For example, if I have a gauge from a stat that is updated once per day, and I select the time range for the dashboard to 5 minutes, this stat will be blank since there was no new data in the past 5 minutes.\n\n The way to set a custom time range, down to the query level, is to select \u201cquery options\u201d and set the relative time to the time range you want, i.e. 1d for the last day.\n\nYou can change the graph type, for example to a stat, gauge, or bar gauge (these are simple and function similarly), and then rename the graph title and this graph is finished.\n\nMultiple Stats \u2014 1, 5, and 15 Minute Load\n\nSimilarly to the last example, we start a query in InfluxDB. This time, instead of just selection the \u201cload1\u201d in influxDB, we will select \u201cload1\u201d, \u201cload5\u201d, and \u201cload15\u201d. We also want to select \u201cncpus\u201d for reasons that will be shown later.\n\nLike last time, we copy our query into grafana, and get 4 series. Here, I will be using a \u201cgauge\u201d type visualization.\n\nAs you can see, this isn\u2019t very nice. There\u2019s no units, the graphs are out of order, and the labels aren\u2019t the most readable.\n\nUsing grafana\u2019s transforms, we can make this into something more usable. Transforms can be found next to \u201cQuery\u201d in the grafana panel editor.\n\nFirst, we want to apply a concatenate fields transform, so we can use an organize fields transform later.\n\nThen, we want to add 3 \u201cadd field from calculation transforms\u201d. This allows us to do math on the data returned by queries. System load in linux is given as a number which goes from 0 for no load to ncpus for max load. We want to have this as a percentage. Therefore, we set the mode of each of these transforms to \u201cbinary operation\u201d. We then divide the load by the number of CPUs\n\nNow, we can use an organize fields transform to hide the original data and rename fields.\n\nAfter this, using the options pane, we can set the unit to \u201cPercent (0.0\u20131.0)\u201d, the min to 0, the max to 1, and the red threshold to 0.8. The title can be changed too, resulting in\n\nCombining Multiple Queries \u2014 CPU and Hard Drive Temperatures\n\nFirst, CPU temperatures are only available when using the powerstat plugin, and Hard Drive Temperatures are only available when using the SMART plugin. See the \u201cExpanding Telegraf\u201d section of this guide to see how to enable this.\n\nSince we are pulling two different measurements, we will use multiple queries in grafana. The first query will pull the CPU temperature, by core\n\nThis query returns 4 time series, or one for each core.\n\nIf we want the mean temperature of all 4 cores, we add a group to our query, group by measurement, and aggregate by mean:\n\nThis aggregates the temperature of the 4 series from before into one. Paste these into grafana and use a bar gauge to display the most recent data.\n\nWe now have to use grafana transforms. First, we use a \u201cconcatenate fields\u201d transform to merge the results of both queries into a single field. Then, and \u201corganize fields\u201d transform is used to rename and reorder the fields:\n\nWe can now use the options pane on the right hand side of grafana to change the title, graph style, orientation, font size, units (degrees C in this case) and thresholds. Thresholds change the color of the bar once it is over a certain level. I set the threshold to 80 and the color to red, so the green bar changes to red when a temperature is over 80 degrees. These can also be set per bar using the \u201coverrides\u201d section. This results in\n\nDisk Usage \u2014 Pie/Donut Chart\n\nFirst, we start off by querying the disk measurement for the \u201cused\u201d and \u201cfree\u201d fields, and filtering this to a single drive.\n\nAgain, this is pasted into grafana, and the chart type is set to \u201cPie\u201d. Like the previous example, a concatenate fields and organize fields transform is used to name the series to something more readable. For a pie chart, the style can either be a \u201cpie\u201d or a \u201cdonut\u201d, and this is changeable in the options pane. Creating a legend in the options panel and adding the percentage values to it is also something I like to do. This results in\n\nBar Charts From Time Series\n\nFor docker, I have a few containers that I like to monitor the CPU and Memory usage of. This can be accomplished in other ways, but I use a bar chart. This requires a couple transforms to make work.\n\nFirst, we want to query the \u201cusagepercent\u201d field from the \u201cdockercontainercpu\u201d and \u201cdockercontainermem\u201d stats. You may want to filter the query to just a few important containers if you have a lot. Then paste this query into grafana.\n\nWe need a few transforms. The first is labels to fields, which takes the container name label from influxDB and makes it into a field.\n\nThe next is reduce, using reduce fields mode. This transforms data from a time series to just the last value(or max or mean depending on the calculation you choose).\n\nThen, an outer join is done on container name to connect each container to its cpu and memory usage values.\n\nAfter this, an organize fields transform is done where the first N/2 entries are labeled \u201cCPU\u201d and the last N/2 entries are labeled \u201cMem\u201d where N is the number of containers queried.\n\nNext, in the options pane, the legend is hidden. The unit is set to percent (0\u2013100). Overrides are performed, by matching with regex. This allows us to match every field labeled \u201cCPU\u201d or \u201cMem\u201d instead of having to apply the overrides manually. In the overrides, the colors of the bars are changed.\n\nThis results in the CPU and memory usage being grouped nicely by container.\n\nRead/Write and Network Usage \u2014 Rates From Totals\n\nLinux reports network and disk reads and writes in bytes since the system was started. If you want to get a rate, this can be done in influxDB.\n\nUsing the aggregation function \u201cderivative\u201d allows us to see the current rate that data is being sent over the network. Note that a very similar query can be done for disk usage, using \u201cdiskio\u201d as the measurement and \u201cwritebytes\u201d and \u201creadbytes\u201d as the field. This query can be pasted into grafana and the standard options fields can be changed to get the graph you want.\n\nExpanding Telegraf\n\nAs mentioned previously, there are more plugins available for telegraf. Some very useful ones are SMART devices for monitoring hard drive errors and temperature, powerstat for seeing CPU frequency and temperature, and fail2ban for monitoring access. These can be enabled by uncommenting the relevant fields in the telegraf config. A full guide on how to set this up is given on the influxDB website.\n\nBeyond Telegraf\n\nTelegraf is great, but there are some stats that it does not cover. These may be from custom APIs you have, or maybe you want to monitor website uptime.\n\nWebsite Uptime, HTTP Status, and Latency\n\nBlackbox Exporter is what I use to monitor my websites. It runs as a docker container, and this is the script I use to start it\n\nIt needs a config file, and for the setup here, this can be very simple:\n\nThe config file is saved in /config\n\nNow, we can query our website at\n\nThis produces a few simple fields, such as HTTP status code and probedurationseconds.\n\nUsing the link above, we can create a scraper in influxDB. To do this, navigate to the data tab of influxDB and select \u201cscrapers\u201d. Paste in the link above. I create a new bucket for each scraper. You can create another api key that gives read access across all buckets and edit your grafana data source configuration with this API key. Once this is all done, you will see a new bucket with all the fields that blackbox exported.\n\n Since influxDB is a time series database, we can use these points in time to chart the state. Query \u201cprobehttpstatuscode\u201d from influxDB and paste it into grafana. For a website, successful http codes are in the range of 200\u2013299. Therefore, we can use the state diagram or status history chart in grafana and set thresholds to be red for values not in 200\u2013299.\n\nSimilarly, the probe duration status measurement can be queried from the scraper\u2019s bucket. A stat or time series is a good way to represent this value.\n\nCustom Bash Scripts with the InfluxDB API\n\nThis is perhaps the most tedious but most flexible usage of influxDB and grafana. This gives you the ability to send anything from your server\u2019s CLI to influxDB. For example, for monitoring my google drive usage via the CLI (using this program), I type the following command and get the following data\n\nUsing standard unix commands, I can for example extract the Used and Free fields here with\n\nThese variables are inserted into a curl request with the following bash script.\n\nThis script can then be run as a cronjob to continuous send data to influxDB.",
       "chunkSeparator": "\n\n",
@@ -39,9 +42,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 28.64,
+          "durationSeconds": 28.08,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 28.64,
+          "endTimeSeconds": 28.08,
           "pauseAfterMs": 100
         },
         {
@@ -68,9 +71,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 9.12,
-          "startTimeSeconds": 28.74,
-          "endTimeSeconds": 37.86,
+          "durationSeconds": 9.2,
+          "startTimeSeconds": 28.18,
+          "endTimeSeconds": 37.38,
           "pauseAfterMs": 100
         },
         {
@@ -91,9 +94,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 45.76,
-          "startTimeSeconds": 37.96,
-          "endTimeSeconds": 83.72,
+          "durationSeconds": 30.8,
+          "startTimeSeconds": 37.48,
+          "endTimeSeconds": 68.28,
           "pauseAfterMs": 100
         },
         {
@@ -120,9 +123,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 13.36,
-          "startTimeSeconds": 83.82,
-          "endTimeSeconds": 97.18,
+          "durationSeconds": 15.6,
+          "startTimeSeconds": 68.38,
+          "endTimeSeconds": 83.98,
           "pauseAfterMs": 100
         },
         {
@@ -155,9 +158,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 17.6,
-          "startTimeSeconds": 97.28,
-          "endTimeSeconds": 114.88,
+          "durationSeconds": 19.28,
+          "startTimeSeconds": 84.08,
+          "endTimeSeconds": 103.36,
           "pauseAfterMs": 100
         },
         {
@@ -184,9 +187,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 28.8,
-          "startTimeSeconds": 114.98,
-          "endTimeSeconds": 143.78,
+          "durationSeconds": 27.44,
+          "startTimeSeconds": 103.46,
+          "endTimeSeconds": 130.9,
           "pauseAfterMs": 100
         },
         {
@@ -219,9 +222,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 15.52,
-          "startTimeSeconds": 143.88,
-          "endTimeSeconds": 159.4,
+          "durationSeconds": 12.96,
+          "startTimeSeconds": 131.0,
+          "endTimeSeconds": 143.96,
           "pauseAfterMs": 100
         },
         {
@@ -248,9 +251,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 13.84,
-          "startTimeSeconds": 159.5,
-          "endTimeSeconds": 173.34,
+          "durationSeconds": 14.48,
+          "startTimeSeconds": 144.06,
+          "endTimeSeconds": 158.54,
           "pauseAfterMs": 100
         },
         {
@@ -277,9 +280,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 21.6,
-          "startTimeSeconds": 173.44,
-          "endTimeSeconds": 195.04,
+          "durationSeconds": 22.4,
+          "startTimeSeconds": 158.64,
+          "endTimeSeconds": 181.04,
           "pauseAfterMs": 100
         },
         {
@@ -300,9 +303,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 18.64,
-          "startTimeSeconds": 195.14,
-          "endTimeSeconds": 213.78,
+          "durationSeconds": 18.08,
+          "startTimeSeconds": 181.14,
+          "endTimeSeconds": 199.22,
           "pauseAfterMs": 100
         },
         {
@@ -323,9 +326,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 23.68,
-          "startTimeSeconds": 213.88,
-          "endTimeSeconds": 237.56,
+          "durationSeconds": 20.24,
+          "startTimeSeconds": 199.32,
+          "endTimeSeconds": 219.56,
           "pauseAfterMs": 100
         },
         {
@@ -364,9 +367,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 18.56,
-          "startTimeSeconds": 237.66,
-          "endTimeSeconds": 256.22,
+          "durationSeconds": 16.16,
+          "startTimeSeconds": 219.66,
+          "endTimeSeconds": 235.82,
           "pauseAfterMs": 100
         },
         {
@@ -399,9 +402,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 17.52,
-          "startTimeSeconds": 256.32,
-          "endTimeSeconds": 273.84,
+          "durationSeconds": 13.2,
+          "startTimeSeconds": 235.92,
+          "endTimeSeconds": 249.12,
           "pauseAfterMs": 100
         },
         {
@@ -434,9 +437,9 @@
             }
           ],
           "audioFile": "chunk-014.wav",
-          "durationSeconds": 23.76,
-          "startTimeSeconds": 273.94,
-          "endTimeSeconds": 297.7,
+          "durationSeconds": 24.64,
+          "startTimeSeconds": 249.22,
+          "endTimeSeconds": 273.86,
           "pauseAfterMs": 100
         },
         {
@@ -463,9 +466,9 @@
             }
           ],
           "audioFile": "chunk-015.wav",
-          "durationSeconds": 18.88,
-          "startTimeSeconds": 297.8,
-          "endTimeSeconds": 316.68,
+          "durationSeconds": 16.0,
+          "startTimeSeconds": 273.96,
+          "endTimeSeconds": 289.96,
           "pauseAfterMs": 100
         },
         {
@@ -498,9 +501,9 @@
             }
           ],
           "audioFile": "chunk-016.wav",
-          "durationSeconds": 22.8,
-          "startTimeSeconds": 316.78,
-          "endTimeSeconds": 339.58,
+          "durationSeconds": 18.56,
+          "startTimeSeconds": 290.06,
+          "endTimeSeconds": 308.62,
           "pauseAfterMs": 100
         },
         {
@@ -521,9 +524,9 @@
             }
           ],
           "audioFile": "chunk-017.wav",
-          "durationSeconds": 16.48,
-          "startTimeSeconds": 339.68,
-          "endTimeSeconds": 356.16,
+          "durationSeconds": 14.8,
+          "startTimeSeconds": 308.72,
+          "endTimeSeconds": 323.52,
           "pauseAfterMs": 100
         },
         {
@@ -556,9 +559,9 @@
             }
           ],
           "audioFile": "chunk-018.wav",
-          "durationSeconds": 27.28,
-          "startTimeSeconds": 356.26,
-          "endTimeSeconds": 383.54,
+          "durationSeconds": 22.16,
+          "startTimeSeconds": 323.62,
+          "endTimeSeconds": 345.78,
           "pauseAfterMs": 100
         },
         {
@@ -585,9 +588,9 @@
             }
           ],
           "audioFile": "chunk-019.wav",
-          "durationSeconds": 20.0,
-          "startTimeSeconds": 383.64,
-          "endTimeSeconds": 403.64,
+          "durationSeconds": 16.8,
+          "startTimeSeconds": 345.88,
+          "endTimeSeconds": 362.68,
           "pauseAfterMs": 100
         },
         {
@@ -626,9 +629,9 @@
             }
           ],
           "audioFile": "chunk-020.wav",
-          "durationSeconds": 24.0,
-          "startTimeSeconds": 403.74,
-          "endTimeSeconds": 427.74,
+          "durationSeconds": 20.72,
+          "startTimeSeconds": 362.78,
+          "endTimeSeconds": 383.5,
           "pauseAfterMs": 100
         },
         {
@@ -649,9 +652,9 @@
             }
           ],
           "audioFile": "chunk-021.wav",
-          "durationSeconds": 28.64,
-          "startTimeSeconds": 427.84,
-          "endTimeSeconds": 456.48,
+          "durationSeconds": 25.68,
+          "startTimeSeconds": 383.6,
+          "endTimeSeconds": 409.28,
           "pauseAfterMs": 100
         },
         {
@@ -678,9 +681,9 @@
             }
           ],
           "audioFile": "chunk-022.wav",
-          "durationSeconds": 23.92,
-          "startTimeSeconds": 456.58,
-          "endTimeSeconds": 480.5,
+          "durationSeconds": 22.08,
+          "startTimeSeconds": 409.38,
+          "endTimeSeconds": 431.46,
           "pauseAfterMs": 100
         },
         {
@@ -707,9 +710,9 @@
             }
           ],
           "audioFile": "chunk-023.wav",
-          "durationSeconds": 23.28,
-          "startTimeSeconds": 480.6,
-          "endTimeSeconds": 503.88,
+          "durationSeconds": 19.44,
+          "startTimeSeconds": 431.56,
+          "endTimeSeconds": 451.0,
           "pauseAfterMs": 100
         },
         {
@@ -736,9 +739,9 @@
             }
           ],
           "audioFile": "chunk-024.wav",
-          "durationSeconds": 16.72,
-          "startTimeSeconds": 503.98,
-          "endTimeSeconds": 520.7,
+          "durationSeconds": 16.4,
+          "startTimeSeconds": 451.1,
+          "endTimeSeconds": 467.5,
           "pauseAfterMs": 100
         },
         {
@@ -765,9 +768,9 @@
             }
           ],
           "audioFile": "chunk-025.wav",
-          "durationSeconds": 16.24,
-          "startTimeSeconds": 520.8,
-          "endTimeSeconds": 537.04,
+          "durationSeconds": 14.4,
+          "startTimeSeconds": 467.6,
+          "endTimeSeconds": 482.0,
           "pauseAfterMs": 100
         },
         {
@@ -788,9 +791,9 @@
             }
           ],
           "audioFile": "chunk-026.wav",
-          "durationSeconds": 28.16,
-          "startTimeSeconds": 537.14,
-          "endTimeSeconds": 565.3,
+          "durationSeconds": 24.48,
+          "startTimeSeconds": 482.1,
+          "endTimeSeconds": 506.58,
           "pauseAfterMs": 100
         },
         {
@@ -817,9 +820,9 @@
             }
           ],
           "audioFile": "chunk-027.wav",
-          "durationSeconds": 20.64,
-          "startTimeSeconds": 565.4,
-          "endTimeSeconds": 586.04,
+          "durationSeconds": 19.6,
+          "startTimeSeconds": 506.68,
+          "endTimeSeconds": 526.28,
           "pauseAfterMs": 100
         },
         {
@@ -846,9 +849,9 @@
             }
           ],
           "audioFile": "chunk-028.wav",
-          "durationSeconds": 23.68,
-          "startTimeSeconds": 586.14,
-          "endTimeSeconds": 609.82,
+          "durationSeconds": 16.24,
+          "startTimeSeconds": 526.38,
+          "endTimeSeconds": 542.62,
           "pauseAfterMs": 100
         },
         {
@@ -875,9 +878,9 @@
             }
           ],
           "audioFile": "chunk-029.wav",
-          "durationSeconds": 14.16,
-          "startTimeSeconds": 609.92,
-          "endTimeSeconds": 624.08,
+          "durationSeconds": 13.2,
+          "startTimeSeconds": 542.72,
+          "endTimeSeconds": 555.92,
           "pauseAfterMs": 100
         },
         {
@@ -904,9 +907,9 @@
             }
           ],
           "audioFile": "chunk-030.wav",
-          "durationSeconds": 17.84,
-          "startTimeSeconds": 624.18,
-          "endTimeSeconds": 642.02,
+          "durationSeconds": 16.64,
+          "startTimeSeconds": 556.02,
+          "endTimeSeconds": 572.66,
           "pauseAfterMs": 100
         },
         {
@@ -927,9 +930,9 @@
             }
           ],
           "audioFile": "chunk-031.wav",
-          "durationSeconds": 15.12,
-          "startTimeSeconds": 642.12,
-          "endTimeSeconds": 657.24,
+          "durationSeconds": 14.24,
+          "startTimeSeconds": 572.76,
+          "endTimeSeconds": 587.0,
           "pauseAfterMs": 100
         },
         {
@@ -950,9 +953,9 @@
             }
           ],
           "audioFile": "chunk-032.wav",
-          "durationSeconds": 30.48,
-          "startTimeSeconds": 657.34,
-          "endTimeSeconds": 687.82,
+          "durationSeconds": 26.16,
+          "startTimeSeconds": 587.1,
+          "endTimeSeconds": 613.26,
           "pauseAfterMs": 100
         },
         {
@@ -979,9 +982,9 @@
             }
           ],
           "audioFile": "chunk-033.wav",
-          "durationSeconds": 10.64,
-          "startTimeSeconds": 687.92,
-          "endTimeSeconds": 698.56,
+          "durationSeconds": 10.8,
+          "startTimeSeconds": 613.36,
+          "endTimeSeconds": 624.16,
           "pauseAfterMs": 100
         },
         {
@@ -1002,9 +1005,9 @@
             }
           ],
           "audioFile": "chunk-034.wav",
-          "durationSeconds": 30.56,
-          "startTimeSeconds": 698.66,
-          "endTimeSeconds": 729.22,
+          "durationSeconds": 26.32,
+          "startTimeSeconds": 624.26,
+          "endTimeSeconds": 650.58,
           "pauseAfterMs": 100
         },
         {
@@ -1032,8 +1035,8 @@
           ],
           "audioFile": "chunk-035.wav",
           "durationSeconds": 14.4,
-          "startTimeSeconds": 729.32,
-          "endTimeSeconds": 743.72,
+          "startTimeSeconds": 650.68,
+          "endTimeSeconds": 665.08,
           "pauseAfterMs": 100
         },
         {
@@ -1054,9 +1057,9 @@
             }
           ],
           "audioFile": "chunk-036.wav",
-          "durationSeconds": 17.12,
-          "startTimeSeconds": 743.82,
-          "endTimeSeconds": 760.94,
+          "durationSeconds": 14.32,
+          "startTimeSeconds": 665.18,
+          "endTimeSeconds": 679.5,
           "pauseAfterMs": 100
         },
         {
@@ -1083,9 +1086,9 @@
             }
           ],
           "audioFile": "chunk-037.wav",
-          "durationSeconds": 23.68,
-          "startTimeSeconds": 761.04,
-          "endTimeSeconds": 784.72,
+          "durationSeconds": 18.64,
+          "startTimeSeconds": 679.6,
+          "endTimeSeconds": 698.24,
           "pauseAfterMs": 100
         },
         {
@@ -1112,9 +1115,9 @@
             }
           ],
           "audioFile": "chunk-038.wav",
-          "durationSeconds": 18.4,
-          "startTimeSeconds": 784.82,
-          "endTimeSeconds": 803.22,
+          "durationSeconds": 19.04,
+          "startTimeSeconds": 698.34,
+          "endTimeSeconds": 717.38,
           "pauseAfterMs": 100
         },
         {
@@ -1135,9 +1138,9 @@
             }
           ],
           "audioFile": "chunk-039.wav",
-          "durationSeconds": 20.56,
-          "startTimeSeconds": 803.32,
-          "endTimeSeconds": 823.88,
+          "durationSeconds": 19.92,
+          "startTimeSeconds": 717.48,
+          "endTimeSeconds": 737.4,
           "pauseAfterMs": 100
         },
         {
@@ -1170,9 +1173,9 @@
             }
           ],
           "audioFile": "chunk-040.wav",
-          "durationSeconds": 21.12,
-          "startTimeSeconds": 823.98,
-          "endTimeSeconds": 845.1,
+          "durationSeconds": 14.96,
+          "startTimeSeconds": 737.5,
+          "endTimeSeconds": 752.46,
           "pauseAfterMs": 100
         },
         {
@@ -1193,9 +1196,9 @@
             }
           ],
           "audioFile": "chunk-041.wav",
-          "durationSeconds": 22.0,
-          "startTimeSeconds": 845.2,
-          "endTimeSeconds": 867.2,
+          "durationSeconds": 20.16,
+          "startTimeSeconds": 752.56,
+          "endTimeSeconds": 772.72,
           "pauseAfterMs": 100
         },
         {
@@ -1222,9 +1225,9 @@
             }
           ],
           "audioFile": "chunk-042.wav",
-          "durationSeconds": 28.4,
-          "startTimeSeconds": 867.3,
-          "endTimeSeconds": 895.7,
+          "durationSeconds": 26.88,
+          "startTimeSeconds": 772.82,
+          "endTimeSeconds": 799.7,
           "pauseAfterMs": 100
         },
         {
@@ -1258,8 +1261,8 @@
           ],
           "audioFile": "chunk-043.wav",
           "durationSeconds": 15.12,
-          "startTimeSeconds": 895.8,
-          "endTimeSeconds": 910.92,
+          "startTimeSeconds": 799.8,
+          "endTimeSeconds": 814.92,
           "pauseAfterMs": 100
         },
         {
@@ -1286,9 +1289,9 @@
             }
           ],
           "audioFile": "chunk-044.wav",
-          "durationSeconds": 13.12,
-          "startTimeSeconds": 911.02,
-          "endTimeSeconds": 924.14,
+          "durationSeconds": 12.64,
+          "startTimeSeconds": 815.02,
+          "endTimeSeconds": 827.66,
           "pauseAfterMs": 100
         },
         {
@@ -1321,9 +1324,9 @@
             }
           ],
           "audioFile": "chunk-045.wav",
-          "durationSeconds": 12.08,
-          "startTimeSeconds": 924.24,
-          "endTimeSeconds": 936.32,
+          "durationSeconds": 11.84,
+          "startTimeSeconds": 827.76,
+          "endTimeSeconds": 839.6,
           "pauseAfterMs": 100
         },
         {
@@ -1344,9 +1347,9 @@
             }
           ],
           "audioFile": "chunk-046.wav",
-          "durationSeconds": 29.28,
-          "startTimeSeconds": 936.42,
-          "endTimeSeconds": 965.7,
+          "durationSeconds": 26.4,
+          "startTimeSeconds": 839.7,
+          "endTimeSeconds": 866.1,
           "pauseAfterMs": 100
         },
         {
@@ -1367,9 +1370,9 @@
             }
           ],
           "audioFile": "chunk-047.wav",
-          "durationSeconds": 27.76,
-          "startTimeSeconds": 965.8,
-          "endTimeSeconds": 993.56,
+          "durationSeconds": 26.16,
+          "startTimeSeconds": 866.2,
+          "endTimeSeconds": 892.36,
           "pauseAfterMs": 100
         },
         {
@@ -1402,9 +1405,9 @@
             }
           ],
           "audioFile": "chunk-048.wav",
-          "durationSeconds": 32.32,
-          "startTimeSeconds": 993.66,
-          "endTimeSeconds": 1025.98,
+          "durationSeconds": 27.68,
+          "startTimeSeconds": 892.46,
+          "endTimeSeconds": 920.14,
           "pauseAfterMs": 100
         },
         {
@@ -1437,9 +1440,9 @@
             }
           ],
           "audioFile": "chunk-049.wav",
-          "durationSeconds": 15.6,
-          "startTimeSeconds": 1026.08,
-          "endTimeSeconds": 1041.68,
+          "durationSeconds": 14.56,
+          "startTimeSeconds": 920.24,
+          "endTimeSeconds": 934.8,
           "pauseAfterMs": 0
         }
       ],
@@ -1450,10 +1453,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-031206_2021-12-31-grafana-server-monitoring",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-031206_2021-12-31-grafana-server-monitoring/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-031206_2021-12-31-grafana-server-monitoring/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-031206_2021-12-31-grafana-server-monitoring/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-042459_2021-12-31-grafana-server-monitoring",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-042459_2021-12-31-grafana-server-monitoring/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-042459_2021-12-31-grafana-server-monitoring/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2021-12-31-grafana-server-monitoring/narration-runs/20260329-042459_2021-12-31-grafana-server-monitoring/post.wav",
       "mp3Path": "public/assets/post-audio/2021-12-31-grafana-server-monitoring/post.mp3"
     }
   }

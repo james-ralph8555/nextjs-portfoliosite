@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2026-03-04-retroglobe-canvas-migration",
-  "generatedAt": "2026-03-29T03:03:01Z",
+  "generatedAt": "2026-03-29T04:43:00Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2026-03-04-retroglobe-canvas-migration.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 19,
     "pauseMs": 100,
-    "durationSeconds": 375.08,
+    "durationSeconds": 336.12,
     "transcript": {
       "text": "0. TL;DR\n\nThe original globe used layered DOM elements plus synchronized CSS keyframes. The new globe keeps the same retro visual identity, but renders through a canvas frame loop with explicit 3D math in TypeScript.\n\nThis change made the renderer easier to reason about, easier to evolve, and less coupled to complex selector/keyframe choreography.\n\n1. Baseline: Legacy CSS Globe\n\nFrom the original CSS implementation in git history, the globe used 5 nested structural layers around the wireframe plus 21 generated wireframe elements (9 latitude rings + 12 meridian lines).\n\nMotion was driven by 4 concurrent animation tracks with pointer-driven transforms layered on top.\n\nStrengths:\n\nVisual behavior was mostly declarative.\n\nIndividual layers were easy to inspect in DevTools.\n\nStyling changes were quick for simple cases.\n\nLimitations:\n\nRenderer behavior was split across many selectors and keyframes.\n\nCoordination across axes and wobble layers became harder to maintain.\n\nAdding new rendering effects meant adding more DOM/CSS complexity.\n\n2. New Canvas Renderer Architecture\n\nThe new approach keeps React in charge of controls and interaction, then delegates frame drawing to a dedicated renderer.\n\n2.1 System Flow\n\nThis is the general JavaScript canvas pattern: collect input state, advance runtime state by frame time, run transform/projection math, then issue layered draw passes.\n\n2.2 React Shell Responsibilities (src/app/RetroGlobe.tsx)\n\nRetroGlobe.tsx now acts as the orchestration layer:\n\nTracks user control state (lineWidth, lineDensity, axis speeds, wobble, band speed, pause).\n\nStores mutable runtime rotation state in refs for smooth frame updates.\n\nHandles drag/touch input and maps it to user rotation offsets.\n\nSyncs canvas backing resolution to element size and DPR.\n\nCalls renderRetroGlobeFrame(...) once per animation frame.\n\n2.3 Render Core Responsibilities (src/lib/retroGlobeCanvas.ts)\n\nThe renderer is a clear draw pipeline:\n\nApply rotational transforms in 3D.\n\nProject transformed points with perspective.\n\nDraw segmented latitude/longitude wireframe shells.\n\nRender gated rotating band highlights (core + glow passes).\n\nFinish with vignette and palette-specific compositing.\n\nControl-speed mapping is centralized in:\n\nspeedLevelToAngularVelocity\n\nwobbleLevelToAngularVelocity\n\nbandLevelToAngularVelocity\n\nThat keeps UI controls and motion behavior consistent.\n\n2.4 Why This Architecture Feels Better\n\nRendering logic is expressed as code stages instead of distributed animation declarations.\n\nNew effects can be inserted into one renderer pipeline.\n\nInteraction and drawing concerns are cleaner to separate and test.\n\n3. why not webgl/three.js?\n\nthree.js is massively popular, and it keeps getting more accessible.\n\nAI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project gravitylens.space is shader-first and uses WebGL-style rendering techniques directly.\n\n3.1 Why we still kept this component on 2D canvas\n\nBrowser/driver behavior for WebGL can vary more than Canvas2D in edge cases (context loss, power-saving modes, GPU policy differences).\n\nA small renderer with line work, segmented bands, and compositing does not need full GPU pipeline complexity.\n\nRuntime and dependency weight matters when this is one visual module inside a broader site.\n\nCanvas2D keeps the debugging loop simpler here: points, transforms, and draw passes map directly to code.\n\nWe wanted deterministic behavior across the exact visual style of this wireframe globe, not a general 3D scene framework.\n\n4. Math: transformation and projection\n\nThe canvas renderer is built from straightforward 3D math applied to a sphere before mapping to 2D.\n\nGiven latitude , longitude , and shell radius , a local point on the sphere is:\n\nRotation matrices:\n\nThe renderer applies the composed rotation in this order (matching rotatePoint):\n\nPerspective projection with camera distance D, center (cx, cy), and clamped denominator:\n\nDepth-based segment alpha (matching depthAlpha) is:\n\nSpeed controls are converted to angular velocity with fixed-period mappings:\n\nThis is the main loop in formula form: rotate, project, depth-gate alpha, draw layered passes, repeat every frame.\n\n5. Why Canvas Won Here\n\nThe migration was not about replacing CSS broadly. It was about moving one rendering-heavy component into a model where behavior is explicit and programmable.\n\nIn the CSS version, the visual system was good but mechanically fragmented. In the canvas version, the sphere is one render target with one frame function and well-defined phases.\n\nTradeoff:\n\nYou own more custom rendering code and math.\n\nPayoff:\n\nBetter long-term control over motion, layering, and effect evolution.\n\n6. Closing\n\nThis migration kept the retro look while changing the implementation model underneath it. The result is a globe renderer that is easier to extend, easier to debug, and easier to iterate on without accumulating more structural CSS complexity.",
       "chunkSeparator": "\n\n",
@@ -45,9 +48,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 18.48,
+          "durationSeconds": 14.56,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 18.48,
+          "endTimeSeconds": 14.56,
           "pauseAfterMs": 100
         },
         {
@@ -80,9 +83,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 25.68,
-          "startTimeSeconds": 18.58,
-          "endTimeSeconds": 44.26,
+          "durationSeconds": 23.68,
+          "startTimeSeconds": 14.66,
+          "endTimeSeconds": 38.34,
           "pauseAfterMs": 100
         },
         {
@@ -121,9 +124,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 14.56,
-          "startTimeSeconds": 44.36,
-          "endTimeSeconds": 58.92,
+          "durationSeconds": 13.92,
+          "startTimeSeconds": 38.44,
+          "endTimeSeconds": 52.36,
           "pauseAfterMs": 100
         },
         {
@@ -168,9 +171,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 20.4,
-          "startTimeSeconds": 59.02,
-          "endTimeSeconds": 79.42,
+          "durationSeconds": 17.04,
+          "startTimeSeconds": 52.46,
+          "endTimeSeconds": 69.5,
           "pauseAfterMs": 100
         },
         {
@@ -209,9 +212,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 22.72,
-          "startTimeSeconds": 79.52,
-          "endTimeSeconds": 102.24,
+          "durationSeconds": 25.04,
+          "startTimeSeconds": 69.6,
+          "endTimeSeconds": 94.64,
           "pauseAfterMs": 100
         },
         {
@@ -244,9 +247,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 20.16,
-          "startTimeSeconds": 102.34,
-          "endTimeSeconds": 122.5,
+          "durationSeconds": 14.56,
+          "startTimeSeconds": 94.74,
+          "endTimeSeconds": 109.3,
           "pauseAfterMs": 100
         },
         {
@@ -285,9 +288,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 18.8,
-          "startTimeSeconds": 122.6,
-          "endTimeSeconds": 141.4,
+          "durationSeconds": 16.32,
+          "startTimeSeconds": 109.4,
+          "endTimeSeconds": 125.72,
           "pauseAfterMs": 100
         },
         {
@@ -332,9 +335,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 19.28,
-          "startTimeSeconds": 141.5,
-          "endTimeSeconds": 160.78,
+          "durationSeconds": 17.68,
+          "startTimeSeconds": 125.82,
+          "endTimeSeconds": 143.5,
           "pauseAfterMs": 100
         },
         {
@@ -379,9 +382,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 16.4,
-          "startTimeSeconds": 160.88,
-          "endTimeSeconds": 177.28,
+          "durationSeconds": 15.12,
+          "startTimeSeconds": 143.6,
+          "endTimeSeconds": 158.72,
           "pauseAfterMs": 100
         },
         {
@@ -420,9 +423,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 15.2,
-          "startTimeSeconds": 177.38,
-          "endTimeSeconds": 192.58,
+          "durationSeconds": 14.88,
+          "startTimeSeconds": 158.82,
+          "endTimeSeconds": 173.7,
           "pauseAfterMs": 100
         },
         {
@@ -461,9 +464,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 15.52,
-          "startTimeSeconds": 192.68,
-          "endTimeSeconds": 208.2,
+          "durationSeconds": 15.92,
+          "startTimeSeconds": 173.8,
+          "endTimeSeconds": 189.72,
           "pauseAfterMs": 100
         },
         {
@@ -490,9 +493,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 18.0,
-          "startTimeSeconds": 208.3,
-          "endTimeSeconds": 226.3,
+          "durationSeconds": 15.68,
+          "startTimeSeconds": 189.82,
+          "endTimeSeconds": 205.5,
           "pauseAfterMs": 100
         },
         {
@@ -519,9 +522,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 19.92,
-          "startTimeSeconds": 226.4,
-          "endTimeSeconds": 246.32,
+          "durationSeconds": 16.64,
+          "startTimeSeconds": 205.6,
+          "endTimeSeconds": 222.24,
           "pauseAfterMs": 100
         },
         {
@@ -554,9 +557,9 @@
             }
           ],
           "audioFile": "chunk-014.wav",
-          "durationSeconds": 25.52,
-          "startTimeSeconds": 246.42,
-          "endTimeSeconds": 271.94,
+          "durationSeconds": 19.6,
+          "startTimeSeconds": 222.34,
+          "endTimeSeconds": 241.94,
           "pauseAfterMs": 100
         },
         {
@@ -590,8 +593,8 @@
           ],
           "audioFile": "chunk-015.wav",
           "durationSeconds": 16.48,
-          "startTimeSeconds": 272.04,
-          "endTimeSeconds": 288.52,
+          "startTimeSeconds": 242.04,
+          "endTimeSeconds": 258.52,
           "pauseAfterMs": 100
         },
         {
@@ -630,9 +633,9 @@
             }
           ],
           "audioFile": "chunk-016.wav",
-          "durationSeconds": 20.8,
-          "startTimeSeconds": 288.62,
-          "endTimeSeconds": 309.42,
+          "durationSeconds": 16.24,
+          "startTimeSeconds": 258.62,
+          "endTimeSeconds": 274.86,
           "pauseAfterMs": 100
         },
         {
@@ -665,9 +668,9 @@
             }
           ],
           "audioFile": "chunk-017.wav",
-          "durationSeconds": 15.92,
-          "startTimeSeconds": 309.52,
-          "endTimeSeconds": 325.44,
+          "durationSeconds": 15.84,
+          "startTimeSeconds": 274.96,
+          "endTimeSeconds": 290.8,
           "pauseAfterMs": 100
         },
         {
@@ -694,9 +697,9 @@
             }
           ],
           "audioFile": "chunk-018.wav",
-          "durationSeconds": 22.72,
-          "startTimeSeconds": 325.54,
-          "endTimeSeconds": 348.26,
+          "durationSeconds": 19.36,
+          "startTimeSeconds": 290.9,
+          "endTimeSeconds": 310.26,
           "pauseAfterMs": 100
         },
         {
@@ -747,9 +750,9 @@
             }
           ],
           "audioFile": "chunk-019.wav",
-          "durationSeconds": 26.72,
-          "startTimeSeconds": 348.36,
-          "endTimeSeconds": 375.08,
+          "durationSeconds": 25.76,
+          "startTimeSeconds": 310.36,
+          "endTimeSeconds": 336.12,
           "pauseAfterMs": 0
         }
       ],
@@ -760,10 +763,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-030011_2026-03-04-retroglobe-canvas-migration/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-044022_2026-03-04-retroglobe-canvas-migration",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-044022_2026-03-04-retroglobe-canvas-migration/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-044022_2026-03-04-retroglobe-canvas-migration/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-03-04-retroglobe-canvas-migration/narration-runs/20260329-044022_2026-03-04-retroglobe-canvas-migration/post.wav",
       "mp3Path": "public/assets/post-audio/2026-03-04-retroglobe-canvas-migration/post.mp3"
     }
   }

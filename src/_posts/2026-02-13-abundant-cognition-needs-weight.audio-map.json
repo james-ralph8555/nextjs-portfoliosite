@@ -1,14 +1,17 @@
 {
   "version": 3,
   "postId": "2026-02-13-abundant-cognition-needs-weight",
-  "generatedAt": "2026-03-29T03:24:43Z",
+  "generatedAt": "2026-03-29T04:37:00Z",
   "status": "ok",
   "narration": {
     "postPath": "src/_posts/2026-02-13-abundant-cognition-needs-weight.md",
     "language": "English",
-    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
-    "instruct": "Speaker: female, alto range, medium-low pitch, smooth and stable timbre\n\nTone: neutral-to-warm, calm, composed, lightly conversational\nEmotion: restrained, low variance, no dramatic shifts\n\nPacing: slightly slower than natural speech, steady rhythm\nProsody: controlled intonation, gentle downward cadence at sentence endings\nPauses: short at commas, clear at sentence boundaries, longer at paragraph breaks\n\nArticulation: precise, crisp consonants, clean pronunciation, no slurring\n\nStyle: informative blog narration, thoughtful and easy to follow, not performative\n\nConstraints: avoid high pitch, avoid exaggerated expressiveness, avoid breathiness, avoid vocal fry, avoid announcer-style projection\n\nGoal: long-form listening comfort with minimal fatigue and consistent delivery",
-    "usedDefaultInstruct": true,
+    "model": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+    "taskType": "Base",
+    "refAudio": "/home/james/projects/tts/prepared_audio/voice_sample_original_mono_48k_00m15s_00m30s_denoise_2.wav",
+    "xVectorOnlyMode": true,
+    "instruct": null,
+    "usedDefaultInstruct": false,
     "generationKwargs": {
       "do_sample": true,
       "subtalker_dosample": true,
@@ -16,7 +19,7 @@
     },
     "chunkCount": 35,
     "pauseMs": 100,
-    "durationSeconds": 685.24,
+    "durationSeconds": 610.44,
     "transcript": {
       "text": "1. When Thinking Becomes Cheap\n\nWe have entered a different cognitive environment. The defining change is not machine intelligence. It is the collapse of articulation as a constraint.\n\nHistorically, expression acted as a filter. To clarify an idea required time, effort, and revision. The cost of formulation naturally constrained how many ideas could fully materialize. Most thoughts remained internal or unfinished.\n\nThat constraint has weakened.\n\nA fragment can be expanded immediately. A draft can be reorganized instantly. Alternative framings can be generated on demand. Iteration cycles compress from hours to seconds.\n\nThis does not eliminate human thinking. It changes its terrain.\n\nInstead of struggling to produce coherent language, we now operate in an environment saturated with it. Coherent phrasing is abundant. Structured responses are abundant. Plausible explanations are abundant.\n\nAbundance alters behavior.\n\nWhen something becomes cheap, we stop rationing it. We experiment more freely. We branch more often. We explore tangents that previously would not have justified the effort.\n\nThis creates a sense of openness \u2014 sometimes exhilarating, sometimes diffuse.\n\nIt can feel like floating because the usual points of resistance are reduced. Tasks that once required concentration now require selection. The bottleneck shifts from production to prioritization.\n\nThe space we have entered is not empty. It is crowded.\n\nCrowded with possible directions.\n\nCrowded with near-complete thoughts.\n\nCrowded with fluent extensions of whatever you begin.\n\nThe central challenge in this space is no longer how to generate.\n\nIt is how to orient.\n\n2. Shared Language Layer\n\nMost software tools historically operated below the language layer.\n\nThey computed, executed, and returned outputs. When they failed, they produced error codes, logs, or blank states. Users learned to interpret those signals, but the system itself did not reason in the same abstraction medium as the user.\n\nThat boundary has shifted.\n\nLarge language models operate directly inside natural language. They generate explanations, alternatives, summaries, counterarguments, and structural revisions in the same format humans use to think and communicate.\n\nThe significance is not just improved performance. It is legibility.\n\nYou can interrogate a model\u2019s output conversationally. You can ask for clarification, refinement, compression, expansion, or reframing. Iteration happens within a shared abstraction layer rather than across an opaque interface.\n\nThis changes the experience of thinking.\n\nWhen a half-formed idea is expanded into a structured outline in seconds, the tool is no longer merely executing commands. It is participating in the shaping of language itself.\n\nThat participation introduces a new requirement: calibration.\n\nFluency is not equivalent to structure. Coherence is not equivalent to depth. The model can generate text that appears complete while still lacking constraint, priority, or real commitment.\n\nThe shared language layer therefore amplifies judgment rather than replacing it.\n\nThe craft shifts from producing sentences to evaluating their integrity.\n\nUsers develop sensitivity to patterns such as:\n\nStructural soundness versus surface fluency.\n\nGenuine synthesis versus repetition.\n\nInsight versus plausible filler.\n\nUseful expansion versus unnecessary elaboration.\n\nLegibility creates collaboration.\n\nCollaboration requires discernment.\n\n3. Gas vs. Gravity\n\nWhen articulation becomes inexpensive, the behavior of ideas changes.\n\nLanguage models reduce the effort required to expand, structure, and refine thoughts. A fragment can become a paragraph. A paragraph can become multiple outlines. A question can branch into several plausible approaches.\n\nThe cost of expression drops. The filtering pressure drops with it.\n\nIn physical terms, gas expands to fill its container. It does not retain shape without constraint. It requires pressure or gravity to condense.\n\nCognition begins to exhibit a similar pattern.\n\nWith reduced friction, ideas proliferate. You can explore adjacent angles, generate alternatives, refine tone, and extend arguments continuously. Exploration becomes easier. Abandonment becomes rarer. Almost every thought can be developed into something that looks complete.\n\nThis abundance is productive. It increases optionality and lowers the barrier to experimentation.\n\nBut abundance also reduces natural compression.\n\nWhen articulation is difficult, only ideas that survive effort become fully formed. Weak intuitions often dissolve before they are written. Strong ones endure the pressure of refinement.\n\nWhen articulation is easy, that pressure weakens. Many ideas reach the page. Few are forced to condense.\n\nThe result is increased volume without guaranteed weight.\n\nThe central constraint shifts.\n\nThe problem is no longer access to ideas.\n\nThe problem is assigning them mass.\n\nMass comes from commitment, prioritization, and constraint.\n\nThe work is no longer generating more thought.\n\nThe work is deciding which thoughts deserve to remain.\n\nThe work is deciding what deserves to remain heavy.\n\n4. Trust Calibration as Craft\n\nThe presence of fluent language changes what skill looks like.\n\nWhen a system can generate structured, coherent responses on demand, the primary challenge is no longer production. It is evaluation.\n\nFluency creates an illusion of completeness. A response can be grammatically correct, logically ordered, and rhetorically confident while still being shallow, redundant, or subtly misaligned with the original intent.\n\nThe craft, therefore, shifts to calibration.\n\nConsider the experience of asking a model to \"improve this paragraph.\" It returns something longer, more formal, with smoother transitions. The grammar is cleaner. The rhythm is more balanced. But somewhere in the revision, a specific claim became generic. A sharp observation became a polite one. The improvement is real\u2014and the paragraph is worse. Calibration is learning to see this immediately.\n\nThis skill is not abstract. It is developed through repeated exposure and correction. Users develop sensitivity to patterns. You begin to notice when a model has restated your question in slightly different words and called it an answer. When it has generated three paragraphs that could be compressed to one sentence. When it sounds confident because the syntax is assertive, not because the reasoning is sound. The list is fluent; the list is also filler.\n\nThe more legible the system becomes, the more responsibility shifts to the human to impose standards.\n\nCalibration is constraint applied in real time.\n\nIt is the act of tightening a response rather than accepting its fluency.\n\nIt is stopping a line of reasoning that sounds impressive but does not move the argument forward.\n\nIt is asking, quietly and repeatedly: does this actually hold?\n\nIn an environment saturated with plausible language, discernment becomes the visible mark of craft.\n\n5. Friction Migrates\n\nFriction does not disappear when a task becomes easier.\n\nIt relocates.\n\nWhen execution becomes automated, the resistance that once lived in mechanics shifts upward into judgment. The difficulty is no longer typing the function or drafting the paragraph. The difficulty is deciding what the function should do, what the paragraph should argue, what constraints matter, and what can be ignored.\n\nCraft does not vanish with automation. It becomes less visible and more structural.\n\nPreviously, skill expressed itself through effort: precision, endurance, refinement under constraint. Now skill expresses itself through selection: what to pursue, what to discard, what to tighten, what to let go.\n\nThe friction is no longer in producing output.\n\nIt is in imposing boundaries.\n\nWithout boundaries, generation continues indefinitely. With boundaries, structure emerges.\n\nThis is the new locus of craft.\n\nIt requires taste \u2014 the ability to sense when something is sufficient. It requires restraint \u2014 the discipline to stop expanding. It requires commitment \u2014 the willingness to choose one direction over many plausible ones.\n\nAutomation reduces mechanical resistance.\n\nIt increases conceptual responsibility.\n\nThe more fluent the system becomes, the more deliberate the human must be.\n\nFriction migrates from the hands to the mind.\n\n6. Choosing Gravity\n\nCheap cognition expands what is possible.\n\nIt lowers the cost of drafting, revising, reframing, and exploring. It makes experimentation accessible and iteration continuous. It enables a kind of intellectual abundance that would have been impractical only a few years ago.\n\nAbundance is not the problem.\n\nOrientation is.\n\nWhen every direction can be developed, the act of choosing becomes the defining constraint. The value shifts from generating more to committing earlier. From expanding outward to stabilizing inward.\n\nGravity, in this environment, is deliberate limitation.\n\nIt is the decision to stop refining. It is the decision to ship one version instead of ten. It is the decision to treat a thought as sufficient and move forward.\n\nThe environment has changed. Articulation is abundant. Iteration is continuous. The bottleneck is no longer production. The bottleneck is conviction. Gravity must be chosen. Not once, as a philosophical stance, but repeatedly\u2014in each decision to stop refining, to ship one version instead of exploring three more, to treat a thought as sufficient and move forward. The tools will continue to improve. They will generate faster, expand more fluently, iterate more smoothly.\n\n The question remains the same: what deserves to become dense?",
       "chunkSeparator": "\n\n",
@@ -51,9 +54,9 @@
             }
           ],
           "audioFile": "chunk-001.wav",
-          "durationSeconds": 30.56,
+          "durationSeconds": 25.2,
           "startTimeSeconds": 0.0,
-          "endTimeSeconds": 30.56,
+          "endTimeSeconds": 25.2,
           "pauseAfterMs": 100
         },
         {
@@ -80,9 +83,9 @@
             }
           ],
           "audioFile": "chunk-002.wav",
-          "durationSeconds": 13.36,
-          "startTimeSeconds": 30.66,
-          "endTimeSeconds": 44.02,
+          "durationSeconds": 13.28,
+          "startTimeSeconds": 25.3,
+          "endTimeSeconds": 38.58,
           "pauseAfterMs": 100
         },
         {
@@ -109,9 +112,9 @@
             }
           ],
           "audioFile": "chunk-003.wav",
-          "durationSeconds": 21.44,
-          "startTimeSeconds": 44.12,
-          "endTimeSeconds": 65.56,
+          "durationSeconds": 17.28,
+          "startTimeSeconds": 38.68,
+          "endTimeSeconds": 55.96,
           "pauseAfterMs": 100
         },
         {
@@ -138,9 +141,9 @@
             }
           ],
           "audioFile": "chunk-004.wav",
-          "durationSeconds": 12.96,
-          "startTimeSeconds": 65.66,
-          "endTimeSeconds": 78.62,
+          "durationSeconds": 14.08,
+          "startTimeSeconds": 56.06,
+          "endTimeSeconds": 70.14,
           "pauseAfterMs": 100
         },
         {
@@ -167,9 +170,9 @@
             }
           ],
           "audioFile": "chunk-005.wav",
-          "durationSeconds": 21.84,
-          "startTimeSeconds": 78.72,
-          "endTimeSeconds": 100.56,
+          "durationSeconds": 17.44,
+          "startTimeSeconds": 70.24,
+          "endTimeSeconds": 87.68,
           "pauseAfterMs": 100
         },
         {
@@ -214,9 +217,9 @@
             }
           ],
           "audioFile": "chunk-006.wav",
-          "durationSeconds": 17.68,
-          "startTimeSeconds": 100.66,
-          "endTimeSeconds": 118.34,
+          "durationSeconds": 15.44,
+          "startTimeSeconds": 87.78,
+          "endTimeSeconds": 103.22,
           "pauseAfterMs": 100
         },
         {
@@ -255,9 +258,9 @@
             }
           ],
           "audioFile": "chunk-007.wav",
-          "durationSeconds": 24.72,
-          "startTimeSeconds": 118.44,
-          "endTimeSeconds": 143.16,
+          "durationSeconds": 24.4,
+          "startTimeSeconds": 103.32,
+          "endTimeSeconds": 127.72,
           "pauseAfterMs": 100
         },
         {
@@ -284,9 +287,9 @@
             }
           ],
           "audioFile": "chunk-008.wav",
-          "durationSeconds": 15.12,
-          "startTimeSeconds": 143.26,
-          "endTimeSeconds": 158.38,
+          "durationSeconds": 15.84,
+          "startTimeSeconds": 127.82,
+          "endTimeSeconds": 143.66,
           "pauseAfterMs": 100
         },
         {
@@ -313,9 +316,9 @@
             }
           ],
           "audioFile": "chunk-009.wav",
-          "durationSeconds": 19.44,
-          "startTimeSeconds": 158.48,
-          "endTimeSeconds": 177.92,
+          "durationSeconds": 19.12,
+          "startTimeSeconds": 143.76,
+          "endTimeSeconds": 162.88,
           "pauseAfterMs": 100
         },
         {
@@ -342,9 +345,9 @@
             }
           ],
           "audioFile": "chunk-010.wav",
-          "durationSeconds": 14.08,
-          "startTimeSeconds": 178.02,
-          "endTimeSeconds": 192.1,
+          "durationSeconds": 13.04,
+          "startTimeSeconds": 162.98,
+          "endTimeSeconds": 176.02,
           "pauseAfterMs": 100
         },
         {
@@ -371,9 +374,9 @@
             }
           ],
           "audioFile": "chunk-011.wav",
-          "durationSeconds": 18.72,
-          "startTimeSeconds": 192.2,
-          "endTimeSeconds": 210.92,
+          "durationSeconds": 15.36,
+          "startTimeSeconds": 176.12,
+          "endTimeSeconds": 191.48,
           "pauseAfterMs": 100
         },
         {
@@ -406,9 +409,9 @@
             }
           ],
           "audioFile": "chunk-012.wav",
-          "durationSeconds": 12.4,
-          "startTimeSeconds": 211.02,
-          "endTimeSeconds": 223.42,
+          "durationSeconds": 12.56,
+          "startTimeSeconds": 191.58,
+          "endTimeSeconds": 204.14,
           "pauseAfterMs": 100
         },
         {
@@ -453,9 +456,9 @@
             }
           ],
           "audioFile": "chunk-013.wav",
-          "durationSeconds": 15.44,
-          "startTimeSeconds": 223.52,
-          "endTimeSeconds": 238.96,
+          "durationSeconds": 15.36,
+          "startTimeSeconds": 204.24,
+          "endTimeSeconds": 219.6,
           "pauseAfterMs": 100
         },
         {
@@ -494,9 +497,9 @@
             }
           ],
           "audioFile": "chunk-014.wav",
-          "durationSeconds": 26.4,
-          "startTimeSeconds": 239.06,
-          "endTimeSeconds": 265.46,
+          "durationSeconds": 22.96,
+          "startTimeSeconds": 219.7,
+          "endTimeSeconds": 242.66,
           "pauseAfterMs": 100
         },
         {
@@ -523,9 +526,9 @@
             }
           ],
           "audioFile": "chunk-015.wav",
-          "durationSeconds": 16.4,
-          "startTimeSeconds": 265.56,
-          "endTimeSeconds": 281.96,
+          "durationSeconds": 14.56,
+          "startTimeSeconds": 242.76,
+          "endTimeSeconds": 257.32,
           "pauseAfterMs": 100
         },
         {
@@ -552,9 +555,9 @@
             }
           ],
           "audioFile": "chunk-016.wav",
-          "durationSeconds": 20.0,
-          "startTimeSeconds": 282.06,
-          "endTimeSeconds": 302.06,
+          "durationSeconds": 20.4,
+          "startTimeSeconds": 257.42,
+          "endTimeSeconds": 277.82,
           "pauseAfterMs": 100
         },
         {
@@ -587,9 +590,9 @@
             }
           ],
           "audioFile": "chunk-017.wav",
-          "durationSeconds": 23.68,
-          "startTimeSeconds": 302.16,
-          "endTimeSeconds": 325.84,
+          "durationSeconds": 20.16,
+          "startTimeSeconds": 277.92,
+          "endTimeSeconds": 298.08,
           "pauseAfterMs": 100
         },
         {
@@ -628,9 +631,9 @@
             }
           ],
           "audioFile": "chunk-018.wav",
-          "durationSeconds": 16.56,
-          "startTimeSeconds": 325.94,
-          "endTimeSeconds": 342.5,
+          "durationSeconds": 15.6,
+          "startTimeSeconds": 298.18,
+          "endTimeSeconds": 313.78,
           "pauseAfterMs": 100
         },
         {
@@ -669,9 +672,9 @@
             }
           ],
           "audioFile": "chunk-019.wav",
-          "durationSeconds": 13.44,
-          "startTimeSeconds": 342.6,
-          "endTimeSeconds": 356.04,
+          "durationSeconds": 13.36,
+          "startTimeSeconds": 313.88,
+          "endTimeSeconds": 327.24,
           "pauseAfterMs": 100
         },
         {
@@ -710,9 +713,9 @@
             }
           ],
           "audioFile": "chunk-020.wav",
-          "durationSeconds": 21.04,
-          "startTimeSeconds": 356.14,
-          "endTimeSeconds": 377.18,
+          "durationSeconds": 19.84,
+          "startTimeSeconds": 327.34,
+          "endTimeSeconds": 347.18,
           "pauseAfterMs": 100
         },
         {
@@ -733,9 +736,9 @@
             }
           ],
           "audioFile": "chunk-021.wav",
-          "durationSeconds": 13.92,
-          "startTimeSeconds": 377.28,
-          "endTimeSeconds": 391.2,
+          "durationSeconds": 14.4,
+          "startTimeSeconds": 347.28,
+          "endTimeSeconds": 361.68,
           "pauseAfterMs": 100
         },
         {
@@ -762,9 +765,9 @@
             }
           ],
           "audioFile": "chunk-022.wav",
-          "durationSeconds": 32.0,
-          "startTimeSeconds": 391.3,
-          "endTimeSeconds": 423.3,
+          "durationSeconds": 24.64,
+          "startTimeSeconds": 361.78,
+          "endTimeSeconds": 386.42,
           "pauseAfterMs": 100
         },
         {
@@ -785,9 +788,9 @@
             }
           ],
           "audioFile": "chunk-023.wav",
-          "durationSeconds": 31.36,
-          "startTimeSeconds": 423.4,
-          "endTimeSeconds": 454.76,
+          "durationSeconds": 26.4,
+          "startTimeSeconds": 386.52,
+          "endTimeSeconds": 412.92,
           "pauseAfterMs": 100
         },
         {
@@ -821,8 +824,8 @@
           ],
           "audioFile": "chunk-024.wav",
           "durationSeconds": 13.6,
-          "startTimeSeconds": 454.86,
-          "endTimeSeconds": 468.46,
+          "startTimeSeconds": 413.02,
+          "endTimeSeconds": 426.62,
           "pauseAfterMs": 100
         },
         {
@@ -855,9 +858,9 @@
             }
           ],
           "audioFile": "chunk-025.wav",
-          "durationSeconds": 17.2,
-          "startTimeSeconds": 468.56,
-          "endTimeSeconds": 485.76,
+          "durationSeconds": 15.6,
+          "startTimeSeconds": 426.72,
+          "endTimeSeconds": 442.32,
           "pauseAfterMs": 100
         },
         {
@@ -896,9 +899,9 @@
             }
           ],
           "audioFile": "chunk-026.wav",
-          "durationSeconds": 26.64,
-          "startTimeSeconds": 485.86,
-          "endTimeSeconds": 512.5,
+          "durationSeconds": 25.6,
+          "startTimeSeconds": 442.42,
+          "endTimeSeconds": 468.02,
           "pauseAfterMs": 100
         },
         {
@@ -925,9 +928,9 @@
             }
           ],
           "audioFile": "chunk-027.wav",
-          "durationSeconds": 23.76,
-          "startTimeSeconds": 512.6,
-          "endTimeSeconds": 536.36,
+          "durationSeconds": 18.32,
+          "startTimeSeconds": 468.12,
+          "endTimeSeconds": 486.44,
           "pauseAfterMs": 100
         },
         {
@@ -966,9 +969,9 @@
             }
           ],
           "audioFile": "chunk-028.wav",
-          "durationSeconds": 17.36,
-          "startTimeSeconds": 536.46,
-          "endTimeSeconds": 553.82,
+          "durationSeconds": 13.92,
+          "startTimeSeconds": 486.54,
+          "endTimeSeconds": 500.46,
           "pauseAfterMs": 100
         },
         {
@@ -989,9 +992,9 @@
             }
           ],
           "audioFile": "chunk-029.wav",
-          "durationSeconds": 16.56,
-          "startTimeSeconds": 553.92,
-          "endTimeSeconds": 570.48,
+          "durationSeconds": 13.44,
+          "startTimeSeconds": 500.56,
+          "endTimeSeconds": 514.0,
           "pauseAfterMs": 100
         },
         {
@@ -1030,9 +1033,9 @@
             }
           ],
           "audioFile": "chunk-030.wav",
-          "durationSeconds": 15.84,
-          "startTimeSeconds": 570.58,
-          "endTimeSeconds": 586.42,
+          "durationSeconds": 12.64,
+          "startTimeSeconds": 514.1,
+          "endTimeSeconds": 526.74,
           "pauseAfterMs": 100
         },
         {
@@ -1065,9 +1068,9 @@
             }
           ],
           "audioFile": "chunk-031.wav",
-          "durationSeconds": 24.4,
-          "startTimeSeconds": 586.52,
-          "endTimeSeconds": 610.92,
+          "durationSeconds": 19.76,
+          "startTimeSeconds": 526.84,
+          "endTimeSeconds": 546.6,
           "pauseAfterMs": 100
         },
         {
@@ -1100,9 +1103,9 @@
             }
           ],
           "audioFile": "chunk-032.wav",
-          "durationSeconds": 18.64,
-          "startTimeSeconds": 611.02,
-          "endTimeSeconds": 629.66,
+          "durationSeconds": 15.6,
+          "startTimeSeconds": 546.7,
+          "endTimeSeconds": 562.3,
           "pauseAfterMs": 100
         },
         {
@@ -1129,9 +1132,9 @@
             }
           ],
           "audioFile": "chunk-033.wav",
-          "durationSeconds": 16.8,
-          "startTimeSeconds": 629.76,
-          "endTimeSeconds": 646.56,
+          "durationSeconds": 14.08,
+          "startTimeSeconds": 562.4,
+          "endTimeSeconds": 576.48,
           "pauseAfterMs": 100
         },
         {
@@ -1152,9 +1155,9 @@
             }
           ],
           "audioFile": "chunk-034.wav",
-          "durationSeconds": 34.0,
-          "startTimeSeconds": 646.66,
-          "endTimeSeconds": 680.66,
+          "durationSeconds": 29.6,
+          "startTimeSeconds": 576.58,
+          "endTimeSeconds": 606.18,
           "pauseAfterMs": 100
         },
         {
@@ -1175,9 +1178,9 @@
             }
           ],
           "audioFile": "chunk-035.wav",
-          "durationSeconds": 4.48,
-          "startTimeSeconds": 680.76,
-          "endTimeSeconds": 685.24,
+          "durationSeconds": 4.16,
+          "startTimeSeconds": 606.28,
+          "endTimeSeconds": 610.44,
           "pauseAfterMs": 0
         }
       ],
@@ -1188,10 +1191,10 @@
       "mimeType": "audio/mpeg"
     },
     "privateArtifacts": {
-      "runDir": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-032036_2026-02-13-abundant-cognition-needs-weight",
-      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-032036_2026-02-13-abundant-cognition-needs-weight/metadata.json",
-      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-032036_2026-02-13-abundant-cognition-needs-weight/chunks.json",
-      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-032036_2026-02-13-abundant-cognition-needs-weight/post.wav",
+      "runDir": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-043303_2026-02-13-abundant-cognition-needs-weight",
+      "metadataPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-043303_2026-02-13-abundant-cognition-needs-weight/metadata.json",
+      "chunkManifestPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-043303_2026-02-13-abundant-cognition-needs-weight/chunks.json",
+      "stitchedWavPath": "scripts/blog-audio/.local/post-audio/2026-02-13-abundant-cognition-needs-weight/narration-runs/20260329-043303_2026-02-13-abundant-cognition-needs-weight/post.wav",
       "mp3Path": "public/assets/post-audio/2026-02-13-abundant-cognition-needs-weight/post.mp3"
     }
   }

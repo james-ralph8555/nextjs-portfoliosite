@@ -56,9 +56,13 @@ type TextBoundary = {
   offset: number;
 };
 
-type MappedNarrationRange = {
+type MappedNarrationTextRange = {
   start: TextBoundary;
   end: TextBoundary;
+};
+
+type MappedNarrationHighlight = {
+  ranges: MappedNarrationTextRange[];
 };
 
 type NarrationTextIndex = {
@@ -86,6 +90,21 @@ function getPostAudioHighlightRegistry() {
 
 function clearPostAudioHighlight() {
   getPostAudioHighlightRegistry()?.delete(POST_AUDIO_HIGHLIGHT_NAME);
+}
+
+function clearNativeSelection() {
+  const selection = window.getSelection();
+  if (!selection) {
+    return;
+  }
+
+  if (typeof selection.removeAllRanges === "function") {
+    selection.removeAllRanges();
+    return;
+  }
+
+  const legacySelection = selection as Selection & { empty?: () => void };
+  legacySelection.empty?.();
 }
 
 function formatTime(value: number) {
@@ -196,9 +215,7 @@ function buildNarrationTextIndex(root: HTMLElement): NarrationTextIndex {
           }
 
           const lastIndex = characters.length - 1;
-          if (characters[lastIndex] === " ") {
-            endBoundaries[lastIndex] = end;
-          } else {
+          if (characters[lastIndex] !== " ") {
             characters.push(" ");
             startBoundaries.push(start);
             endBoundaries.push(end);
@@ -245,9 +262,7 @@ function buildLegacyNarrationTextIndex(root: HTMLElement): NarrationTextIndex {
           }
 
           const lastIndex = characters.length - 1;
-          if (characters[lastIndex] === " ") {
-            endBoundaries[lastIndex] = end;
-          } else {
+          if (characters[lastIndex] !== " ") {
             characters.push(" ");
             startBoundaries.push(start);
             endBoundaries.push(end);
@@ -327,7 +342,61 @@ function buildNarrationBlockIndices(root: HTMLElement) {
   return blockIndices;
 }
 
-function mapChunkSegmentsToNarrationRange(
+function buildMappedNarrationHighlight(
+  index: NarrationTextIndex,
+  startChar: number,
+  endChar: number
+): MappedNarrationHighlight | null {
+  if (startChar < 0 || endChar > index.text.length || endChar <= startChar) {
+    return null;
+  }
+
+  const ranges: MappedNarrationTextRange[] = [];
+  let currentRange: MappedNarrationTextRange | null = null;
+
+  for (let charIndex = startChar; charIndex < endChar; charIndex += 1) {
+    const startBoundary = index.startBoundaries[charIndex];
+    const endBoundary = index.endBoundaries[charIndex];
+    if (!startBoundary || !endBoundary) {
+      continue;
+    }
+
+    // Split at text-node boundaries so the highlight never spans over ignored DOM like
+    // images, diagrams, or KaTeX nodes sitting between narratable text fragments.
+    if (startBoundary.node !== endBoundary.node) {
+      if (currentRange) {
+        ranges.push(currentRange);
+        currentRange = null;
+      }
+      continue;
+    }
+
+    if (
+      currentRange &&
+      currentRange.end.node === startBoundary.node &&
+      currentRange.end.offset === startBoundary.offset
+    ) {
+      currentRange.end = endBoundary;
+      continue;
+    }
+
+    if (currentRange) {
+      ranges.push(currentRange);
+    }
+    currentRange = {
+      start: startBoundary,
+      end: endBoundary,
+    };
+  }
+
+  if (currentRange) {
+    ranges.push(currentRange);
+  }
+
+  return ranges.length > 0 ? { ranges } : null;
+}
+
+function mapChunkSegmentsToNarrationHighlight(
   blockIndices: Map<number, NarrationTextIndex>,
   chunk: PostAudioPlayerChunk,
   audioSrc: string
@@ -336,8 +405,7 @@ function mapChunkSegmentsToNarrationRange(
     return null;
   }
 
-  let startBoundary: TextBoundary | null = null;
-  let endBoundary: TextBoundary | null = null;
+  const ranges: MappedNarrationTextRange[] = [];
 
   for (const segment of chunk.segments) {
     const blockId = segment.blockId;
@@ -367,24 +435,15 @@ function mapChunkSegmentsToNarrationRange(
       );
     }
 
-    const segmentStartBoundary = blockIndex.startBoundaries[startChar];
-    const segmentEndBoundary = blockIndex.endBoundaries[endChar - 1];
-    if (!segmentStartBoundary || !segmentEndBoundary) {
+    const segmentHighlight = buildMappedNarrationHighlight(blockIndex, startChar, endChar);
+    if (!segmentHighlight) {
       return null;
     }
 
-    if (!startBoundary) {
-      startBoundary = segmentStartBoundary;
-    }
-    endBoundary = segmentEndBoundary;
+    ranges.push(...segmentHighlight.ranges);
   }
 
-  return startBoundary && endBoundary
-    ? {
-        start: startBoundary,
-        end: endBoundary,
-      }
-    : null;
+  return ranges.length > 0 ? { ranges } : null;
 }
 
 function mapLegacyChunksToNarrationRanges(root: HTMLElement, chunks: PostAudioPlayerChunk[]) {
@@ -393,7 +452,7 @@ function mapLegacyChunksToNarrationRanges(root: HTMLElement, chunks: PostAudioPl
   }
 
   const narrationIndex = buildLegacyNarrationTextIndex(root);
-  const mappedRanges: Array<MappedNarrationRange | null> = [];
+  const mappedRanges: Array<MappedNarrationHighlight | null> = [];
   let searchCursor = 0;
 
   for (const chunk of chunks) {
@@ -410,18 +469,7 @@ function mapLegacyChunksToNarrationRanges(root: HTMLElement, chunks: PostAudioPl
     }
 
     const endIndex = startIndex + normalizedChunkText.length;
-    const startBoundary = narrationIndex.startBoundaries[startIndex];
-    const endBoundary = narrationIndex.endBoundaries[endIndex - 1];
-
-    if (!startBoundary || !endBoundary) {
-      mappedRanges.push(null);
-      continue;
-    }
-
-    mappedRanges.push({
-      start: startBoundary,
-      end: endBoundary,
-    });
+    mappedRanges.push(buildMappedNarrationHighlight(narrationIndex, startIndex, endIndex));
     searchCursor = endIndex;
   }
 
@@ -472,7 +520,7 @@ export default function PostAudioPlayer({ audioSrc, title, chunks }: PostAudioPl
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [activeChunkIndex, setActiveChunkIndex] = useState<number | null>(null);
-  const [mappedChunkRanges, setMappedChunkRanges] = useState<Array<MappedNarrationRange | null>>([]);
+  const [mappedChunkRanges, setMappedChunkRanges] = useState<Array<MappedNarrationHighlight | null>>([]);
   const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const hasPlaybackPosition = currentTime > 0;
@@ -660,7 +708,7 @@ export default function PostAudioPlayer({ audioSrc, title, chunks }: PostAudioPl
 
     const blockIndices = buildNarrationBlockIndices(article);
     const nextMappedRanges = safeChunks.map((chunk) => {
-      const mappedFromSegments = mapChunkSegmentsToNarrationRange(blockIndices, chunk, audioSrc);
+      const mappedFromSegments = mapChunkSegmentsToNarrationHighlight(blockIndices, chunk, audioSrc);
       if (mappedFromSegments) {
         return mappedFromSegments;
       }
@@ -689,22 +737,30 @@ export default function PostAudioPlayer({ audioSrc, title, chunks }: PostAudioPl
 
     if (activeChunkIndex === null || !hasPlaybackPosition) {
       clearPostAudioHighlight();
+      clearNativeSelection();
       return;
     }
 
-    const mappedRange = mappedChunkRanges[activeChunkIndex];
-    if (!mappedRange) {
+    const mappedHighlight = mappedChunkRanges[activeChunkIndex];
+    if (!mappedHighlight || mappedHighlight.ranges.length === 0) {
       clearPostAudioHighlight();
+      clearNativeSelection();
       return;
     }
 
-    const range = document.createRange();
-    range.setStart(mappedRange.start.node, mappedRange.start.offset);
-    range.setEnd(mappedRange.end.node, mappedRange.end.offset);
-    highlightRegistry.set(POST_AUDIO_HIGHLIGHT_NAME, new HighlightConstructor(range));
+    clearNativeSelection();
+
+    const ranges = mappedHighlight.ranges.map((mappedRange) => {
+      const range = document.createRange();
+      range.setStart(mappedRange.start.node, mappedRange.start.offset);
+      range.setEnd(mappedRange.end.node, mappedRange.end.offset);
+      return range;
+    });
+    highlightRegistry.set(POST_AUDIO_HIGHLIGHT_NAME, new HighlightConstructor(...ranges));
 
     return () => {
       clearPostAudioHighlight();
+      clearNativeSelection();
     };
   }, [activeChunkIndex, hasPlaybackPosition, mappedChunkRanges]);
 
