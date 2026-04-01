@@ -99,6 +99,7 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
   - Linkable headings via `rehype-slug` + autolink
   - Layered SVG/image depth cards driven by optional post sidecar maps (`src/_posts/<post>.svg-map.json`)
   - Blog-audio sidecars written to `src/_posts/<post>.audio-map.json`
+  - AI-image prompt sidecars written to `src/_posts/<post>.ai-image-map.json`
   - HTML media embeds in posts (for example `<video>`), plus video or image `coverImage` support in blog listings
 - Blog surfaces:
   - Home page `BLOG` block (`BlogLinkBlock`) shows recent posts in terminal-table/card format

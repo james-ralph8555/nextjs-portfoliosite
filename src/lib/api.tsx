@@ -22,6 +22,7 @@ import remarkFigureCaption from "remark-figure-caption";
 let p: ReturnType<typeof getParserPre> | undefined;
 const postSvgMapCache = new Map<string, Promise<PostSvgMap | null>>();
 const postAudioMapCache = new Map<string, Promise<PostAudioMap | null>>();
+const postAiImageMapCache = new Map<string, Promise<PostAiImageMap | null>>();
 
 interface PostSvgMapImageEntry {
   src: string;
@@ -91,6 +92,18 @@ interface PostAudioMap {
   version: number;
   postId: string;
   narration?: PostAudioNarration | null;
+}
+
+interface PostAiImageEntry {
+  src: string;
+  prompt: string | null;
+  model: string | null;
+}
+
+interface PostAiImageMap {
+  version: number;
+  postId: string;
+  images: PostAiImageEntry[];
 }
 
 interface NarrationBlock {
@@ -655,6 +668,54 @@ async function loadPostAudioMap(postId: string): Promise<PostAudioMap | null> {
   };
 }
 
+async function loadPostAiImageMap(postId: string): Promise<PostAiImageMap | null> {
+  const mapPath = join("src/_posts", `${postId}.ai-image-map.json`);
+
+  let raw: string;
+  try {
+    raw = await fs.promises.readFile(mapPath, "utf8");
+  } catch (err: any) {
+    if (err?.code === "ENOENT") {
+      return null;
+    }
+    throw err;
+  }
+
+  const parsed = JSON.parse(raw) as Partial<PostAiImageMap>;
+  if (!Array.isArray(parsed.images)) {
+    return null;
+  }
+
+  const images = (parsed.images as unknown[]).reduce<PostAiImageEntry[]>((acc, entry) => {
+    if (!entry || typeof entry !== "object") {
+      return acc;
+    }
+
+    const { src, prompt, model } = entry as {
+      src?: unknown;
+      prompt?: unknown;
+      model?: unknown;
+    };
+
+    if (typeof src !== "string" || src.length === 0) {
+      return acc;
+    }
+
+    acc.push({
+      src,
+      prompt: typeof prompt === "string" && prompt.length > 0 ? prompt : null,
+      model: typeof model === "string" && model.length > 0 ? model : null,
+    });
+    return acc;
+  }, []);
+
+  return {
+    version: Number(parsed.version || 1),
+    postId: String(parsed.postId || postId),
+    images,
+  };
+}
+
 function getPostSvgMap(postId: string) {
   const cached = postSvgMapCache.get(postId);
   if (cached) {
@@ -684,6 +745,22 @@ function getPostAudioMap(postId: string) {
   });
 
   postAudioMapCache.set(postId, pending);
+  return pending;
+}
+
+function getPostAiImageMap(postId: string) {
+  const cached = postAiImageMapCache.get(postId);
+  if (cached) {
+    return cached;
+  }
+
+  const pending = loadPostAiImageMap(postId).catch((err) => {
+    postAiImageMapCache.delete(postId);
+    console.warn(`[blog-ai-image-map] Failed to load ${postId}.ai-image-map.json: ${String(err?.message || err)}`);
+    return null;
+  });
+
+  postAiImageMapCache.set(postId, pending);
   return pending;
 }
 
@@ -789,6 +866,7 @@ export async function getPostById(id: string) {
   const parser = await getParser();
   const svgMap = await getPostSvgMap(realId);
   const audioMap = await getPostAudioMap(realId);
+  const aiImageMap = await getPostAiImageMap(realId);
   const audioNarration = getValidatedNarration(audioMap?.narration);
   const svgMapBySrc = new Map<string, PostSvgMapImageEntry>(
     (svgMap?.images || [])
@@ -843,6 +921,7 @@ export async function getPostById(id: string) {
     coverImage: data.coverImage || null,
     html: html.value.toString(),
     audioNarration,
+    aiImagePrompts: aiImageMap?.images || [],
   };
 }
 
