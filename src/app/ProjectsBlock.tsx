@@ -114,9 +114,9 @@ export const ProjectsBlock = () => {
 
   // Featured projects to exclude from the main table
   const featuredProjectTitles = [
-    'PageSonic',
+    'PDF Viewer & TTS Audiobook Creator',
     'Real-Time Black Hole Simulator',
-    'HomeBench', 
+    'Browser SQL Workbench', 
     'Web Audio Synthesizer'
   ];
 

@@ -2,12 +2,11 @@ const projectsConfig = {
   title: "Projects",
   items: [
     {
-      title: "HomeBench",
+      title: "Browser SQL Workbench",
       summary:
         "Privacy-first, in-browser SQL workbench powered by DuckDB-WASM.",
       image: "/assets/homebench.webp",
       url: "https://homebench.casa",
-      github: "james-ralph8555/homebench",
     },
     {
       title: "Real-Time Black Hole Simulator",
@@ -15,16 +14,13 @@ const projectsConfig = {
         "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
       image: "/assets/black-hole-laboratory.webp",
       url: "https://gravitylens.space",
-      github: "james-ralph8555/black-hole-laboratory",
     },
     {
-      title: "PageSonic",
+      title: "PDF Viewer & TTS Audiobook Creator",
       summary:
         "Local first, in-browser PDF viewer + neuralTTS audiobook creator",
       image: "/assets/pagesonic.webp",
       url: "https://page-sonic.com",
-      github: "james-ralph8555/pagesonic",
-      githubUrl: "https://github.com/james-ralph8555/pagesonic",
     },
     {
       title: "Web Audio Synthesizer",
