@@ -1,0 +1,29 @@
+{
+  "rootDomain": "james-ralph.com",
+  "sites": [
+    {
+      "id": "portfolio",
+      "publicName": "James Ralph Portfolio",
+      "projectPath": ".",
+      "artifactPath": "out",
+      "installCommand": ["npm", "ci"],
+      "buildCommand": ["npm", "run", "build"],
+      "domainAliases": ["james-ralph.com", "www.james-ralph.com"],
+      "defaultRootObject": "index.html",
+      "fallbackPagePath": "/index.html",
+      "responseHeaders": "cross-origin-isolated"
+    },
+    {
+      "id": "gravitylens",
+      "publicName": "GravityLens",
+      "projectPath": "projects/black-hole-laboratory",
+      "artifactPath": "projects/black-hole-laboratory/www/dist",
+      "installCommand": ["npm", "ci"],
+      "buildCommand": ["npm", "run", "build"],
+      "domainAliases": ["gravitylens.james-ralph.com"],
+      "defaultRootObject": "index.html",
+      "fallbackPagePath": "/index.html",
+      "responseHeaders": "standard"
+    }
+  ]
+}

@@ -5,6 +5,10 @@ import { NextjsPortfoliositeCertificateStack } from '../lib/certificate-stack'
 import { NextjsPortfoliositeSiteStack } from '../lib/static-site-stack'
 
 const app = new App()
+const domainName = process.env.SITE_DOMAIN_NAME ?? 'james-ralph.com'
+const siteCertificateArn =
+  app.node.tryGetContext('certificateArn') ??
+  process.env.SITE_CERTIFICATE_ARN
 
 const defaultAccount = process.env.CDK_DEFAULT_ACCOUNT
 const defaultRegion = process.env.CDK_DEFAULT_REGION
@@ -16,7 +20,7 @@ const certificateEnv: Environment = {
 
 new NextjsPortfoliositeCertificateStack(app, 'NextjsPortfoliositeCertificateStack', {
   env: certificateEnv,
-  domainName: 'james-ralph.com',
+  domainName,
 })
 
 const siteEnv: Environment = {
@@ -26,4 +30,5 @@ const siteEnv: Environment = {
 
 new NextjsPortfoliositeSiteStack(app, 'NextjsPortfoliositeSiteStack', {
   env: siteEnv,
+  certificateArn: siteCertificateArn,
 })

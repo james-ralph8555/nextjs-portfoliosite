@@ -108,39 +108,56 @@ All non‑code content lives in `src/content` (JSON) and `src/_posts` (Markdown)
 - Note: Markdown parser creation is memoized for faster builds
 
 ## Deployment (AWS CDK)
-Deployed via AWS CDK infrastructure:
+
+The repository deploys two independently built static sites:
+
+| Site | Domain | Source | Build output |
+| --- | --- | --- | --- |
+| Portfolio | `james-ralph.com`, `www.james-ralph.com` | repository root | `out/` |
+| GravityLens | `gravitylens.james-ralph.com` | `projects/black-hole-laboratory/` | `projects/black-hole-laboratory/www/dist/` |
+
+`hosted-apps.json` is the source of truth for project paths, build commands,
+artifacts, and domain aliases.
 
 **Prerequisites**:
 - AWS CLI configured with appropriate credentials
-- Certificate in ACM (us-east-1) for `james-ralph.com` with SANs `www` and `*.james-ralph.com`
+- ACM certificate in `us-east-1` for `james-ralph.com`, `www.james-ralph.com`, and `*.james-ralph.com`
+- Node.js/npm, Rust, the `wasm32-unknown-unknown` target, and `wasm-pack`
 
-**Deploy steps**:
+**Build and deploy**:
+
 ```bash
-# Build the site
-npm run build
+# Install root and hosted-project dependencies.
+npm run bootstrap:apps
 
-# Deploy via CDK
+# Build the portfolio and GravityLens.
+npm run build:apps
+
+# Deploy both CloudFront/S3 sites with the existing wildcard certificate.
 cd infra
 npm ci
-npm run deploy:portfolio
+SITE_CERTIFICATE_ARN='arn:aws:acm:us-east-1:ACCOUNT:certificate/ID' npm run deploy:portfolio
 ```
 
-The CDK stack (`infra/lib/static-site-stack.ts`) provisions:
-- S3 bucket for static assets
-- CloudFront distribution with HTTPS redirect
-- Bucket deployment with CloudFront invalidation
+To build GravityLens by itself, run `npm run build:gravitylens`.
+
+The CDK stack (`infra/lib/static-site-stack.ts`) provisions a private,
+versioned S3 bucket, CloudFront distribution, static asset deployment, and
+cache invalidation for each site in `hosted-apps.json`. After deployment,
+point the `gravitylens.james-ralph.com` DNS record at the emitted
+`GravitylensCloudFrontDomainName`.
 
 ## CDK Infra (Static Sites)
+
 - Location: `infra/`
 - Stacks:
-  - `NextjsPortfoliositeCertificateStack`: ACM cert for `james-ralph.com` with SANs `www` and wildcard `*.james-ralph.com` (DNS validation; manual records).
-  - `NextjsPortfoliositeSiteStack`: S3+CloudFront for the main static export (`out/`).
+  - `NextjsPortfoliositeCertificateStack`: ACM certificate for `james-ralph.com` with `www` and wildcard SANs (DNS validation).
+  - `NextjsPortfoliositeSiteStack`: S3 and CloudFront resources for the portfolio and GravityLens.
 
-Quick start:
-- Cert (must be in `us-east-1` for CloudFront):
-  - `cd infra && npm run build`
-  - `CERTIFICATE_REGION=us-east-1 npm run cdk -- deploy NextjsPortfoliositeCertificateStack`
-  - Manually create the DNS validation CNAMEs in your DNS provider, then continue once issued.
+The certificate must be in `us-east-1` for CloudFront. To create it, run
+`CERTIFICATE_REGION=us-east-1 npm run cdk -- deploy NextjsPortfoliositeCertificateStack`
+from `infra/`, create the emitted DNS validation CNAMEs, and wait for ACM to
+issue the certificate before deploying the site stack.
 
 ## Configuration & Security
 - Secrets via AWS Secrets Manager or SSM Parameter Store

@@ -125,7 +125,7 @@ three.js is massively popular, and it keeps getting more accessible.
   <img src="/assets/retroglobe-canvas-migration/three-npm-downloads.svg" alt="three.js monthly npm downloads from 2025-01 to 2026-02" style="width: 100%; height: auto; border: 1px solid #1A1A1A; background: #060606;" />
 </div>
 
-AI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project [gravitylens.space](https://gravitylens.space/) is shader-first and uses WebGL-style rendering techniques directly.
+AI tooling also makes graphics workflows much easier now. That is a good thing. For example, my other project [GravityLens](https://gravitylens.james-ralph.com/) is shader-first and uses WebGL-style rendering techniques directly.
 
 ### 3.1 Why we still kept this component on 2D canvas
 

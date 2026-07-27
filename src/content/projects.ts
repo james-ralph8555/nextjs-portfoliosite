@@ -13,7 +13,7 @@ const projectsConfig = {
       summary:
         "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
       image: "/assets/black-hole-laboratory.webp",
-      url: "https://gravitylens.space",
+      url: "https://gravitylens.james-ralph.com/",
     },
     {
       title: "PDF Viewer & TTS Audiobook Creator",
