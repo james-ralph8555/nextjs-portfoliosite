@@ -14,6 +14,8 @@ const projectsConfig = {
         "Real-time 3D graviational lensing simulation in your browser (Rust/WebGPU/WASM).",
       image: "/assets/black-hole-laboratory.webp",
       url: "https://gravitylens.james-ralph.com/",
+      github: "james-ralph8555/nextjs-portfoliosite",
+      githubUrl: "https://github.com/james-ralph8555/nextjs-portfoliosite/blob/main/projects/black-hole-laboratory/README.md",
     },
     {
       title: "PDF Viewer & TTS Audiobook Creator",
