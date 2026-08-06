@@ -3,8 +3,30 @@ import init, { run } from './pkg/index.js';
 
 window.selectedGraphicsBackend = 'Detecting';
 
+function isIOSFamily() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 async function detectGraphicsBackend() {
   const webgpuUnavailableReasons = [];
+  if (isIOSFamily()) {
+    try {
+      const testCanvas = document.createElement('canvas');
+      const gl2 = testCanvas.getContext('webgl2', { alpha: false, antialias: true });
+      if (gl2) {
+        return {
+          ok: true,
+          backend: 'webgl',
+          reason: 'Using WebGL 2 for iOS compatibility.',
+        };
+      }
+      webgpuUnavailableReasons.push('Preferred iOS WebGL 2 backend is unavailable.');
+    } catch (e) {
+      webgpuUnavailableReasons.push(`Preferred iOS WebGL 2 check failed: ${e}`);
+    }
+  }
+
 
   if (navigator.gpu) {
     try {

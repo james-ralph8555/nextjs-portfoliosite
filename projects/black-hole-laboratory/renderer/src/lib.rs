@@ -173,6 +173,8 @@ struct State<'a> {
     last_render_time: std::time::Instant,
     #[cfg(target_arch = "wasm32")]
     last_render_time: f64, // Use f64 for JS performance.now() timestamp
+    #[cfg(target_arch = "wasm32")]
+    loading_screen_hidden: bool,
     profiler: Profiler,
     staging_belt: StagingBelt,
 }
@@ -610,6 +612,8 @@ impl<'a> State<'a> {
             last_render_time: std::time::Instant::now(),
             #[cfg(target_arch = "wasm32")]
             last_render_time: web_sys::window().unwrap().performance().unwrap().now(),
+            #[cfg(target_arch = "wasm32")]
+            loading_screen_hidden: false,
             profiler,
             staging_belt,
         }
@@ -904,6 +908,12 @@ impl<'a> State<'a> {
         
         output.present();
 
+        #[cfg(target_arch = "wasm32")]
+        if !self.loading_screen_hidden {
+            js_hide_loading_screen();
+            self.loading_screen_hidden = true;
+        }
+
         Ok(())
     }
 }
@@ -979,8 +989,6 @@ impl ApplicationHandler for App {
                     let new_state = State::new(window_for_wasm, browser_backend).await;
                     *state_ref.borrow_mut() = Some(new_state);
                     log::info!("Successfully created and stored WASM state");
-                    // Hide loading screen now that renderer is ready
-                    js_hide_loading_screen();
                 });
             } else {
                 *self.state.borrow_mut() = Some(pollster::block_on(State::new(window)));
